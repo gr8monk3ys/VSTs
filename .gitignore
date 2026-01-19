@@ -1,0 +1,25 @@
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Downloads (don't commit actual plugin files)
+downloads/
+*.dmg
+*.pkg
+*.exe
+*.msi
+*.deb
+*.tar.gz
+*.tar.xz
+*.zip
+
+# Logs
+*.log
+
+# IDE
+.vscode/
+.idea/
