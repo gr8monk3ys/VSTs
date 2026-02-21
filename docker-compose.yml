@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  # Download all plugins
+  download-all:
+    build: .
+    volumes:
+      - ./downloads:/downloads
+    command: ["--all"]
+
+  # Download synths only
+  download-synths:
+    build: .
+    volumes:
+      - ./downloads:/downloads
+    command: ["--synths"]
+
+  # Download effects only
+  download-effects:
+    build: .
+    volumes:
+      - ./downloads:/downloads
+    command: ["--effects"]
+
+  # List available plugins
+  list:
+    build: .
+    command: ["--list"]
+
+  # Interactive shell for debugging
+  shell:
+    build: .
+    entrypoint: /bin/bash
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./downloads:/downloads
