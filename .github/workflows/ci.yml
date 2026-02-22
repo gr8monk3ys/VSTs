@@ -51,6 +51,8 @@ jobs:
             python-version: '3.9'
           - os: windows-latest
             python-version: '3.12'
+    env:
+      PYTHONUTF8: '1'  # Ensure UTF-8 output on Windows (fixes UnicodeEncodeError for box-drawing chars)
 
     steps:
       - uses: actions/checkout@v4
@@ -160,6 +162,7 @@ jobs:
         with:
           context: .
           push: false
+          load: true  # Load image into Docker daemon so 'docker run' can access it
           tags: free-vst-plugins:test
           cache-from: type=gha
           cache-to: type=gha,mode=max
