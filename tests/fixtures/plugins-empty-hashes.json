@@ -1,0 +1,34 @@
+{
+  "meta": {
+    "name": "Test Fixture",
+    "version": "0.0.0",
+    "description": "Two-plugin fixture for --compute-hashes tests",
+    "updated": "2026-05-09",
+    "author": "test",
+    "license": "MIT",
+    "platforms": ["macos", "windows", "linux"]
+  },
+  "plugins": {
+    "synths": [
+      {
+        "name": "FakeSynth",
+        "description": "fixture",
+        "urls": {
+          "macos": {
+            "url": "MOCKURL/fakesynth-mac.dmg",
+            "filename": "fakesynth-mac.dmg"
+          },
+          "windows": {
+            "url": "MOCKURL/fakesynth-win.exe",
+            "filename": "fakesynth-win.exe"
+          }
+        },
+        "version": "1.0.0",
+        "formats": ["VST3"],
+        "website": "https://example.invalid/fakesynth",
+        "open_source": false
+      }
+    ]
+  },
+  "manual_download": []
+}
