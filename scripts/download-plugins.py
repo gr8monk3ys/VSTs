@@ -190,6 +190,50 @@ def recompute_hashes(plugins_data: dict, force: bool) -> dict:
                 entry['hash_source'] = 'self'
     return plugins_data
 
+def detect_latest_for_github(repo: str, tag: str | None = None,
+                             api_base: str = "https://api.github.com") -> dict:
+    """Fetch a release from the GitHub API.
+
+    repo: 'owner/name'.
+    tag: if None, queries /releases/latest. If set, queries /releases/tags/{tag}
+         (used for plugins pinned to a rolling tag like Airwindows's DAWPlugin).
+    api_base: defaults to the public GitHub API. Tests override with a mock-server URL.
+
+    Returns {'tag': str, 'assets': [{'name': str, 'url': str, 'size': int}, ...]}.
+
+    Reads GITHUB_TOKEN from the environment when set and adds it as a Bearer
+    Authorization header (raises the rate limit from 60/hr to 5000/hr).
+    HTTP errors propagate to the caller.
+    """
+    if tag:
+        path = f"/repos/{repo}/releases/tags/{tag}"
+    else:
+        path = f"/repos/{repo}/releases/latest"
+
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (compatible; VST-Downloader/1.0)',
+        'Accept': 'application/vnd.github+json',
+    }
+    token = os.environ.get('GITHUB_TOKEN')
+    if token:
+        headers['Authorization'] = f'Bearer {token}'
+
+    req = urllib.request.Request(api_base + path, headers=headers)
+    with urllib.request.urlopen(req, timeout=30) as response:
+        data = json.loads(response.read().decode('utf-8'))
+
+    return {
+        'tag': data.get('tag_name', ''),
+        'assets': [
+            {
+                'name': a.get('name', ''),
+                'url': a.get('browser_download_url', ''),
+                'size': a.get('size', 0),
+            }
+            for a in data.get('assets', [])
+        ],
+    }
+
 def extract_archives(download_dir):
     """Extract zip files."""
     print_section("Extracting Archives")
