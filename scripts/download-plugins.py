@@ -429,6 +429,37 @@ def print_check_updates_report(report: dict) -> None:
         print("Everything up to date.")
 
 
+def apply_updates(plugins_data: dict, report: dict) -> None:
+    """Mutate plugins_data in place: for each plugin in report['updates'],
+    update urls[plat].url + filename, clear sha256 + hash_source, and bump version.
+
+    Hashes are intentionally cleared (not computed) — main() then calls
+    recompute_hashes() which will repopulate only the cleared entries.
+    """
+    # Build a quick index: (category, name) → plugin dict.
+    index = {}
+    for cat, plugins in plugins_data.get('plugins', {}).items():
+        for p in plugins:
+            index[(cat, p.get('name'))] = p
+
+    for upd in report['updates']:
+        plugin = index.get((upd['category'], upd['name']))
+        if plugin is None:
+            continue
+        for pu in upd['platforms']:
+            asset = pu['new_asset']
+            if asset is None:
+                continue
+            entry = plugin['urls'][pu['plat']]
+            entry['url'] = asset['url']
+            entry['filename'] = asset['name']
+            entry.pop('sha256', None)
+            entry.pop('hash_source', None)
+        # Bump version unless the tag is rolling (same string before and after).
+        if upd['old_version'] != upd['new_version']:
+            plugin['version'] = upd['new_version']
+
+
 def extract_archives(download_dir):
     """Extract zip files."""
     print_section("Extracting Archives")
@@ -639,8 +670,13 @@ Examples:
         report = check_updates(plugins_data, api_base=api_base)
         print_check_updates_report(report)
         if args.apply:
-            # Task 6 implements this branch.
-            raise NotImplementedError("--apply is implemented in Task 6")
+            apply_updates(plugins_data, report)
+            # Recompute hashes for entries whose sha256 was cleared.
+            recompute_hashes(plugins_data, force=False)
+            rendered = json.dumps(plugins_data, indent=2, ensure_ascii=False) + "\n"
+            plugins_json.write_text(rendered, encoding='utf-8')
+            print(f"\n{C.GREEN}Applied{C.NC} {len(report['updates'])} update(s). plugins.json updated.")
+            sys.exit(0)
         n_up = len(report['updates'])
         n_fail = len(report['failures'])
         sys.exit(1 if (n_up or n_fail) else 0)

@@ -162,3 +162,65 @@ def test_check_updates_exit_zero_when_no_drift(mock_server, fixtures_dir, tmp_pa
 
     assert result.returncode == 0
     assert "no update" in result.stdout.lower()
+
+
+def test_apply_writes_url_filename_version_and_recomputes_hash(mock_server, fixtures_dir, tmp_path) -> None:
+    # Mock-server-served release: simulates upstream having shipped 1.0.1.
+    _serve_fake_release(mock_server, "fake/synth", "1.0.1",
+                        ["FakeSynth-1.0.1-mac.dmg", "FakeSynth-1.0.1-win.exe"])
+
+    # Mock the actual download endpoints that recompute_hashes will hit.
+    mac_body = b"new-mac-installer-bytes"
+    win_body = b"new-win-installer-bytes"
+    mock_server.add("/FakeSynth-1.0.1-mac.dmg", mac_body)
+    mock_server.add("/FakeSynth-1.0.1-win.exe", win_body)
+
+    json_path = tmp_path / "plugins.json"
+    # Modify fixture: rewrite the example.invalid URLs to point at the mock server,
+    # so when --apply re-points URLs to the new asset URLs from the API response,
+    # the hashes can actually be computed against the mock's body.
+    fixture_text = (fixtures_dir / "plugins-update-fixture.json").read_text(encoding="utf-8")
+    json_path.write_text(fixture_text, encoding="utf-8")
+
+    # The API response uses browser_download_url=https://example.invalid/<name>; rewrite
+    # it to mock_server.base_url so recompute_hashes can fetch them.
+    # We do this by serving release JSON whose asset URLs point at the mock server.
+    body = json.dumps({
+        "tag_name": "1.0.1",
+        "assets": [
+            {"name": "FakeSynth-1.0.1-mac.dmg",
+             "browser_download_url": mock_server.url_for("/FakeSynth-1.0.1-mac.dmg"),
+             "size": len(mac_body)},
+            {"name": "FakeSynth-1.0.1-win.exe",
+             "browser_download_url": mock_server.url_for("/FakeSynth-1.0.1-win.exe"),
+             "size": len(win_body)},
+        ],
+    }).encode("utf-8")
+    mock_server.add("/repos/fake/synth/releases/latest", body)
+
+    result = subprocess.run(
+        [sys.executable, str(SCRIPT), "--check-updates", "--apply",
+         "--plugins-json", str(json_path)],
+        capture_output=True, text=True, check=False,
+        env={**os.environ, "VST_DLP_GITHUB_API_BASE": mock_server.base_url},
+    )
+
+    assert result.returncode == 0, f"stdout:\n{result.stdout}\nstderr:\n{result.stderr}"
+
+    data = json.loads(json_path.read_text(encoding="utf-8"))
+    plugin = data["plugins"]["synths"][0]
+    assert plugin["version"] == "1.0.1"
+
+    mac = plugin["urls"]["macos"]
+    win = plugin["urls"]["windows"]
+
+    import hashlib
+    assert mac["filename"] == "FakeSynth-1.0.1-mac.dmg"
+    assert mac["url"] == mock_server.url_for("/FakeSynth-1.0.1-mac.dmg")
+    assert mac["sha256"] == hashlib.sha256(mac_body).hexdigest()
+    assert mac["hash_source"] == "self"
+
+    assert win["filename"] == "FakeSynth-1.0.1-win.exe"
+    assert win["url"] == mock_server.url_for("/FakeSynth-1.0.1-win.exe")
+    assert win["sha256"] == hashlib.sha256(win_body).hexdigest()
+    assert win["hash_source"] == "self"
