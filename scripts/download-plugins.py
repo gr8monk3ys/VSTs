@@ -143,52 +143,6 @@ def recompute_hashes(plugins_data: dict, force: bool) -> dict:
                 entry['hash_source'] = 'self'
     return plugins_data
 
-def download_airwindows(download_dir, plat):
-    """Download latest Airwindows Consolidated from GitHub."""
-    print(f"  {C.CYAN}⬇{C.NC}  Fetching latest Airwindows Consolidated...")
-
-    api_url = "https://api.github.com/repos/baconpaul/airwin2rack/releases/tags/DAWPlugin"
-
-    platform_patterns = {
-        'macos': 'macOS',
-        'windows': 'win64',
-        'linux': 'linux'
-    }
-
-    try:
-        req = urllib.request.Request(api_url, headers={
-            'User-Agent': 'Mozilla/5.0',
-            'Accept': 'application/vnd.github.v3+json'
-        })
-
-        with urllib.request.urlopen(req, timeout=30) as response:
-            data = json.loads(response.read().decode())
-
-        pattern = platform_patterns.get(plat, 'macOS')
-        download_url = None
-
-        for asset in data.get('assets', []):
-            name = asset.get('name', '')
-            if pattern in name:
-                download_url = asset.get('browser_download_url')
-                break
-
-        if download_url:
-            ext = '.dmg' if plat == 'macos' else '.zip' if plat == 'windows' else '.tar.gz'
-            filename = f"airwindows-consolidated-{plat}{ext}"
-            filepath = download_dir / filename
-
-            if filepath.exists():
-                print(f"  {C.YELLOW}⏭{C.NC}  Airwindows Consolidated - already downloaded")
-                return True
-
-            return download_file(download_url, filepath, "Airwindows Consolidated (350+ plugins)")
-
-    except Exception as e:
-        print(f"  {C.RED}✗{C.NC}  Airwindows Consolidated - failed: {e}")
-
-    return False
-
 def extract_archives(download_dir):
     """Extract zip files."""
     print_section("Extracting Archives")
@@ -250,12 +204,6 @@ def download_category(plugins_data, category, download_dir, plat):
 
     for plugin in plugins:
         name = plugin.get('name', 'Unknown')
-
-        # Skip Airwindows (handled separately)
-        if 'airwindows' in name.lower():
-            download_airwindows(download_dir, plat)
-            continue
-
         url, filename = get_plugin_url(plugin, plat)
 
         if not url:

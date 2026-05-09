@@ -296,16 +296,24 @@
         "name": "Airwindows Consolidated",
         "description": "350+ effects in one plugin - saturation, tape, console, everything",
         "urls": {
-          "macos": { "url": "github-api", "filename": "airwindows-consolidated-macos.dmg" },
-          "windows": { "url": "github-api", "filename": "airwindows-consolidated-windows.zip" },
-          "linux": { "url": "github-api", "filename": "airwindows-consolidated-linux.tar.gz" }
+          "macos": {
+            "url": "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/airwindows-consolidated-macOS-2026-05-02-dc0ed69.dmg",
+            "filename": "airwindows-consolidated-macOS.dmg"
+          },
+          "windows": {
+            "url": "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/AirwindowsConsolidated-2026-05-02-dc0ed69-Windows-64bit-setup.exe",
+            "filename": "airwindows-consolidated-windows-setup.exe"
+          },
+          "linux": {
+            "url": "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/AirwindowsConsolidated-2026-05-02-dc0ed69-Linux.zip",
+            "filename": "airwindows-consolidated-linux.zip"
+          }
         },
-        "version": "rolling",
+        "version": "2026-05-02-dc0ed69",
         "formats": ["VST3", "AU", "CLAP", "LV2"],
         "website": "https://www.airwindows.com/consolidated/",
         "open_source": true,
-        "github": "https://github.com/baconpaul/airwin2rack",
-        "note": "Script fetches latest from GitHub API"
+        "github": "https://github.com/baconpaul/airwin2rack"
       },
       {
         "name": "DC1A",
