@@ -6,13 +6,13 @@ All plugins are legally free from their official sources.
 """
 
 import argparse
+import hashlib
 import json
 import os
 import platform
 import sys
 import urllib.request
 import urllib.error
-import shutil
 import zipfile
 from pathlib import Path
 
@@ -28,6 +28,17 @@ class Colors:
     NC = '\033[0m' if ENABLED else ''
 
 C = Colors()
+
+
+class ChecksumMismatch(Exception):
+    """Raised when a downloaded file's SHA-256 does not match plugins.json."""
+
+    def __init__(self, name: str, expected: str, actual: str) -> None:
+        super().__init__(f"{name}: expected {expected}, got {actual}")
+        self.name = name
+        self.expected = expected
+        self.actual = actual
+
 
 def get_platform():
     """Detect current platform."""
@@ -73,82 +84,111 @@ def print_section(title):
     print(f"{C.BLUE}  {title}{C.NC}")
     print(f"{C.BLUE}{'─'*64}{C.NC}")
 
-def download_file(url, filepath, name):
-    """Download a file with progress indication."""
+def download_file(url, filepath, name, expected_sha256, hash_source):
+    """Download `url` to `filepath`, verifying SHA-256 in a single I/O pass.
+
+    On hash mismatch, removes the partial/cached file and raises
+    ChecksumMismatch. On a cached-file hit (filepath already exists), the
+    file is re-hashed before being trusted; if it doesn't match, the cached
+    file is deleted and the download proceeds normally.
+    """
     if filepath.exists():
-        print(f"  {C.YELLOW}⏭{C.NC}  {name} - already downloaded")
-        return True
+        h_existing = hashlib.sha256()
+        with open(filepath, 'rb') as f:
+            for chunk in iter(lambda: f.read(65536), b''):
+                h_existing.update(chunk)
+        if h_existing.hexdigest() == expected_sha256:
+            print(f"  {C.YELLOW}⏭{C.NC}  {name} - already verified ({hash_source})")
+            return True
+        # Cached file is bad — delete and fall through to re-download.
+        filepath.unlink()
+        print(f"  {C.YELLOW}⚠{C.NC}  {name} - cached file failed verification, redownloading")
 
     print(f"  {C.CYAN}⬇{C.NC}  Downloading {name}...")
 
+    req = urllib.request.Request(url, headers={
+        'User-Agent': 'Mozilla/5.0 (compatible; VST-Downloader/1.0)'
+    })
+
+    h = hashlib.sha256()
     try:
-        # Create request with browser-like headers
-        req = urllib.request.Request(url, headers={
-            'User-Agent': 'Mozilla/5.0 (compatible; VST-Downloader/1.0)'
-        })
-
-        with urllib.request.urlopen(req, timeout=60) as response:
-            with open(filepath, 'wb') as f:
-                shutil.copyfileobj(response, f)
-
-        print(f"  {C.GREEN}✓{C.NC}  {name} - downloaded successfully")
-        return True
-
+        with urllib.request.urlopen(req, timeout=60) as response, open(filepath, 'wb') as f:
+            while True:
+                chunk = response.read(65536)
+                if not chunk:
+                    break
+                f.write(chunk)
+                h.update(chunk)
     except urllib.error.HTTPError as e:
+        if filepath.exists():
+            filepath.unlink()
         print(f"  {C.RED}✗{C.NC}  {name} - HTTP error {e.code}")
         return False
     except urllib.error.URLError as e:
+        if filepath.exists():
+            filepath.unlink()
         print(f"  {C.RED}✗{C.NC}  {name} - connection error: {e.reason}")
         return False
-    except Exception as e:
-        print(f"  {C.RED}✗{C.NC}  {name} - error: {e}")
-        return False
 
-def download_airwindows(download_dir, plat):
-    """Download latest Airwindows Consolidated from GitHub."""
-    print(f"  {C.CYAN}⬇{C.NC}  Fetching latest Airwindows Consolidated...")
+    actual = h.hexdigest()
+    if actual != expected_sha256:
+        filepath.unlink()
+        print(f"  {C.RED}✗{C.NC}  {name} - HASH MISMATCH")
+        print(f"      expected: {expected_sha256}")
+        print(f"      actual:   {actual}")
+        raise ChecksumMismatch(name, expected_sha256, actual)
 
-    api_url = "https://api.github.com/repos/baconpaul/airwin2rack/releases/tags/DAWPlugin"
+    print(f"  {C.GREEN}✓{C.NC}  {name} - verified ({hash_source})")
+    return True
 
-    platform_patterns = {
-        'macos': 'macOS',
-        'windows': 'win64',
-        'linux': 'linux'
-    }
+def compute_hash_for_url(url: str, chunk_size: int = 65536) -> str:
+    """Stream the URL and return the lowercase hex SHA-256 of its body.
 
-    try:
-        req = urllib.request.Request(api_url, headers={
-            'User-Agent': 'Mozilla/5.0',
-            'Accept': 'application/vnd.github.v3+json'
-        })
+    Used by the --compute-hashes maintainer mode. Does NOT write a file
+    or perform any verification — it is the trust-on-first-use primitive.
 
-        with urllib.request.urlopen(req, timeout=30) as response:
-            data = json.loads(response.read().decode())
-
-        pattern = platform_patterns.get(plat, 'macOS')
-        download_url = None
-
-        for asset in data.get('assets', []):
-            name = asset.get('name', '')
-            if pattern in name:
-                download_url = asset.get('browser_download_url')
+    Refuses to hash text/html or application/json responses, since those
+    typically indicate a download-gate page or API error rather than a
+    real installer (the hash would be valid but verify the wrong content).
+    """
+    req = urllib.request.Request(url, headers={
+        'User-Agent': 'Mozilla/5.0 (compatible; VST-Downloader/1.0)'
+    })
+    h = hashlib.sha256()
+    with urllib.request.urlopen(req, timeout=60) as response:
+        ct = (response.getheader('Content-Type') or '').lower()
+        if ct.startswith('text/html') or ct.startswith('application/json'):
+            raise ValueError(
+                f"refusing to hash {url} — Content-Type is {ct!r}; "
+                "this URL probably serves a download-gate page or API error, "
+                "not a real installer. Move the entry to manual_download."
+            )
+        while True:
+            chunk = response.read(chunk_size)
+            if not chunk:
                 break
+            h.update(chunk)
+    return h.hexdigest()
 
-        if download_url:
-            ext = '.dmg' if plat == 'macos' else '.zip' if plat == 'windows' else '.tar.gz'
-            filename = f"airwindows-consolidated-{plat}{ext}"
-            filepath = download_dir / filename
+def recompute_hashes(plugins_data: dict, force: bool) -> dict:
+    """Walk plugins_data, compute SHA-256 for every URL, return updated dict.
 
-            if filepath.exists():
-                print(f"  {C.YELLOW}⏭{C.NC}  Airwindows Consolidated - already downloaded")
-                return True
-
-            return download_file(download_url, filepath, "Airwindows Consolidated (350+ plugins)")
-
-    except Exception as e:
-        print(f"  {C.RED}✗{C.NC}  Airwindows Consolidated - failed: {e}")
-
-    return False
+    By default, existing sha256 fields are preserved (so manually-set
+    'publisher' hashes are not clobbered). With force=True, every URL is
+    recomputed and tagged 'self'.
+    """
+    for category_plugins in plugins_data.get('plugins', {}).values():
+        for plugin in category_plugins:
+            urls = plugin.get('urls', {})
+            for plat, entry in urls.items():
+                if not isinstance(entry, dict) or 'url' not in entry:
+                    continue
+                if entry.get('sha256') and not force:
+                    continue
+                digest = compute_hash_for_url(entry['url'])
+                entry['sha256'] = digest
+                entry['hash_source'] = 'self'
+    return plugins_data
 
 def extract_archives(download_dir):
     """Extract zip files."""
@@ -170,34 +210,16 @@ def extract_archives(download_dir):
             print(f"  {C.RED}✗{C.NC}  Failed to extract {zip_path.name}: {e}")
 
 def get_plugin_url(plugin, plat):
-    """Get the download URL for a plugin on the current platform."""
-    # Check for platform-specific URL
-    url_key = f"url_{plat}"
-    if url_key in plugin:
-        return plugin[url_key], plugin.get(f"filename_{plat}", plugin.get('filename'))
+    """Get the URL entry dict for the current platform.
 
-    # Check for 'urls' dict
-    if 'urls' in plugin and plat in plugin['urls']:
-        url_info = plugin['urls'][plat]
-        if isinstance(url_info, dict):
-            return url_info.get('url'), url_info.get('filename')
-        return url_info, plugin.get('filename')
-
-    # Fall back to default URL (usually macOS)
-    url = plugin.get('url')
-    filename = plugin.get('filename')
-
-    # Skip if URL is clearly for a different platform
-    if url:
-        url_lower = url.lower()
-        if plat == 'macos' and ('win' in url_lower or 'linux' in url_lower):
-            return None, None
-        if plat == 'windows' and ('macos' in url_lower or 'osx' in url_lower or 'linux' in url_lower):
-            return None, None
-        if plat == 'linux' and ('macos' in url_lower or 'osx' in url_lower or 'win' in url_lower):
-            return None, None
-
-    return url, filename
+    Returns a dict with keys 'url', 'filename', 'sha256', 'hash_source'
+    or None if the plugin is unavailable for this platform.
+    """
+    urls = plugin.get('urls', {})
+    entry = urls.get(plat)
+    if isinstance(entry, dict) and entry.get('url'):
+        return entry
+    return None
 
 def download_category(plugins_data, category, download_dir, plat):
     """Download all plugins in a category."""
@@ -211,25 +233,17 @@ def download_category(plugins_data, category, download_dir, plat):
 
     for plugin in plugins:
         name = plugin.get('name', 'Unknown')
+        entry = get_plugin_url(plugin, plat)
 
-        # Skip Airwindows (handled separately)
-        if 'airwindows' in name.lower():
-            download_airwindows(download_dir, plat)
-            continue
-
-        url, filename = get_plugin_url(plugin, plat)
-
-        if not url:
+        if entry is None:
             print(f"  {C.YELLOW}⏭{C.NC}  {name} - not available for {plat}")
             continue
 
-        if not filename:
-            filename = url.split('/')[-1].split('?')[0]
-            filename = urllib.request.unquote(filename)
-
+        url = entry['url']
+        filename = entry.get('filename') or urllib.request.unquote(url.split('/')[-1].split('?')[0])
         filepath = download_dir / filename
 
-        if not download_file(url, filepath, name):
+        if not download_file(url, filepath, name, entry['sha256'], entry['hash_source']):
             failed += 1
 
     return failed
@@ -268,7 +282,7 @@ def print_summary(download_dir, plat):
         print("     3. Follow installer prompts")
         print("     4. Rescan plugins in your DAW")
     else:  # Linux
-        print(f"     1. Extract archives to plugin directories:")
+        print("     1. Extract archives to plugin directories:")
         print(f"        VST3: {C.CYAN}~/.vst3{C.NC}")
         print(f"        VST:  {C.CYAN}~/.vst{C.NC} or {C.CYAN}/usr/lib/vst{C.NC}")
         print(f"        LV2:  {C.CYAN}~/.lv2{C.NC}")
@@ -293,9 +307,9 @@ def list_plugins(plugins_data, plat):
 
         for plugin in plugins_data['plugins'][category]:
             name = plugin.get('name', 'Unknown')
-            url, _ = get_plugin_url(plugin, plat)
+            entry = get_plugin_url(plugin, plat)
 
-            if url:
+            if entry is not None:
                 print(f"  • {name}")
             else:
                 print(f"  • {name} {C.YELLOW}(not available for {plat}){C.NC}")
@@ -335,6 +349,14 @@ Examples:
                         help='Download directory')
     parser.add_argument('--platform', choices=['macos', 'windows', 'linux'],
                         help='Override detected platform')
+    parser.add_argument('--compute-hashes', action='store_true',
+                        help='Maintainer mode: compute SHA-256 for every URL and emit updated plugins.json')
+    parser.add_argument('--in-place', action='store_true',
+                        help='With --compute-hashes: rewrite plugins.json instead of stdout')
+    parser.add_argument('--force-recompute', action='store_true',
+                        help='With --compute-hashes: overwrite existing sha256 fields (otherwise preserved)')
+    parser.add_argument('--plugins-json', type=str,
+                        help='Path to plugins.json (defaults to ../plugins.json relative to script)')
 
     args = parser.parse_args()
 
@@ -346,7 +368,7 @@ Examples:
 
     # Load plugins data
     script_dir = Path(__file__).parent
-    plugins_json = script_dir.parent / 'plugins.json'
+    plugins_json = Path(args.plugins_json) if args.plugins_json else script_dir.parent / 'plugins.json'
 
     if not plugins_json.exists():
         print(f"{C.RED}Error: plugins.json not found at {plugins_json}{C.NC}")
@@ -357,6 +379,16 @@ Examples:
     # List mode
     if args.list:
         list_plugins(plugins_data, plat)
+        return
+
+    # Compute hashes mode
+    if args.compute_hashes:
+        updated = recompute_hashes(plugins_data, args.force_recompute)
+        rendered = json.dumps(updated, indent=2, ensure_ascii=False) + "\n"
+        if args.in_place:
+            plugins_json.write_text(rendered, encoding='utf-8')
+        else:
+            sys.stdout.write(rendered)
         return
 
     # Determine which categories to download
@@ -380,10 +412,13 @@ Examples:
     download_dir.mkdir(parents=True, exist_ok=True)
 
     failed = 0
-
-    # Download each category
-    for category in categories:
-        failed += download_category(plugins_data, category, download_dir, plat)
+    try:
+        for category in categories:
+            failed += download_category(plugins_data, category, download_dir, plat)
+    except ChecksumMismatch as e:
+        print(f"\n{C.RED}HASH MISMATCH detected for {e.name}.{C.NC}")
+        print(f"{C.RED}Aborting. The bad file has been deleted.{C.NC}")
+        sys.exit(1)
 
     # Extract archives
     extract_archives(download_dir)

@@ -25,10 +25,19 @@ jobs:
       - name: Validate JSON
         run: python -m json.tool plugins.json > /dev/null
 
+      - name: Validate plugins.json against schema
+        run: |
+          pip install jsonschema
+          python -c "import json, jsonschema; \
+            schema = json.load(open('schemas/plugins.schema.json')); \
+            data = json.load(open('plugins.json')); \
+            jsonschema.validate(instance=data, schema=schema); \
+            print('plugins.json validates against schema')"
+
       - name: Lint Python script
         run: |
           pip install ruff
-          ruff check scripts/download-plugins.py || true
+          ruff check scripts/download-plugins.py
 
       - name: Check script syntax
         run: python -m py_compile scripts/download-plugins.py
@@ -78,6 +87,11 @@ jobs:
           print(f'Detected platform: {detected}')
           assert detected in ['macos', 'windows', 'linux'], f'Unknown platform: {detected}'
           "
+
+      - name: Run unit + integration tests
+        run: |
+          pip install pytest jsonschema
+          pytest tests/ -v
 
   check-urls:
     name: Validate Plugin URLs
@@ -144,8 +158,7 @@ jobs:
               print("\nFailed URLs:")
               for f in failed:
                   print(f"  - {f}")
-              # Don't fail the build for URL issues (they may be temporary)
-              # sys.exit(1)
+              sys.exit(1)
           EOF
 
   docker:

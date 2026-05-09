@@ -76,14 +76,13 @@ docker-compose run download-effects
 
 | Plugin | Type | macOS | Windows | Linux | Open Source |
 |--------|------|:-----:|:-------:|:-----:|:-----------:|
-| **[Valhalla Supermassive](https://valhalladsp.com/shop/reverb/valhalla-supermassive/)** | Reverb/Delay | ✅ | ✅ | | |
-| **[Valhalla FreqEcho](https://valhalladsp.com/shop/delay/valhalla-freq-echo/)** | Freq Shifter + Echo | ✅ | ✅ | | |
-| **[OTT](https://xferrecords.com/freeware)** | Multiband Compressor | ✅ | ✅ | | |
+| **[Valhalla Supermassive](https://valhalladsp.com/shop/reverb/valhalla-supermassive/)** | Reverb/Delay | ✅ | | | |
+| **[Valhalla FreqEcho](https://valhalladsp.com/shop/delay/valhalla-freq-echo/)** | Freq Shifter + Echo | ✅ | | | |
+| **[OTT](https://xferrecords.com/freeware)** | Multiband Compressor | ✅ | | | |
 | **[Dragonfly Reverb](https://michaelwillis.github.io/dragonfly-reverb/)** | 4 Reverbs | ✅ | ✅ | ✅ | ✅ |
 | **[BYOD](https://chowdsp.com/products.html)** | Modular Distortion | ✅ | ✅ | ✅ | ✅ |
 | **[TDR Nova](https://www.tokyodawn.net/tdr-nova/)** | Dynamic EQ | ✅ | ✅ | | |
 | **[Airwindows Consolidated](https://www.airwindows.com/consolidated/)** | **350+ effects** | ✅ | ✅ | ✅ | ✅ |
-| **[DC1A](https://klanghelm.com/contents/products/DC1A)** | Character Compressor | ✅ | ✅ | | |
 | **[TAL-Vocoder](https://tal-software.com/products/tal-vocoder)** | Classic 80s Vocoder | ✅ | ✅ | ✅ | |
 
 ### Instruments & Bundles
@@ -91,7 +90,7 @@ docker-compose run download-effects
 | Plugin | Description | macOS | Windows | Linux |
 |--------|-------------|:-----:|:-------:|:-----:|
 | **[Sitala](https://decomposer.de/sitala/)** | Drum sampler - 16 pads | ✅ | ✅ | ✅ |
-| **[MeldaProduction MFreeFXBundle](https://www.meldaproduction.com/MFreeFXBundle)** | 37 free effects | ✅ | ✅ | ✅ |
+| **[MeldaProduction MFreeFXBundle](https://www.meldaproduction.com/MFreeFXBundle)** | 37 free effects | ✅ | ✅ | |
 
 ## Manual Download Required
 
@@ -99,6 +98,7 @@ These require account registration but are worth it:
 
 | Plugin | Platforms | Why It's Great |
 |--------|-----------|----------------|
+| **[DC1A](https://klanghelm.com/contents/products/DC1A)** | macOS/Win | Character compressor — direct URL serves a download-gate page |
 | **[Vital](https://vital.audio)** | All | Best free wavetable synth (rivals $189 Serum) |
 | **[Spitfire LABS](https://labs.spitfireaudio.com)** | macOS/Win | Pro-quality sampled instruments |
 | **[Analog Obsession](https://analogobsession.com)** | macOS/Win | 50+ analog hardware emulations |
