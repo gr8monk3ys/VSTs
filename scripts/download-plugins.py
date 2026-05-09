@@ -13,7 +13,6 @@ import platform
 import sys
 import urllib.request
 import urllib.error
-import shutil
 import zipfile
 from pathlib import Path
 
@@ -272,7 +271,7 @@ def print_summary(download_dir, plat):
         print("     3. Follow installer prompts")
         print("     4. Rescan plugins in your DAW")
     else:  # Linux
-        print(f"     1. Extract archives to plugin directories:")
+        print("     1. Extract archives to plugin directories:")
         print(f"        VST3: {C.CYAN}~/.vst3{C.NC}")
         print(f"        VST:  {C.CYAN}~/.vst{C.NC} or {C.CYAN}/usr/lib/vst{C.NC}")
         print(f"        LV2:  {C.CYAN}~/.lv2{C.NC}")
