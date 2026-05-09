@@ -42,12 +42,12 @@
             "filename": "Dexed-1.0.1-macOS.dmg"
           },
           "windows": {
-            "url": "https://github.com/asb2m10/dexed/releases/download/v1.0.1/Dexed-1.0.1-windows.exe",
-            "filename": "Dexed-1.0.1-windows.exe"
+            "url": "https://github.com/asb2m10/dexed/releases/download/v1.0.1/Dexed-1.0.1-win.exe",
+            "filename": "Dexed-1.0.1-win.exe"
           },
           "linux": {
-            "url": "https://github.com/asb2m10/dexed/releases/download/v1.0.1/Dexed-1.0.1-linux.tar.gz",
-            "filename": "Dexed-1.0.1-linux.tar.gz"
+            "url": "https://github.com/asb2m10/dexed/releases/download/v1.0.1/Dexed-1.0.1-lnx.zip",
+            "filename": "Dexed-1.0.1-lnx.zip"
           }
         },
         "version": "1.0.1",
@@ -65,12 +65,12 @@
             "filename": "OB-Xd.2.19.pkg"
           },
           "windows": {
-            "url": "https://github.com/reales/OB-Xd/releases/download/v2.19/OB-Xd.2.19_Win.exe",
-            "filename": "OB-Xd.2.19_Win.exe"
+            "url": "https://github.com/reales/OB-Xd/releases/download/v2.19/Obxd219.exe",
+            "filename": "Obxd219.exe"
           },
           "linux": {
-            "url": "https://github.com/reales/OB-Xd/releases/download/v2.19/OB-Xd.2.19_Linux_x86_64.tar.gz",
-            "filename": "OB-Xd.2.19_Linux.tar.gz"
+            "url": "https://github.com/reales/OB-Xd/releases/download/v2.19/Obxd219.deb",
+            "filename": "Obxd219.deb"
           }
         },
         "version": "2.19",
@@ -88,12 +88,12 @@
             "filename": "Helm_v0_9_0_r.pkg"
           },
           "windows": {
-            "url": "https://tytel.org/static/dist/Helm_v0_9_0_r.exe",
-            "filename": "Helm_v0_9_0_r.exe"
+            "url": "https://tytel.org/static/dist/Helm_64bit_v0_9_0_r.msi",
+            "filename": "Helm_64bit_v0_9_0_r.msi"
           },
           "linux": {
-            "url": "https://tytel.org/static/dist/helm_0_9_0_r.tar.gz",
-            "filename": "helm_0_9_0_r.tar.gz"
+            "url": "https://tytel.org/static/dist/helm_0.9.0_amd64_r.deb",
+            "filename": "helm_0.9.0_amd64_r.deb"
           }
         },
         "version": "0.9.0",
@@ -111,12 +111,12 @@
             "filename": "TAL-NoiseMaker-installer_macos.zip"
           },
           "windows": {
-            "url": "https://tal-software.com/downloads/plugins/TAL-NoiseMaker-installer.zip",
-            "filename": "TAL-NoiseMaker-installer_win.zip"
+            "url": "https://tal-software.com/downloads/plugins/install_TAL-NoiseMaker.zip",
+            "filename": "install_TAL-NoiseMaker.zip"
           },
           "linux": {
-            "url": "https://tal-software.com/downloads/plugins/TAL-NoiseMaker-installer_linux.zip",
-            "filename": "TAL-NoiseMaker-installer_linux.zip"
+            "url": "https://tal-software.com/downloads/plugins/TAL-NoiseMaker_64_linux.zip",
+            "filename": "TAL-NoiseMaker_64_linux.zip"
           }
         },
         "version": "5.0.6",
@@ -159,8 +159,8 @@
             "filename": "Zebralette_Win.zip"
           },
           "linux": {
-            "url": "https://dl.u-he.com/releases/Zebra_Legacy_294_16765_Linux.tar.xz",
-            "filename": "Zebralette_Linux.tar.xz"
+            "url": "https://dl.u-he.com/releases/Zebra_Legacy_294_16765_Linux.zip",
+            "filename": "Zebralette_Linux.zip"
           }
         },
         "version": "2.9.4",
@@ -240,8 +240,8 @@
             "filename": "dragonfly-reverb-3.2.10-win64.zip"
           },
           "linux": {
-            "url": "https://github.com/michaelwillis/dragonfly-reverb/releases/download/3.2.10/dragonfly-reverb-3.2.10-linux-x86_64.tar.gz",
-            "filename": "dragonfly-reverb-3.2.10-linux.tar.gz"
+            "url": "https://github.com/michaelwillis/dragonfly-reverb/releases/download/3.2.10/dragonfly-reverb-3.2.10-linux-x86_64.tar.xz",
+            "filename": "dragonfly-reverb-3.2.10-linux.tar.xz"
           }
         },
         "version": "3.2.10",
@@ -259,12 +259,12 @@
             "filename": "BYOD-Mac-1.3.0.dmg"
           },
           "windows": {
-            "url": "https://github.com/Chowdhury-DSP/BYOD/releases/download/v1.3.0/BYOD-Win-1.3.0.exe",
-            "filename": "BYOD-Win-1.3.0.exe"
+            "url": "https://github.com/Chowdhury-DSP/BYOD/releases/download/v1.3.0/BYOD-Win-64bit-1.3.0.exe",
+            "filename": "BYOD-Win-64bit-1.3.0.exe"
           },
           "linux": {
-            "url": "https://github.com/Chowdhury-DSP/BYOD/releases/download/v1.3.0/BYOD-Linux-1.3.0.deb",
-            "filename": "BYOD-Linux-1.3.0.deb"
+            "url": "https://github.com/Chowdhury-DSP/BYOD/releases/download/v1.3.0/BYOD-Linux-x64-1.3.0.deb",
+            "filename": "BYOD-Linux-x64-1.3.0.deb"
           }
         },
         "version": "1.3.0",
@@ -278,15 +278,15 @@
         "description": "Dynamic EQ - parallel bands, pro mixing tool",
         "urls": {
           "macos": {
-            "url": "https://www.tokyodawn.net/labs/Nova/2.2.1/TDR%20Nova%20(macOS).pkg",
-            "filename": "TDR-Nova-macOS.pkg"
+            "url": "https://www.tokyodawn.net/labs/Nova/2.2.2/TDR%20Nova.zip",
+            "filename": "TDR-Nova-macOS.zip"
           },
           "windows": {
-            "url": "https://www.tokyodawn.net/labs/Nova/2.2.1/TDR%20Nova%20(Windows).zip",
-            "filename": "TDR-Nova-Windows.zip"
+            "url": "https://www.tokyodawn.net/labs/Nova/2.2.2/TDR%20Nova%20(installer).zip",
+            "filename": "TDR-Nova-Windows-installer.zip"
           }
         },
-        "version": "2.2.1",
+        "version": "2.2.2",
         "formats": ["VST3", "AU", "VST", "AAX"],
         "website": "https://www.tokyodawn.net/tdr-nova/",
         "open_source": false,
@@ -343,12 +343,12 @@
             "filename": "TAL-Vocoder-installer_macos.zip"
           },
           "windows": {
-            "url": "https://tal-software.com/downloads/plugins/TAL-Vocoder-2-installer.zip",
-            "filename": "TAL-Vocoder-installer_win.zip"
+            "url": "https://tal-software.com/downloads/plugins/install_TAL-Vocoder-2.zip",
+            "filename": "install_TAL-Vocoder-2.zip"
           },
           "linux": {
-            "url": "https://tal-software.com/downloads/plugins/TAL-Vocoder-2-installer_linux.zip",
-            "filename": "TAL-Vocoder-installer_linux.zip"
+            "url": "https://tal-software.com/downloads/plugins/TAL-Vocoder-2_64_linux.zip",
+            "filename": "TAL-Vocoder-2_64_linux.zip"
           }
         },
         "version": "3.0.4",
@@ -367,15 +367,15 @@
             "filename": "Sitala-1.0.dmg"
           },
           "windows": {
-            "url": "https://www.decomposer.de/sitala/releases/Sitala-1.0-Windows.exe",
-            "filename": "Sitala-1.0-Windows.exe"
+            "url": "https://www.decomposer.de/sitala/releases/Sitala-1.0-Setup-64.msi",
+            "filename": "Sitala-1.0-Setup-64.msi"
           },
           "linux": {
-            "url": "https://www.decomposer.de/sitala/releases/Sitala-1.0-Linux.tar.gz",
-            "filename": "Sitala-1.0-Linux.tar.gz"
+            "url": "https://www.decomposer.de/sitala/releases/sitala-1.0_amd64.deb",
+            "filename": "sitala-1.0_amd64.deb"
           }
         },
-        "version": "1.0.9",
+        "version": "1.0",
         "formats": ["VST", "AU", "AAX", "Standalone"],
         "website": "https://decomposer.de/sitala/",
         "open_source": false,
@@ -388,19 +388,15 @@
         "description": "37 free effects - EQ, compressor, reverb, analyzer, more",
         "urls": {
           "macos": {
-            "url": "https://meldaproduction.b-cdn.net/download/mpluginmanager/MPluginManager_mac.zip",
-            "filename": "MPluginManager_mac.zip"
+            "url": "https://meldaproduction.b-cdn.net/download/mpluginmanager/MPluginManager_02_21_setupmac.zip",
+            "filename": "MPluginManager_02_21_setupmac.zip"
           },
           "windows": {
-            "url": "https://meldaproduction.b-cdn.net/download/mpluginmanager/MPluginManager.exe",
-            "filename": "MPluginManager.exe"
-          },
-          "linux": {
-            "url": "https://meldaproduction.b-cdn.net/download/mpluginmanager/MPluginManager_linux.tar.gz",
-            "filename": "MPluginManager_linux.tar.gz"
+            "url": "https://meldaproduction.b-cdn.net/download/mpluginmanager/MPluginManager_02_21_setup.exe",
+            "filename": "MPluginManager_02_21_setup.exe"
           }
         },
-        "version": "latest",
+        "version": "02.21",
         "formats": ["VST3", "AU", "VST", "AAX"],
         "website": "https://www.meldaproduction.com/MFreeFXBundle",
         "open_source": false,
