@@ -106,3 +106,59 @@ def test_find_matching_asset_returns_none_for_extension_only_match() -> None:
     result = dlp.find_matching_asset(current, cands)
 
     assert result is None
+
+
+def _serve_fake_release(mock_server, repo: str, tag: str, asset_names: list[str]) -> None:
+    body = _fake_release(tag, asset_names)
+    mock_server.add(f"/repos/{repo}/releases/latest", body)
+
+
+def _write_update_fixture(template: Path, dest: Path) -> None:
+    # No URL substitution needed in the JSON — the script will be told the api_base
+    # via env var. The plugin URLs themselves point at example.invalid (never fetched
+    # in --check-updates read-only mode).
+    dest.write_text(template.read_text(encoding="utf-8"), encoding="utf-8")
+
+
+def test_check_updates_reports_drift_without_writing(mock_server, fixtures_dir, tmp_path) -> None:
+    _serve_fake_release(mock_server, "fake/synth", "v1.0.1",
+                        ["FakeSynth-1.0.1-mac.dmg", "FakeSynth-1.0.1-win.exe"])
+
+    json_path = tmp_path / "plugins.json"
+    _write_update_fixture(fixtures_dir / "plugins-update-fixture.json", json_path)
+    original_text = json_path.read_text(encoding="utf-8")
+
+    result = subprocess.run(
+        [sys.executable, str(SCRIPT), "--check-updates",
+         "--plugins-json", str(json_path)],
+        capture_output=True, text=True, check=False,
+        env={**os.environ, "VST_DLP_GITHUB_API_BASE": mock_server.base_url},
+    )
+
+    assert result.returncode == 1, f"expected exit 1 (drift), got {result.returncode}\n{result.stdout}\n{result.stderr}"
+    assert "FakeSynth" in result.stdout
+    assert "1.0.0" in result.stdout
+    assert "1.0.1" in result.stdout
+    assert "NEW VERSION" in result.stdout
+
+    # Crucially: read-only. plugins.json must be byte-identical.
+    assert json_path.read_text(encoding="utf-8") == original_text
+
+
+def test_check_updates_exit_zero_when_no_drift(mock_server, fixtures_dir, tmp_path) -> None:
+    # Mock returns the SAME version that's pinned in the fixture.
+    _serve_fake_release(mock_server, "fake/synth", "1.0.0",
+                        ["FakeSynth-1.0.0-mac.dmg", "FakeSynth-1.0.0-win.exe"])
+
+    json_path = tmp_path / "plugins.json"
+    _write_update_fixture(fixtures_dir / "plugins-update-fixture.json", json_path)
+
+    result = subprocess.run(
+        [sys.executable, str(SCRIPT), "--check-updates",
+         "--plugins-json", str(json_path)],
+        capture_output=True, text=True, check=False,
+        env={**os.environ, "VST_DLP_GITHUB_API_BASE": mock_server.base_url},
+    )
+
+    assert result.returncode == 0
+    assert "no update" in result.stdout.lower()

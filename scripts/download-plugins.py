@@ -281,6 +281,154 @@ def find_matching_asset(current_filename: str, candidates: list[dict],
 
     return best
 
+def _parse_update_strategy(strategy: str) -> tuple[str, str | None] | None:
+    """Parse 'github:owner/repo' or 'github:owner/repo@tag'. Returns (repo, tag) or None."""
+    if not strategy or not strategy.startswith('github:'):
+        return None
+    rest = strategy[len('github:'):]
+    if '@' in rest:
+        repo, tag = rest.rsplit('@', 1)
+        return repo, tag
+    return rest, None
+
+
+def check_updates(plugins_data: dict, api_base: str = "https://api.github.com") -> dict:
+    """Walk the manifest, return a structured drift report.
+
+    Returns:
+      {
+        'updates': [   # plugins where every platform matched and at least one filename differs
+          {'name': str, 'category': str, 'old_version': str, 'new_version': str,
+           'platforms': [{'plat': str, 'old_filename': str, 'new_asset': {...}}]},
+          ...
+        ],
+        'no_updates': [{'name', 'category', 'version'}, ...],
+        'manual': [{'name', 'category', 'version'}, ...],
+        'failures': [{'name', 'category', 'reason'}, ...],
+      }
+    """
+    report = {'updates': [], 'no_updates': [], 'manual': [], 'failures': []}
+
+    for category, plugins in plugins_data.get('plugins', {}).items():
+        for plugin in plugins:
+            name = plugin.get('name', 'Unknown')
+            current_version = plugin.get('version', '?')
+            strategy = plugin.get('update_strategy')
+
+            if not strategy:
+                report['manual'].append({
+                    'name': name, 'category': category, 'version': current_version,
+                })
+                continue
+
+            parsed = _parse_update_strategy(strategy)
+            if not parsed:
+                report['failures'].append({
+                    'name': name, 'category': category,
+                    'reason': f'malformed update_strategy: {strategy}',
+                })
+                continue
+
+            repo, tag = parsed
+
+            try:
+                release = detect_latest_for_github(repo, tag=tag, api_base=api_base)
+            except urllib.error.HTTPError as e:
+                report['failures'].append({
+                    'name': name, 'category': category,
+                    'reason': f'GitHub API HTTP {e.code}: {e.reason}',
+                })
+                continue
+            except urllib.error.URLError as e:
+                report['failures'].append({
+                    'name': name, 'category': category,
+                    'reason': f'GitHub API connection error: {e.reason}',
+                })
+                continue
+
+            new_tag = release['tag']
+            old_tag = tag if tag else current_version  # for substitution-strategy
+
+            platform_updates = []
+            any_drift = False
+            any_failure = False
+            for plat, entry in plugin.get('urls', {}).items():
+                if not isinstance(entry, dict) or 'filename' not in entry:
+                    continue
+                cur_filename = entry['filename']
+                matched = find_matching_asset(
+                    cur_filename, release['assets'],
+                    old_tag=old_tag, new_tag=new_tag,
+                )
+                if matched is None:
+                    any_failure = True
+                    platform_updates.append({
+                        'plat': plat, 'old_filename': cur_filename, 'new_asset': None,
+                    })
+                    continue
+                if matched['name'] != cur_filename:
+                    any_drift = True
+                platform_updates.append({
+                    'plat': plat, 'old_filename': cur_filename, 'new_asset': matched,
+                })
+
+            if any_failure:
+                missing = [p['plat'] for p in platform_updates if p['new_asset'] is None]
+                report['failures'].append({
+                    'name': name, 'category': category,
+                    'reason': f'no matching asset for: {", ".join(missing)}',
+                })
+            elif any_drift:
+                report['updates'].append({
+                    'name': name, 'category': category,
+                    'old_version': current_version, 'new_version': new_tag,
+                    'platforms': platform_updates,
+                })
+            else:
+                report['no_updates'].append({
+                    'name': name, 'category': category, 'version': current_version,
+                })
+
+    return report
+
+
+def print_check_updates_report(report: dict) -> None:
+    """Pretty-print the drift report grouped by category."""
+    by_cat: dict[str, list] = {}
+    for kind in ('updates', 'no_updates', 'manual', 'failures'):
+        for item in report[kind]:
+            by_cat.setdefault(item['category'], []).append((kind, item))
+
+    total_with_strategy = len(report['updates']) + len(report['no_updates']) + len(report['failures'])
+    total_manual = len(report['manual'])
+    print(f"\nChecking {total_with_strategy + total_manual} plugins ({total_with_strategy} with github strategy, {total_manual} manual)...\n")
+
+    for cat in sorted(by_cat):
+        print(f"{cat.title()}")
+        for kind, item in by_cat[cat]:
+            name = item['name']
+            if kind == 'updates':
+                print(f"  {name:<30} {item['old_version']:<8} → {item['new_version']:<8} {C.YELLOW}⬆ NEW VERSION{C.NC}")
+                for pu in item['platforms']:
+                    print(f"    {pu['plat']:8} {pu['new_asset']['name']}")
+            elif kind == 'no_updates':
+                print(f"  {name:<30} {item['version']:<8} → {item['version']:<8} no update")
+            elif kind == 'manual':
+                print(f"  {name:<30} {item['version']:<8} → ?       manual")
+            elif kind == 'failures':
+                print(f"  {name:<30} {C.RED}DETECTION FAILED{C.NC} — {item['reason']}")
+        print()
+
+    n_up = len(report['updates'])
+    n_fail = len(report['failures'])
+    if n_up:
+        print(f"{n_up} update(s) available. Run with --apply to update plugins.json.")
+    if n_fail:
+        print(f"{n_fail} detection failure(s). See lines marked DETECTION FAILED above.")
+    if not n_up and not n_fail:
+        print("Everything up to date.")
+
+
 def extract_archives(download_dir):
     """Extract zip files."""
     print_section("Extracting Archives")
@@ -446,6 +594,10 @@ Examples:
                         help='With --compute-hashes: rewrite plugins.json instead of stdout')
     parser.add_argument('--force-recompute', action='store_true',
                         help='With --compute-hashes: overwrite existing sha256 fields (otherwise preserved)')
+    parser.add_argument('--check-updates', action='store_true',
+                        help='Detect upstream version drift on entries with update_strategy set')
+    parser.add_argument('--apply', action='store_true',
+                        help='With --check-updates: write URL/filename/version/sha256 updates back to plugins.json')
     parser.add_argument('--plugins-json', type=str,
                         help='Path to plugins.json (defaults to ../plugins.json relative to script)')
 
@@ -481,6 +633,17 @@ Examples:
         else:
             sys.stdout.write(rendered)
         return
+
+    if args.check_updates:
+        api_base = os.environ.get('VST_DLP_GITHUB_API_BASE', 'https://api.github.com')
+        report = check_updates(plugins_data, api_base=api_base)
+        print_check_updates_report(report)
+        if args.apply:
+            # Task 6 implements this branch.
+            raise NotImplementedError("--apply is implemented in Task 6")
+        n_up = len(report['updates'])
+        n_fail = len(report['failures'])
+        sys.exit(1 if (n_up or n_fail) else 0)
 
     # Determine which categories to download
     download_all = not (args.synths or args.effects or args.instruments or args.bundles)
