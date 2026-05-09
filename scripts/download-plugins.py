@@ -6,6 +6,7 @@ All plugins are legally free from their official sources.
 """
 
 import argparse
+import hashlib
 import json
 import os
 import platform
@@ -103,6 +104,24 @@ def download_file(url, filepath, name):
     except Exception as e:
         print(f"  {C.RED}✗{C.NC}  {name} - error: {e}")
         return False
+
+def compute_hash_for_url(url: str, chunk_size: int = 65536) -> str:
+    """Stream the URL and return the lowercase hex SHA-256 of its body.
+
+    Used by the --compute-hashes maintainer mode. Does NOT write a file
+    or perform any verification — it is the trust-on-first-use primitive.
+    """
+    req = urllib.request.Request(url, headers={
+        'User-Agent': 'Mozilla/5.0 (compatible; VST-Downloader/1.0)'
+    })
+    h = hashlib.sha256()
+    with urllib.request.urlopen(req, timeout=60) as response:
+        while True:
+            chunk = response.read(chunk_size)
+            if not chunk:
+                break
+            h.update(chunk)
+    return h.hexdigest()
 
 def download_airwindows(download_dir, plat):
     """Download latest Airwindows Consolidated from GitHub."""
