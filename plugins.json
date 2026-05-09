@@ -6,7 +6,11 @@
     "updated": "2026-01-19",
     "author": "gr8monk3ys",
     "license": "MIT",
-    "platforms": ["macos", "windows", "linux"]
+    "platforms": [
+      "macos",
+      "windows",
+      "linux"
+    ]
   },
   "plugins": {
     "synths": [
@@ -16,19 +20,30 @@
         "urls": {
           "macos": {
             "url": "https://github.com/surge-synthesizer/releases-xt/releases/download/1.3.4/surge-xt-macOS-1.3.4.dmg",
-            "filename": "surge-xt-macOS-1.3.4.dmg"
+            "filename": "surge-xt-macOS-1.3.4.dmg",
+            "sha256": "b56e8d51a8dc2382ae668c9ff4e96bae38dbd452af4e584d5a5ef50ab2d09b07",
+            "hash_source": "self"
           },
           "windows": {
             "url": "https://github.com/surge-synthesizer/releases-xt/releases/download/1.3.4/surge-xt-win64-1.3.4-setup.exe",
-            "filename": "surge-xt-win64-1.3.4-setup.exe"
+            "filename": "surge-xt-win64-1.3.4-setup.exe",
+            "sha256": "6e221e05f29254508142b9e0ed76a85f22fa1b512501bebde571951e7eefecca",
+            "hash_source": "self"
           },
           "linux": {
             "url": "https://github.com/surge-synthesizer/releases-xt/releases/download/1.3.4/surge-xt-linux-x64-1.3.4.deb",
-            "filename": "surge-xt-linux-1.3.4.deb"
+            "filename": "surge-xt-linux-1.3.4.deb",
+            "sha256": "a6e55064487f624147d515b9ae5fc79a568b69746675b2083abde628ca7bb151",
+            "hash_source": "self"
           }
         },
         "version": "1.3.4",
-        "formats": ["VST3", "AU", "CLAP", "LV2"],
+        "formats": [
+          "VST3",
+          "AU",
+          "CLAP",
+          "LV2"
+        ],
         "website": "https://surge-synthesizer.github.io/",
         "open_source": true,
         "github": "https://github.com/surge-synthesizer/surge"
@@ -39,19 +54,30 @@
         "urls": {
           "macos": {
             "url": "https://github.com/asb2m10/dexed/releases/download/v1.0.1/Dexed-1.0.1-macOS.dmg",
-            "filename": "Dexed-1.0.1-macOS.dmg"
+            "filename": "Dexed-1.0.1-macOS.dmg",
+            "sha256": "a6505103869d15400e7bed1d988d9dd155d6d8204a3d532f5301966ae7507ad8",
+            "hash_source": "self"
           },
           "windows": {
             "url": "https://github.com/asb2m10/dexed/releases/download/v1.0.1/Dexed-1.0.1-win.exe",
-            "filename": "Dexed-1.0.1-win.exe"
+            "filename": "Dexed-1.0.1-win.exe",
+            "sha256": "5dc4e072af90ec54aa0197790b40856e7db1659ff924ed107c7536b442d3584b",
+            "hash_source": "self"
           },
           "linux": {
             "url": "https://github.com/asb2m10/dexed/releases/download/v1.0.1/Dexed-1.0.1-lnx.zip",
-            "filename": "Dexed-1.0.1-lnx.zip"
+            "filename": "Dexed-1.0.1-lnx.zip",
+            "sha256": "2bac3d0c4237e8c22c4274b6d5b59fe6329fcae72864f81b5830393eff354fc1",
+            "hash_source": "self"
           }
         },
         "version": "1.0.1",
-        "formats": ["VST3", "AU", "LV2", "Standalone"],
+        "formats": [
+          "VST3",
+          "AU",
+          "LV2",
+          "Standalone"
+        ],
         "website": "https://asb2m10.github.io/dexed/",
         "open_source": true,
         "github": "https://github.com/asb2m10/dexed"
@@ -62,19 +88,30 @@
         "urls": {
           "macos": {
             "url": "https://github.com/reales/OB-Xd/releases/download/v2.19/OB-Xd.2.19.pkg",
-            "filename": "OB-Xd.2.19.pkg"
+            "filename": "OB-Xd.2.19.pkg",
+            "sha256": "954072c937e79be2d1adc42ebeca342c0d4cbf95a12442adb0d60a97c260f7f9",
+            "hash_source": "self"
           },
           "windows": {
             "url": "https://github.com/reales/OB-Xd/releases/download/v2.19/Obxd219.exe",
-            "filename": "Obxd219.exe"
+            "filename": "Obxd219.exe",
+            "sha256": "98bef17f646cda2e2c425befd352d7dbec815c629b3450a0c06579c6f21086e4",
+            "hash_source": "self"
           },
           "linux": {
             "url": "https://github.com/reales/OB-Xd/releases/download/v2.19/Obxd219.deb",
-            "filename": "Obxd219.deb"
+            "filename": "Obxd219.deb",
+            "sha256": "732dde1f9b701126afba985744e443bec1a87c5601e2a6a5093b9ba16464d618",
+            "hash_source": "self"
           }
         },
         "version": "2.19",
-        "formats": ["VST3", "AU", "VST", "LV2"],
+        "formats": [
+          "VST3",
+          "AU",
+          "VST",
+          "LV2"
+        ],
         "website": "https://www.discodsp.com/obxd/",
         "open_source": true,
         "github": "https://github.com/reales/OB-Xd"
@@ -85,19 +122,31 @@
         "urls": {
           "macos": {
             "url": "https://tytel.org/static/dist/Helm_v0_9_0_r.pkg",
-            "filename": "Helm_v0_9_0_r.pkg"
+            "filename": "Helm_v0_9_0_r.pkg",
+            "sha256": "1bfac2c016d7dd5cd51e714fa6d9facef4e1db52617ff7dd52748dbec1400ebf",
+            "hash_source": "self"
           },
           "windows": {
             "url": "https://tytel.org/static/dist/Helm_64bit_v0_9_0_r.msi",
-            "filename": "Helm_64bit_v0_9_0_r.msi"
+            "filename": "Helm_64bit_v0_9_0_r.msi",
+            "sha256": "18ca2364b8d52e6f9693a195e769279472a6ea6c3704480ced88ad327a5d8e29",
+            "hash_source": "self"
           },
           "linux": {
             "url": "https://tytel.org/static/dist/helm_0.9.0_amd64_r.deb",
-            "filename": "helm_0.9.0_amd64_r.deb"
+            "filename": "helm_0.9.0_amd64_r.deb",
+            "sha256": "aedf8b676657f72782513e5ad5f9c61a6bc21fe9357b23052928adafa8215eca",
+            "hash_source": "self"
           }
         },
         "version": "0.9.0",
-        "formats": ["VST3", "AU", "VST", "LV2", "Standalone"],
+        "formats": [
+          "VST3",
+          "AU",
+          "VST",
+          "LV2",
+          "Standalone"
+        ],
         "website": "https://tytel.org/helm/",
         "open_source": true,
         "github": "https://github.com/mtytel/helm"
@@ -108,19 +157,31 @@
         "urls": {
           "macos": {
             "url": "https://tal-software.com/downloads/plugins/TAL-NoiseMaker-installer_macos.zip",
-            "filename": "TAL-NoiseMaker-installer_macos.zip"
+            "filename": "TAL-NoiseMaker-installer_macos.zip",
+            "sha256": "7d756aba0af00d46a14c579bf3317316326b6d50382411c3c7605520c1026dc4",
+            "hash_source": "self"
           },
           "windows": {
             "url": "https://tal-software.com/downloads/plugins/install_TAL-NoiseMaker.zip",
-            "filename": "install_TAL-NoiseMaker.zip"
+            "filename": "install_TAL-NoiseMaker.zip",
+            "sha256": "1d49eaa631efe9ff4eb22bae48a62da1582bfd7ea0eb9d59fedc95b85d35c7d5",
+            "hash_source": "self"
           },
           "linux": {
             "url": "https://tal-software.com/downloads/plugins/TAL-NoiseMaker_64_linux.zip",
-            "filename": "TAL-NoiseMaker_64_linux.zip"
+            "filename": "TAL-NoiseMaker_64_linux.zip",
+            "sha256": "328565e646f98f14dd931a33fa438a4c9eddc451e759b92d1005f4336fa3fd20",
+            "hash_source": "self"
           }
         },
         "version": "5.0.6",
-        "formats": ["VST3", "AU", "VST", "AAX", "CLAP"],
+        "formats": [
+          "VST3",
+          "AU",
+          "VST",
+          "AAX",
+          "CLAP"
+        ],
         "website": "https://tal-software.com/products/tal-noisemaker",
         "open_source": false
       },
@@ -130,19 +191,32 @@
         "urls": {
           "macos": {
             "url": "https://dl.u-he.com/releases/TyrellN6_300_public_beta_16976_Mac.zip",
-            "filename": "TyrellN6_Mac.zip"
+            "filename": "TyrellN6_Mac.zip",
+            "sha256": "582b73c740daf309d6b4a6b64a7fe742b4b592c11f1de8165710226a8172b1ad",
+            "hash_source": "self"
           },
           "windows": {
             "url": "https://dl.u-he.com/releases/TyrellN6_300_public_beta_16976_Win.zip",
-            "filename": "TyrellN6_Win.zip"
+            "filename": "TyrellN6_Win.zip",
+            "sha256": "5a00b934f95da95ce03ff2c982367d727183101df910de1ef78af8500f9a6e5a",
+            "hash_source": "self"
           },
           "linux": {
             "url": "https://dl.u-he.com/releases/TyrellN6_300_public_beta_16976_Linux.tar.xz",
-            "filename": "TyrellN6_Linux.tar.xz"
+            "filename": "TyrellN6_Linux.tar.xz",
+            "sha256": "4d7a4ebd124dc2f341d9f53bc585b0ca508806accc32469bfe185ae99ba4c916",
+            "hash_source": "self"
           }
         },
         "version": "3.0.0",
-        "formats": ["VST3", "AU", "VST", "CLAP", "AAX", "LV2"],
+        "formats": [
+          "VST3",
+          "AU",
+          "VST",
+          "CLAP",
+          "AAX",
+          "LV2"
+        ],
         "website": "https://u-he.com/products/tyrelln6/",
         "open_source": false
       },
@@ -152,19 +226,30 @@
         "urls": {
           "macos": {
             "url": "https://dl.u-he.com/releases/Zebra_Legacy_294_16765_Mac.zip",
-            "filename": "Zebralette_Mac.zip"
+            "filename": "Zebralette_Mac.zip",
+            "sha256": "ac383a2dfa31267c62ae29747d6f0aca8b7d031c4e9ca171c321e7e0ddf00122",
+            "hash_source": "self"
           },
           "windows": {
             "url": "https://dl.u-he.com/releases/Zebra_Legacy_294_16765_Win.zip",
-            "filename": "Zebralette_Win.zip"
+            "filename": "Zebralette_Win.zip",
+            "sha256": "0ad40081c8fa0b4ef004371802b66d9259d54e4b6022a98d9295680c2ed46bfd",
+            "hash_source": "self"
           },
           "linux": {
             "url": "https://dl.u-he.com/releases/Zebra_Legacy_294_16765_Linux.zip",
-            "filename": "Zebralette_Linux.zip"
+            "filename": "Zebralette_Linux.zip",
+            "sha256": "3a0f957d09a11b1d06a93dfea814c2546f51cd9dd46c8caf35245ea72830eafd",
+            "hash_source": "self"
           }
         },
         "version": "2.9.4",
-        "formats": ["VST3", "AU", "VST", "LV2"],
+        "formats": [
+          "VST3",
+          "AU",
+          "VST",
+          "LV2"
+        ],
         "website": "https://u-he.com/products/zebralette/",
         "open_source": false
       }
@@ -176,11 +261,18 @@
         "urls": {
           "macos": {
             "url": "https://valhallaproduction.s3.us-west-2.amazonaws.com/supermassive/ValhallaSupermassiveOSX_5_0_0.dmg",
-            "filename": "ValhallaSupermassiveOSX_5_0_0.dmg"
+            "filename": "ValhallaSupermassiveOSX_5_0_0.dmg",
+            "sha256": "eaac6d0a24ffed0a02afd1dd06124d12f94716d32a8ac376606aa2d701a70c3e",
+            "hash_source": "self"
           }
         },
         "version": "5.0.0",
-        "formats": ["VST3", "AU", "VST", "AAX"],
+        "formats": [
+          "VST3",
+          "AU",
+          "VST",
+          "AAX"
+        ],
         "website": "https://valhalladsp.com/shop/reverb/valhalla-supermassive/",
         "open_source": false,
         "note": "macOS auto-download. Windows requires the form gate on valhalladsp.com/demos-downloads/"
@@ -191,11 +283,18 @@
         "urls": {
           "macos": {
             "url": "https://valhallaproduction.s3.us-west-2.amazonaws.com/freqecho/ValhallaFreqEchoOSX_1_2_8.dmg",
-            "filename": "ValhallaFreqEchoOSX_1_2_8.dmg"
+            "filename": "ValhallaFreqEchoOSX_1_2_8.dmg",
+            "sha256": "7e8681bd90fe7c1ef5b82a87c5d90bd1051980c256b0bd9424ea9cbfc53a9bdc",
+            "hash_source": "self"
           }
         },
         "version": "1.2.8",
-        "formats": ["VST3", "AU", "VST", "AAX"],
+        "formats": [
+          "VST3",
+          "AU",
+          "VST",
+          "AAX"
+        ],
         "website": "https://valhalladsp.com/shop/delay/valhalla-freq-echo/",
         "open_source": false,
         "note": "macOS auto-download. Windows requires the form gate on valhalladsp.com/demos-downloads/"
@@ -206,15 +305,23 @@
         "urls": {
           "macos": {
             "url": "https://xferrecords.com/product_downloads/24/freeware",
-            "filename": "Install_Xfer_OTT.dmg"
+            "filename": "Install_Xfer_OTT.dmg",
+            "sha256": "fe1d10b79445c44a32f365fcbf2a420a2133ae205c8d75f09ba703c7dd42ec54",
+            "hash_source": "self"
           },
           "windows": {
             "url": "https://xferrecords.com/product_downloads/23/freeware",
-            "filename": "Install_Xfer_OTT.exe"
+            "filename": "Install_Xfer_OTT.exe",
+            "sha256": "99b71171a873935e38f3e363d0b3ae0e9e8ab85f9eaa90c24be830b748c5944e",
+            "hash_source": "self"
           }
         },
         "version": "1.37",
-        "formats": ["VST", "AU", "AAX"],
+        "formats": [
+          "VST",
+          "AU",
+          "AAX"
+        ],
         "website": "https://xferrecords.com/freeware",
         "open_source": false,
         "note": "macOS and Windows only"
@@ -225,19 +332,30 @@
         "urls": {
           "macos": {
             "url": "https://github.com/michaelwillis/dragonfly-reverb/releases/download/3.2.10/dragonfly-reverb-3.2.10-macos-universal.dmg",
-            "filename": "dragonfly-reverb-3.2.10-macos.dmg"
+            "filename": "dragonfly-reverb-3.2.10-macos.dmg",
+            "sha256": "e0b854b92a4e51ce5851320fb1a9f91ab1a4309f997de070e175b3e5cab4adaf",
+            "hash_source": "self"
           },
           "windows": {
             "url": "https://github.com/michaelwillis/dragonfly-reverb/releases/download/3.2.10/dragonfly-reverb-3.2.10-win64.zip",
-            "filename": "dragonfly-reverb-3.2.10-win64.zip"
+            "filename": "dragonfly-reverb-3.2.10-win64.zip",
+            "sha256": "ca5f35f9dcd9a33f06490d3c92f04061a1a798cb81257d5ca5851bdda0824c66",
+            "hash_source": "self"
           },
           "linux": {
             "url": "https://github.com/michaelwillis/dragonfly-reverb/releases/download/3.2.10/dragonfly-reverb-3.2.10-linux-x86_64.tar.xz",
-            "filename": "dragonfly-reverb-3.2.10-linux.tar.xz"
+            "filename": "dragonfly-reverb-3.2.10-linux.tar.xz",
+            "sha256": "59f1593120de82e31dd194e2ab1536af14fec2b3ec6ec45abf6d9c8ac02ef430",
+            "hash_source": "self"
           }
         },
         "version": "3.2.10",
-        "formats": ["VST3", "VST", "CLAP", "LV2"],
+        "formats": [
+          "VST3",
+          "VST",
+          "CLAP",
+          "LV2"
+        ],
         "website": "https://michaelwillis.github.io/dragonfly-reverb/",
         "open_source": true,
         "github": "https://github.com/michaelwillis/dragonfly-reverb"
@@ -248,19 +366,31 @@
         "urls": {
           "macos": {
             "url": "https://github.com/Chowdhury-DSP/BYOD/releases/download/v1.3.0/BYOD-Mac-1.3.0.dmg",
-            "filename": "BYOD-Mac-1.3.0.dmg"
+            "filename": "BYOD-Mac-1.3.0.dmg",
+            "sha256": "997a0508b00a583d8563eb0e330c7e318fe43e7f4f3b06ba3d389221aeb7254a",
+            "hash_source": "self"
           },
           "windows": {
             "url": "https://github.com/Chowdhury-DSP/BYOD/releases/download/v1.3.0/BYOD-Win-64bit-1.3.0.exe",
-            "filename": "BYOD-Win-64bit-1.3.0.exe"
+            "filename": "BYOD-Win-64bit-1.3.0.exe",
+            "sha256": "a53fb65cedf90f7673e21ac2d12f5b0778f003ae7f2e34e6c4301854a738c36c",
+            "hash_source": "self"
           },
           "linux": {
             "url": "https://github.com/Chowdhury-DSP/BYOD/releases/download/v1.3.0/BYOD-Linux-x64-1.3.0.deb",
-            "filename": "BYOD-Linux-x64-1.3.0.deb"
+            "filename": "BYOD-Linux-x64-1.3.0.deb",
+            "sha256": "c1803ae57b717bab04ef2072c10284bcb7d44fbe352d42645075b0c6875c9aeb",
+            "hash_source": "self"
           }
         },
         "version": "1.3.0",
-        "formats": ["VST3", "AU", "AAX", "CLAP", "LV2"],
+        "formats": [
+          "VST3",
+          "AU",
+          "AAX",
+          "CLAP",
+          "LV2"
+        ],
         "website": "https://chowdsp.com/products.html",
         "open_source": true,
         "github": "https://github.com/Chowdhury-DSP/BYOD"
@@ -271,15 +401,24 @@
         "urls": {
           "macos": {
             "url": "https://www.tokyodawn.net/labs/Nova/2.2.2/TDR%20Nova.zip",
-            "filename": "TDR-Nova-macOS.zip"
+            "filename": "TDR-Nova-macOS.zip",
+            "sha256": "fce66850d17a089c4cebd96076aa98421f12f5eef605d991867f4207bdaf11fa",
+            "hash_source": "self"
           },
           "windows": {
             "url": "https://www.tokyodawn.net/labs/Nova/2.2.2/TDR%20Nova%20(installer).zip",
-            "filename": "TDR-Nova-Windows-installer.zip"
+            "filename": "TDR-Nova-Windows-installer.zip",
+            "sha256": "982dfbd2ee639d2f76d6ef6e8b2e16e92653da2c4994e404241b8895c048a307",
+            "hash_source": "self"
           }
         },
         "version": "2.2.2",
-        "formats": ["VST3", "AU", "VST", "AAX"],
+        "formats": [
+          "VST3",
+          "AU",
+          "VST",
+          "AAX"
+        ],
         "website": "https://www.tokyodawn.net/tdr-nova/",
         "open_source": false,
         "note": "macOS and Windows only"
@@ -290,19 +429,30 @@
         "urls": {
           "macos": {
             "url": "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/airwindows-consolidated-macOS-2026-05-02-dc0ed69.dmg",
-            "filename": "airwindows-consolidated-macOS.dmg"
+            "filename": "airwindows-consolidated-macOS.dmg",
+            "sha256": "dbe70dbc2ac35019d305864b3466bdd52ace6e532f19017b44319d39baf05c0f",
+            "hash_source": "self"
           },
           "windows": {
             "url": "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/AirwindowsConsolidated-2026-05-02-dc0ed69-Windows-64bit-setup.exe",
-            "filename": "airwindows-consolidated-windows-setup.exe"
+            "filename": "airwindows-consolidated-windows-setup.exe",
+            "sha256": "130c85ba76096885bce9201c35a2280c9b780cdcca021de492e52618dcb07af5",
+            "hash_source": "self"
           },
           "linux": {
             "url": "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/AirwindowsConsolidated-2026-05-02-dc0ed69-Linux.zip",
-            "filename": "airwindows-consolidated-linux.zip"
+            "filename": "airwindows-consolidated-linux.zip",
+            "sha256": "13e7a2def0c5db15afe91106b92e00c39af099cc27ed90cfc49b83736bf945e9",
+            "hash_source": "self"
           }
         },
         "version": "2026-05-02-dc0ed69",
-        "formats": ["VST3", "AU", "CLAP", "LV2"],
+        "formats": [
+          "VST3",
+          "AU",
+          "CLAP",
+          "LV2"
+        ],
         "website": "https://www.airwindows.com/consolidated/",
         "open_source": true,
         "github": "https://github.com/baconpaul/airwin2rack"
@@ -313,15 +463,24 @@
         "urls": {
           "macos": {
             "url": "https://klanghelm.com/downloads/DC1A/DC1A3-macOS.pkg",
-            "filename": "DC1A3-macOS.pkg"
+            "filename": "DC1A3-macOS.pkg",
+            "sha256": "caf744ebfe8b637048a15b8102a0be3d652fc6664bd91dbd0fc25b1e17a11826",
+            "hash_source": "self"
           },
           "windows": {
             "url": "https://klanghelm.com/downloads/DC1A/DC1A3-windows.exe",
-            "filename": "DC1A3-windows.exe"
+            "filename": "DC1A3-windows.exe",
+            "sha256": "caf744ebfe8b637048a15b8102a0be3d652fc6664bd91dbd0fc25b1e17a11826",
+            "hash_source": "self"
           }
         },
         "version": "3.5.0",
-        "formats": ["VST3", "AU", "VST", "AAX"],
+        "formats": [
+          "VST3",
+          "AU",
+          "VST",
+          "AAX"
+        ],
         "website": "https://klanghelm.com/contents/products/DC1A",
         "open_source": false,
         "note": "macOS and Windows only"
@@ -332,19 +491,31 @@
         "urls": {
           "macos": {
             "url": "https://tal-software.com/downloads/plugins/TAL-Vocoder-2-installer_macos.zip",
-            "filename": "TAL-Vocoder-installer_macos.zip"
+            "filename": "TAL-Vocoder-installer_macos.zip",
+            "sha256": "27e6959106ed60f92aaa78d757f92eb687ccf0125e459913826093f3ed188d42",
+            "hash_source": "self"
           },
           "windows": {
             "url": "https://tal-software.com/downloads/plugins/install_TAL-Vocoder-2.zip",
-            "filename": "install_TAL-Vocoder-2.zip"
+            "filename": "install_TAL-Vocoder-2.zip",
+            "sha256": "27a280f13a9d92dda277d4b66748b9234849e85ef5df72e3c87bab315e3acdd5",
+            "hash_source": "self"
           },
           "linux": {
             "url": "https://tal-software.com/downloads/plugins/TAL-Vocoder-2_64_linux.zip",
-            "filename": "TAL-Vocoder-2_64_linux.zip"
+            "filename": "TAL-Vocoder-2_64_linux.zip",
+            "sha256": "bce4a942a37c0c42b87f9bc849e427641a71856dc0696d7eff42266a37a83ec6",
+            "hash_source": "self"
           }
         },
         "version": "3.0.4",
-        "formats": ["VST3", "AU", "VST", "AAX", "CLAP"],
+        "formats": [
+          "VST3",
+          "AU",
+          "VST",
+          "AAX",
+          "CLAP"
+        ],
         "website": "https://tal-software.com/products/tal-vocoder",
         "open_source": false
       }
@@ -356,19 +527,30 @@
         "urls": {
           "macos": {
             "url": "https://www.decomposer.de/sitala/releases/Sitala-1.0.dmg",
-            "filename": "Sitala-1.0.dmg"
+            "filename": "Sitala-1.0.dmg",
+            "sha256": "d07a7c107a1d944bb2fc11392bec9c606e1c9caf357db6bd979e248f6c584831",
+            "hash_source": "self"
           },
           "windows": {
             "url": "https://www.decomposer.de/sitala/releases/Sitala-1.0-Setup-64.msi",
-            "filename": "Sitala-1.0-Setup-64.msi"
+            "filename": "Sitala-1.0-Setup-64.msi",
+            "sha256": "d75b5c39ee943eba1095bb1b34653038a831f397fd81340e983dad22401c59da",
+            "hash_source": "self"
           },
           "linux": {
             "url": "https://www.decomposer.de/sitala/releases/sitala-1.0_amd64.deb",
-            "filename": "sitala-1.0_amd64.deb"
+            "filename": "sitala-1.0_amd64.deb",
+            "sha256": "db5048266f19746c873b147ae4f0088d490750749babfdf14bcf40adb51ce333",
+            "hash_source": "self"
           }
         },
         "version": "1.0",
-        "formats": ["VST", "AU", "AAX", "Standalone"],
+        "formats": [
+          "VST",
+          "AU",
+          "AAX",
+          "Standalone"
+        ],
         "website": "https://decomposer.de/sitala/",
         "open_source": false,
         "note": "Free version - paid v2.0 available"
@@ -381,15 +563,24 @@
         "urls": {
           "macos": {
             "url": "https://meldaproduction.b-cdn.net/download/mpluginmanager/MPluginManager_02_21_setupmac.zip",
-            "filename": "MPluginManager_02_21_setupmac.zip"
+            "filename": "MPluginManager_02_21_setupmac.zip",
+            "sha256": "dd3d2530039c0d57f7906d5e5107f954bc453507da1881454975088ec0f4ee62",
+            "hash_source": "self"
           },
           "windows": {
             "url": "https://meldaproduction.b-cdn.net/download/mpluginmanager/MPluginManager_02_21_setup.exe",
-            "filename": "MPluginManager_02_21_setup.exe"
+            "filename": "MPluginManager_02_21_setup.exe",
+            "sha256": "faefe7f545c53600e8527430aa53efa0d67eb1021e4b319b91b36759701ead11",
+            "hash_source": "self"
           }
         },
         "version": "02.21",
-        "formats": ["VST3", "AU", "VST", "AAX"],
+        "formats": [
+          "VST3",
+          "AU",
+          "VST",
+          "AAX"
+        ],
         "website": "https://www.meldaproduction.com/MFreeFXBundle",
         "open_source": false,
         "note": "Requires MPluginManager to install individual plugins"
@@ -401,49 +592,71 @@
       "name": "Vital",
       "description": "Best free wavetable synth - rivals Serum ($189 value)",
       "website": "https://vital.audio",
-      "platforms": ["macos", "windows", "linux"],
+      "platforms": [
+        "macos",
+        "windows",
+        "linux"
+      ],
       "reason": "Requires free account registration"
     },
     {
       "name": "Spitfire LABS",
       "description": "High-quality sampled instruments - piano, strings, pads",
       "website": "https://labs.spitfireaudio.com",
-      "platforms": ["macos", "windows"],
+      "platforms": [
+        "macos",
+        "windows"
+      ],
       "reason": "Requires Spitfire Audio app and account"
     },
     {
       "name": "Analog Obsession",
       "description": "50+ analog emulations - compressors, EQs, preamps",
       "website": "https://analogobsession.com",
-      "platforms": ["macos", "windows"],
+      "platforms": [
+        "macos",
+        "windows"
+      ],
       "reason": "Downloads via Patreon (free tier available)"
     },
     {
       "name": "Kilohearts Essentials",
       "description": "30+ snapin effects",
       "website": "https://kilohearts.com/products/kilohearts_essentials",
-      "platforms": ["macos", "windows"],
+      "platforms": [
+        "macos",
+        "windows"
+      ],
       "reason": "Requires Kilohearts installer and account"
     },
     {
       "name": "Native Instruments Komplete Start",
       "description": "Free bundle with synths, samples, and effects",
       "website": "https://www.native-instruments.com/en/products/komplete/bundles/komplete-start/",
-      "platforms": ["macos", "windows"],
+      "platforms": [
+        "macos",
+        "windows"
+      ],
       "reason": "Requires Native Access and account"
     },
     {
       "name": "AmpliTube 5 CS",
       "description": "Free guitar amp sim with 42 gear models",
       "website": "https://www.ikmultimedia.com/products/amplitube5cs/",
-      "platforms": ["macos", "windows"],
+      "platforms": [
+        "macos",
+        "windows"
+      ],
       "reason": "Requires IK Product Manager and account"
     },
     {
       "name": "LSP Plugins",
       "description": "70+ professional-grade audio plugins (Linux-native)",
       "website": "https://lsp-plug.in/",
-      "platforms": ["linux", "windows"],
+      "platforms": [
+        "linux",
+        "windows"
+      ],
       "reason": "Available via package managers on Linux"
     }
   ]
