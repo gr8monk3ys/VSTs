@@ -57,3 +57,43 @@ def test_detect_latest_for_github_uses_tagged_endpoint(mock_server) -> None:
     assert len(result["assets"]) == 1
     assert result["assets"][0]["name"] == "airwindows-2026-06-15-abc.dmg"
     assert result["assets"][0]["url"] == "https://example.invalid/airwindows-2026-06-15-abc.dmg"
+
+
+def _candidates(*names: str) -> list[dict]:
+    return [{"name": n, "url": f"https://example.invalid/{n}", "size": 1000} for n in names]
+
+
+def test_find_matching_asset_exact_substitution() -> None:
+    current = "Surge-XT-1.3.4-mac.dmg"
+    cands = _candidates("Surge-XT-1.3.5-mac.dmg", "Surge-XT-1.3.5-win.exe", "Surge-XT-1.3.5-linux.deb")
+
+    result = dlp.find_matching_asset(current, cands, old_tag="1.3.4", new_tag="1.3.5")
+
+    assert result is not None
+    assert result["name"] == "Surge-XT-1.3.5-mac.dmg"
+
+
+def test_find_matching_asset_token_overlap_fallback() -> None:
+    # Rolling-tag case: filename contains a date+commit not derivable by tag substitution.
+    current = "airwindows-consolidated-macOS-2026-05-02-dc0ed69.dmg"
+    cands = _candidates(
+        "airwindows-consolidated-macOS-2026-06-15-newcommit.dmg",
+        "AirwindowsConsolidated-2026-06-15-newcommit-Linux.zip",
+        "AirwindowsConsolidated-2026-06-15-newcommit-Windows-64bit-setup.exe",
+    )
+
+    # old_tag == new_tag (rolling DAWPlugin). Strategy A produces no substitution
+    # because old_tag != new_tag is False. Falls through to Strategy B.
+    result = dlp.find_matching_asset(current, cands, old_tag="DAWPlugin", new_tag="DAWPlugin")
+
+    assert result is not None
+    assert result["name"] == "airwindows-consolidated-macOS-2026-06-15-newcommit.dmg"
+
+
+def test_find_matching_asset_returns_none_when_no_match() -> None:
+    current = "Surge-XT-1.3.4-mac.dmg"
+    cands = _candidates("totally-unrelated-thing.zip")
+
+    result = dlp.find_matching_asset(current, cands, old_tag="1.3.4", new_tag="1.3.5")
+
+    assert result is None

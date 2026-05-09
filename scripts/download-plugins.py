@@ -10,6 +10,7 @@ import hashlib
 import json
 import os
 import platform
+import re
 import sys
 import urllib.request
 import urllib.error
@@ -233,6 +234,52 @@ def detect_latest_for_github(repo: str, tag: str | None = None,
             for a in data.get('assets', [])
         ],
     }
+
+def find_matching_asset(current_filename: str, candidates: list[dict],
+                        old_tag: str | None = None,
+                        new_tag: str | None = None,
+                        target_size: int | None = None) -> dict | None:
+    """Pick the candidate asset that should replace `current_filename`.
+
+    Strategy A (exact substitution): if old_tag and new_tag are both set and differ
+      and old_tag appears as a substring of current_filename, build the expected
+      new name by substituting and look for an exact match in candidates.
+
+    Strategy B (token-overlap fallback): split current and each candidate name on
+      `-_.`, lowercase, count shared tokens. Highest score wins; ties broken by
+      smallest absolute size delta from target_size if provided; further ties by
+      iteration order.
+
+    Returns the matched candidate dict or None if no candidate scores at least 2
+    shared tokens (prevents matching purely on file extension).
+    """
+    if old_tag and new_tag and old_tag != new_tag and old_tag in current_filename:
+        expected = current_filename.replace(old_tag, new_tag)
+        for cand in candidates:
+            if cand['name'] == expected:
+                return cand
+
+    def tokens(name: str) -> set[str]:
+        return {t for t in re.split(r'[-_.]', name.lower()) if t}
+
+    current_toks = tokens(current_filename)
+    best = None
+    best_score = 1
+    best_size_delta = float('inf')
+    for cand in candidates:
+        score = len(current_toks & tokens(cand['name']))
+        if score < best_score:
+            continue
+        if target_size is not None:
+            size_delta = abs(cand.get('size', 0) - target_size)
+        else:
+            size_delta = 0
+        if score > best_score or (score == best_score and size_delta < best_size_delta):
+            best = cand
+            best_score = score
+            best_size_delta = size_delta
+
+    return best
 
 def extract_archives(download_dir):
     """Extract zip files."""
