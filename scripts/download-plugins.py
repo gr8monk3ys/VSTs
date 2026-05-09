@@ -123,6 +123,26 @@ def compute_hash_for_url(url: str, chunk_size: int = 65536) -> str:
             h.update(chunk)
     return h.hexdigest()
 
+def recompute_hashes(plugins_data: dict, force: bool) -> dict:
+    """Walk plugins_data, compute SHA-256 for every URL, return updated dict.
+
+    By default, existing sha256 fields are preserved (so manually-set
+    'publisher' hashes are not clobbered). With force=True, every URL is
+    recomputed and tagged 'self'.
+    """
+    for category_plugins in plugins_data.get('plugins', {}).values():
+        for plugin in category_plugins:
+            urls = plugin.get('urls', {})
+            for plat, entry in urls.items():
+                if not isinstance(entry, dict) or 'url' not in entry:
+                    continue
+                if entry.get('sha256') and not force:
+                    continue
+                digest = compute_hash_for_url(entry['url'])
+                entry['sha256'] = digest
+                entry['hash_source'] = 'self'
+    return plugins_data
+
 def download_airwindows(download_dir, plat):
     """Download latest Airwindows Consolidated from GitHub."""
     print(f"  {C.CYAN}⬇{C.NC}  Fetching latest Airwindows Consolidated...")
@@ -354,6 +374,14 @@ Examples:
                         help='Download directory')
     parser.add_argument('--platform', choices=['macos', 'windows', 'linux'],
                         help='Override detected platform')
+    parser.add_argument('--compute-hashes', action='store_true',
+                        help='Maintainer mode: compute SHA-256 for every URL and emit updated plugins.json')
+    parser.add_argument('--in-place', action='store_true',
+                        help='With --compute-hashes: rewrite plugins.json instead of stdout')
+    parser.add_argument('--force-recompute', action='store_true',
+                        help='With --compute-hashes: overwrite existing sha256 fields (otherwise preserved)')
+    parser.add_argument('--plugins-json', type=str,
+                        help='Path to plugins.json (defaults to ../plugins.json relative to script)')
 
     args = parser.parse_args()
 
@@ -365,7 +393,7 @@ Examples:
 
     # Load plugins data
     script_dir = Path(__file__).parent
-    plugins_json = script_dir.parent / 'plugins.json'
+    plugins_json = Path(args.plugins_json) if args.plugins_json else script_dir.parent / 'plugins.json'
 
     if not plugins_json.exists():
         print(f"{C.RED}Error: plugins.json not found at {plugins_json}{C.NC}")
@@ -376,6 +404,16 @@ Examples:
     # List mode
     if args.list:
         list_plugins(plugins_data, plat)
+        return
+
+    # Compute hashes mode
+    if args.compute_hashes:
+        updated = recompute_hashes(plugins_data, args.force_recompute)
+        rendered = json.dumps(updated, indent=2, ensure_ascii=False) + "\n"
+        if args.in_place:
+            plugins_json.write_text(rendered, encoding='utf-8')
+        else:
+            sys.stdout.write(rendered)
         return
 
     # Determine which categories to download
