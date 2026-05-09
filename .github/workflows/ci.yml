@@ -36,6 +36,13 @@ jobs:
             jsonschema.validate(instance=data, schema=schema); \
             print('plugins.json validates against schema')"
 
+      - name: Check for upstream version drift
+        run: |
+          python3 scripts/download-plugins.py --check-updates
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Lint Python script
         run: |
           pip install ruff
