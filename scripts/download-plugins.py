@@ -264,7 +264,7 @@ def find_matching_asset(current_filename: str, candidates: list[dict],
 
     current_toks = tokens(current_filename)
     best = None
-    best_score = 1
+    best_score = 2
     best_size_delta = float('inf')
     for cand in candidates:
         score = len(current_toks & tokens(cand['name']))

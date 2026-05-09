@@ -97,3 +97,12 @@ def test_find_matching_asset_returns_none_when_no_match() -> None:
     result = dlp.find_matching_asset(current, cands, old_tag="1.3.4", new_tag="1.3.5")
 
     assert result is None
+
+
+def test_find_matching_asset_returns_none_for_extension_only_match() -> None:
+    current = "fileA.dmg"
+    cands = _candidates("fileB.dmg")  # only the .dmg extension is shared
+
+    result = dlp.find_matching_asset(current, cands)
+
+    assert result is None
