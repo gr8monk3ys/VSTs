@@ -30,6 +30,17 @@ class Colors:
 
 C = Colors()
 
+
+class ChecksumMismatch(Exception):
+    """Raised when a downloaded file's SHA-256 does not match plugins.json."""
+
+    def __init__(self, name: str, expected: str, actual: str) -> None:
+        super().__init__(f"{name}: expected {expected}, got {actual}")
+        self.name = name
+        self.expected = expected
+        self.actual = actual
+
+
 def get_platform():
     """Detect current platform."""
     system = platform.system().lower()
@@ -74,36 +85,62 @@ def print_section(title):
     print(f"{C.BLUE}  {title}{C.NC}")
     print(f"{C.BLUE}{'─'*64}{C.NC}")
 
-def download_file(url, filepath, name):
-    """Download a file with progress indication."""
+def download_file(url, filepath, name, expected_sha256, hash_source):
+    """Download `url` to `filepath`, verifying SHA-256 in a single I/O pass.
+
+    On hash mismatch, removes the partial/cached file and raises
+    ChecksumMismatch. On a cached-file hit (filepath already exists), the
+    file is re-hashed before being trusted; if it doesn't match, the cached
+    file is deleted and the download proceeds normally.
+    """
     if filepath.exists():
-        print(f"  {C.YELLOW}⏭{C.NC}  {name} - already downloaded")
-        return True
+        h_existing = hashlib.sha256()
+        with open(filepath, 'rb') as f:
+            for chunk in iter(lambda: f.read(65536), b''):
+                h_existing.update(chunk)
+        if h_existing.hexdigest() == expected_sha256:
+            print(f"  {C.YELLOW}⏭{C.NC}  {name} - already verified ({hash_source})")
+            return True
+        # Cached file is bad — delete and fall through to re-download.
+        filepath.unlink()
+        print(f"  {C.YELLOW}⚠{C.NC}  {name} - cached file failed verification, redownloading")
 
     print(f"  {C.CYAN}⬇{C.NC}  Downloading {name}...")
 
+    req = urllib.request.Request(url, headers={
+        'User-Agent': 'Mozilla/5.0 (compatible; VST-Downloader/1.0)'
+    })
+
+    h = hashlib.sha256()
     try:
-        # Create request with browser-like headers
-        req = urllib.request.Request(url, headers={
-            'User-Agent': 'Mozilla/5.0 (compatible; VST-Downloader/1.0)'
-        })
-
-        with urllib.request.urlopen(req, timeout=60) as response:
-            with open(filepath, 'wb') as f:
-                shutil.copyfileobj(response, f)
-
-        print(f"  {C.GREEN}✓{C.NC}  {name} - downloaded successfully")
-        return True
-
+        with urllib.request.urlopen(req, timeout=60) as response, open(filepath, 'wb') as f:
+            while True:
+                chunk = response.read(65536)
+                if not chunk:
+                    break
+                f.write(chunk)
+                h.update(chunk)
     except urllib.error.HTTPError as e:
+        if filepath.exists():
+            filepath.unlink()
         print(f"  {C.RED}✗{C.NC}  {name} - HTTP error {e.code}")
         return False
     except urllib.error.URLError as e:
+        if filepath.exists():
+            filepath.unlink()
         print(f"  {C.RED}✗{C.NC}  {name} - connection error: {e.reason}")
         return False
-    except Exception as e:
-        print(f"  {C.RED}✗{C.NC}  {name} - error: {e}")
-        return False
+
+    actual = h.hexdigest()
+    if actual != expected_sha256:
+        filepath.unlink()
+        print(f"  {C.RED}✗{C.NC}  {name} - HASH MISMATCH")
+        print(f"      expected: {expected_sha256}")
+        print(f"      actual:   {actual}")
+        raise ChecksumMismatch(name, expected_sha256, actual)
+
+    print(f"  {C.GREEN}✓{C.NC}  {name} - verified ({hash_source})")
+    return True
 
 def compute_hash_for_url(url: str, chunk_size: int = 65536) -> str:
     """Stream the URL and return the lowercase hex SHA-256 of its body.
@@ -163,34 +200,16 @@ def extract_archives(download_dir):
             print(f"  {C.RED}✗{C.NC}  Failed to extract {zip_path.name}: {e}")
 
 def get_plugin_url(plugin, plat):
-    """Get the download URL for a plugin on the current platform."""
-    # Check for platform-specific URL
-    url_key = f"url_{plat}"
-    if url_key in plugin:
-        return plugin[url_key], plugin.get(f"filename_{plat}", plugin.get('filename'))
+    """Get the URL entry dict for the current platform.
 
-    # Check for 'urls' dict
-    if 'urls' in plugin and plat in plugin['urls']:
-        url_info = plugin['urls'][plat]
-        if isinstance(url_info, dict):
-            return url_info.get('url'), url_info.get('filename')
-        return url_info, plugin.get('filename')
-
-    # Fall back to default URL (usually macOS)
-    url = plugin.get('url')
-    filename = plugin.get('filename')
-
-    # Skip if URL is clearly for a different platform
-    if url:
-        url_lower = url.lower()
-        if plat == 'macos' and ('win' in url_lower or 'linux' in url_lower):
-            return None, None
-        if plat == 'windows' and ('macos' in url_lower or 'osx' in url_lower or 'linux' in url_lower):
-            return None, None
-        if plat == 'linux' and ('macos' in url_lower or 'osx' in url_lower or 'win' in url_lower):
-            return None, None
-
-    return url, filename
+    Returns a dict with keys 'url', 'filename', 'sha256', 'hash_source'
+    or None if the plugin is unavailable for this platform.
+    """
+    urls = plugin.get('urls', {})
+    entry = urls.get(plat)
+    if isinstance(entry, dict) and entry.get('url'):
+        return entry
+    return None
 
 def download_category(plugins_data, category, download_dir, plat):
     """Download all plugins in a category."""
@@ -204,19 +223,17 @@ def download_category(plugins_data, category, download_dir, plat):
 
     for plugin in plugins:
         name = plugin.get('name', 'Unknown')
-        url, filename = get_plugin_url(plugin, plat)
+        entry = get_plugin_url(plugin, plat)
 
-        if not url:
+        if entry is None:
             print(f"  {C.YELLOW}⏭{C.NC}  {name} - not available for {plat}")
             continue
 
-        if not filename:
-            filename = url.split('/')[-1].split('?')[0]
-            filename = urllib.request.unquote(filename)
-
+        url = entry['url']
+        filename = entry.get('filename') or urllib.request.unquote(url.split('/')[-1].split('?')[0])
         filepath = download_dir / filename
 
-        if not download_file(url, filepath, name):
+        if not download_file(url, filepath, name, entry['sha256'], entry['hash_source']):
             failed += 1
 
     return failed
@@ -280,9 +297,9 @@ def list_plugins(plugins_data, plat):
 
         for plugin in plugins_data['plugins'][category]:
             name = plugin.get('name', 'Unknown')
-            url, _ = get_plugin_url(plugin, plat)
+            entry = get_plugin_url(plugin, plat)
 
-            if url:
+            if entry is not None:
                 print(f"  • {name}")
             else:
                 print(f"  • {name} {C.YELLOW}(not available for {plat}){C.NC}")
@@ -385,10 +402,13 @@ Examples:
     download_dir.mkdir(parents=True, exist_ok=True)
 
     failed = 0
-
-    # Download each category
-    for category in categories:
-        failed += download_category(plugins_data, category, download_dir, plat)
+    try:
+        for category in categories:
+            failed += download_category(plugins_data, category, download_dir, plat)
+    except ChecksumMismatch as e:
+        print(f"\n{C.RED}HASH MISMATCH detected for {e.name}.{C.NC}")
+        print(f"{C.RED}Aborting. The bad file has been deleted.{C.NC}")
+        sys.exit(1)
 
     # Extract archives
     extract_archives(download_dir)
