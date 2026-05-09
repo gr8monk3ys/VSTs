@@ -177,17 +177,13 @@
           "macos": {
             "url": "https://valhallaproduction.s3.us-west-2.amazonaws.com/supermassive/ValhallaSupermassiveOSX_5_0_0.dmg",
             "filename": "ValhallaSupermassiveOSX_5_0_0.dmg"
-          },
-          "windows": {
-            "url": "https://valhallaproduction.s3.us-west-2.amazonaws.com/supermassive/ValhallaSupermassiveWin_5_0_0.exe",
-            "filename": "ValhallaSupermassiveWin_5_0_0.exe"
           }
         },
         "version": "5.0.0",
         "formats": ["VST3", "AU", "VST", "AAX"],
         "website": "https://valhalladsp.com/shop/reverb/valhalla-supermassive/",
         "open_source": false,
-        "note": "macOS and Windows only"
+        "note": "macOS auto-download. Windows requires the form gate on valhalladsp.com/demos-downloads/"
       },
       {
         "name": "Valhalla FreqEcho",
@@ -196,17 +192,13 @@
           "macos": {
             "url": "https://valhallaproduction.s3.us-west-2.amazonaws.com/freqecho/ValhallaFreqEchoOSX_1_2_8.dmg",
             "filename": "ValhallaFreqEchoOSX_1_2_8.dmg"
-          },
-          "windows": {
-            "url": "https://valhallaproduction.s3.us-west-2.amazonaws.com/freqecho/ValhallaFreqEchoWin_1_2_8.exe",
-            "filename": "ValhallaFreqEchoWin_1_2_8.exe"
           }
         },
         "version": "1.2.8",
         "formats": ["VST3", "AU", "VST", "AAX"],
         "website": "https://valhalladsp.com/shop/delay/valhalla-freq-echo/",
         "open_source": false,
-        "note": "macOS and Windows only"
+        "note": "macOS auto-download. Windows requires the form gate on valhalladsp.com/demos-downloads/"
       },
       {
         "name": "OTT",
