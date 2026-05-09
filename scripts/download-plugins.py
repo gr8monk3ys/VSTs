@@ -146,12 +146,23 @@ def compute_hash_for_url(url: str, chunk_size: int = 65536) -> str:
 
     Used by the --compute-hashes maintainer mode. Does NOT write a file
     or perform any verification — it is the trust-on-first-use primitive.
+
+    Refuses to hash text/html or application/json responses, since those
+    typically indicate a download-gate page or API error rather than a
+    real installer (the hash would be valid but verify the wrong content).
     """
     req = urllib.request.Request(url, headers={
         'User-Agent': 'Mozilla/5.0 (compatible; VST-Downloader/1.0)'
     })
     h = hashlib.sha256()
     with urllib.request.urlopen(req, timeout=60) as response:
+        ct = (response.getheader('Content-Type') or '').lower()
+        if ct.startswith('text/html') or ct.startswith('application/json'):
+            raise ValueError(
+                f"refusing to hash {url} — Content-Type is {ct!r}; "
+                "this URL probably serves a download-gate page or API error, "
+                "not a real installer. Move the entry to manual_download."
+            )
         while True:
             chunk = response.read(chunk_size)
             if not chunk:

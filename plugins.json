@@ -308,12 +308,6 @@
             "filename": "Install_Xfer_OTT.dmg",
             "sha256": "fe1d10b79445c44a32f365fcbf2a420a2133ae205c8d75f09ba703c7dd42ec54",
             "hash_source": "self"
-          },
-          "windows": {
-            "url": "https://xferrecords.com/product_downloads/23/freeware",
-            "filename": "Install_Xfer_OTT.exe",
-            "sha256": "99b71171a873935e38f3e363d0b3ae0e9e8ab85f9eaa90c24be830b748c5944e",
-            "hash_source": "self"
           }
         },
         "version": "1.37",
@@ -324,7 +318,7 @@
         ],
         "website": "https://xferrecords.com/freeware",
         "open_source": false,
-        "note": "macOS and Windows only"
+        "note": "macOS auto-download. Windows requires going to xferrecords.com/freeware (the direct URL serves a JSON gate response)"
       },
       {
         "name": "Dragonfly Reverb",
@@ -458,34 +452,6 @@
         "github": "https://github.com/baconpaul/airwin2rack"
       },
       {
-        "name": "DC1A",
-        "description": "Klanghelm character compressor - simple but powerful",
-        "urls": {
-          "macos": {
-            "url": "https://klanghelm.com/downloads/DC1A/DC1A3-macOS.pkg",
-            "filename": "DC1A3-macOS.pkg",
-            "sha256": "caf744ebfe8b637048a15b8102a0be3d652fc6664bd91dbd0fc25b1e17a11826",
-            "hash_source": "self"
-          },
-          "windows": {
-            "url": "https://klanghelm.com/downloads/DC1A/DC1A3-windows.exe",
-            "filename": "DC1A3-windows.exe",
-            "sha256": "caf744ebfe8b637048a15b8102a0be3d652fc6664bd91dbd0fc25b1e17a11826",
-            "hash_source": "self"
-          }
-        },
-        "version": "3.5.0",
-        "formats": [
-          "VST3",
-          "AU",
-          "VST",
-          "AAX"
-        ],
-        "website": "https://klanghelm.com/contents/products/DC1A",
-        "open_source": false,
-        "note": "macOS and Windows only"
-      },
-      {
         "name": "TAL-Vocoder",
         "description": "Classic 80s vocoder sound - 11 bands",
         "urls": {
@@ -588,6 +554,16 @@
     ]
   },
   "manual_download": [
+    {
+      "name": "DC1A",
+      "description": "Klanghelm character compressor - simple but powerful",
+      "website": "https://klanghelm.com/contents/products/DC1A",
+      "platforms": [
+        "macos",
+        "windows"
+      ],
+      "reason": "Direct download URL serves an HTML download-gate page; Klanghelm requires navigating their site"
+    },
     {
       "name": "Vital",
       "description": "Best free wavetable synth - rivals Serum ($189 value)",
