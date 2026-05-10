@@ -1,0 +1,39 @@
+{
+  "meta": {
+    "name": "Test Fixture",
+    "version": "0.0.0",
+    "description": "Fixture for --check-updates tests",
+    "updated": "2026-05-09",
+    "author": "test",
+    "license": "MIT",
+    "platforms": ["macos", "windows"]
+  },
+  "plugins": {
+    "synths": [
+      {
+        "name": "FakeSynth",
+        "description": "fixture",
+        "update_strategy": "github:fake/synth",
+        "urls": {
+          "macos": {
+            "url": "https://example.invalid/FakeSynth-1.0.0-mac.dmg",
+            "filename": "FakeSynth-1.0.0-mac.dmg",
+            "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+            "hash_source": "self"
+          },
+          "windows": {
+            "url": "https://example.invalid/FakeSynth-1.0.0-win.exe",
+            "filename": "FakeSynth-1.0.0-win.exe",
+            "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+            "hash_source": "self"
+          }
+        },
+        "version": "1.0.0",
+        "formats": ["VST3"],
+        "website": "https://example.invalid/fakesynth",
+        "open_source": false
+      }
+    ]
+  },
+  "manual_download": []
+}

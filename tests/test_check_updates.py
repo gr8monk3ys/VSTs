@@ -1,0 +1,243 @@
+"""Tests for --check-updates and its helpers."""
+
+from __future__ import annotations
+
+import importlib.util
+import json
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+import pytest
+
+SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "download-plugins.py"
+_spec = importlib.util.spec_from_file_location("dlp", SCRIPT)
+dlp = importlib.util.module_from_spec(_spec)
+sys.modules["dlp"] = dlp
+_spec.loader.exec_module(dlp)
+
+
+def _fake_release(tag: str, asset_names: list[str]) -> bytes:
+    """Build a JSON body matching the GitHub API release shape."""
+    return json.dumps({
+        "tag_name": tag,
+        "assets": [
+            {"name": n, "browser_download_url": f"https://example.invalid/{n}", "size": 1234}
+            for n in asset_names
+        ],
+    }).encode("utf-8")
+
+
+def test_detect_latest_for_github_uses_latest_endpoint(mock_server) -> None:
+    body = _fake_release("v1.3.5", ["Surge-XT-1.3.5-mac.dmg", "Surge-XT-1.3.5-win.exe"])
+    mock_server.add("/repos/surge-synthesizer/releases-xt/releases/latest", body)
+
+    result = dlp.detect_latest_for_github(
+        "surge-synthesizer/releases-xt",
+        api_base=mock_server.base_url,
+    )
+
+    assert result["tag"] == "v1.3.5"
+    asset_names = sorted(a["name"] for a in result["assets"])
+    assert asset_names == ["Surge-XT-1.3.5-mac.dmg", "Surge-XT-1.3.5-win.exe"]
+
+
+def test_detect_latest_for_github_uses_tagged_endpoint(mock_server) -> None:
+    body = _fake_release("DAWPlugin", ["airwindows-2026-06-15-abc.dmg"])
+    mock_server.add("/repos/baconpaul/airwin2rack/releases/tags/DAWPlugin", body)
+
+    result = dlp.detect_latest_for_github(
+        "baconpaul/airwin2rack",
+        tag="DAWPlugin",
+        api_base=mock_server.base_url,
+    )
+
+    assert result["tag"] == "DAWPlugin"
+    assert len(result["assets"]) == 1
+    assert result["assets"][0]["name"] == "airwindows-2026-06-15-abc.dmg"
+    assert result["assets"][0]["url"] == "https://example.invalid/airwindows-2026-06-15-abc.dmg"
+
+
+def _candidates(*names: str) -> list[dict]:
+    return [{"name": n, "url": f"https://example.invalid/{n}", "size": 1000} for n in names]
+
+
+def test_find_matching_asset_exact_substitution() -> None:
+    current = "Surge-XT-1.3.4-mac.dmg"
+    cands = _candidates("Surge-XT-1.3.5-mac.dmg", "Surge-XT-1.3.5-win.exe", "Surge-XT-1.3.5-linux.deb")
+
+    result = dlp.find_matching_asset(current, cands, old_tag="1.3.4", new_tag="1.3.5")
+
+    assert result is not None
+    assert result["name"] == "Surge-XT-1.3.5-mac.dmg"
+
+
+def test_find_matching_asset_token_overlap_fallback() -> None:
+    # Rolling-tag case: filename contains a date+commit not derivable by tag substitution.
+    current = "airwindows-consolidated-macOS-2026-05-02-dc0ed69.dmg"
+    cands = _candidates(
+        "airwindows-consolidated-macOS-2026-06-15-newcommit.dmg",
+        "AirwindowsConsolidated-2026-06-15-newcommit-Linux.zip",
+        "AirwindowsConsolidated-2026-06-15-newcommit-Windows-64bit-setup.exe",
+    )
+
+    # old_tag == new_tag (rolling DAWPlugin). Strategy A produces no substitution
+    # because old_tag != new_tag is False. Falls through to Strategy B.
+    result = dlp.find_matching_asset(current, cands, old_tag="DAWPlugin", new_tag="DAWPlugin")
+
+    assert result is not None
+    assert result["name"] == "airwindows-consolidated-macOS-2026-06-15-newcommit.dmg"
+
+
+def test_find_matching_asset_returns_none_when_no_match() -> None:
+    current = "Surge-XT-1.3.4-mac.dmg"
+    cands = _candidates("totally-unrelated-thing.zip")
+
+    result = dlp.find_matching_asset(current, cands, old_tag="1.3.4", new_tag="1.3.5")
+
+    assert result is None
+
+
+def test_find_matching_asset_returns_none_for_extension_only_match() -> None:
+    current = "fileA.dmg"
+    cands = _candidates("fileB.dmg")  # only the .dmg extension is shared
+
+    result = dlp.find_matching_asset(current, cands)
+
+    assert result is None
+
+
+def _serve_fake_release(mock_server, repo: str, tag: str, asset_names: list[str]) -> None:
+    body = _fake_release(tag, asset_names)
+    mock_server.add(f"/repos/{repo}/releases/latest", body)
+
+
+def _write_update_fixture(template: Path, dest: Path) -> None:
+    # No URL substitution needed in the JSON — the script will be told the api_base
+    # via env var. The plugin URLs themselves point at example.invalid (never fetched
+    # in --check-updates read-only mode).
+    dest.write_text(template.read_text(encoding="utf-8"), encoding="utf-8")
+
+
+def test_check_updates_reports_drift_without_writing(mock_server, fixtures_dir, tmp_path) -> None:
+    _serve_fake_release(mock_server, "fake/synth", "v1.0.1",
+                        ["FakeSynth-1.0.1-mac.dmg", "FakeSynth-1.0.1-win.exe"])
+
+    json_path = tmp_path / "plugins.json"
+    _write_update_fixture(fixtures_dir / "plugins-update-fixture.json", json_path)
+    original_text = json_path.read_text(encoding="utf-8")
+
+    result = subprocess.run(
+        [sys.executable, str(SCRIPT), "--check-updates",
+         "--plugins-json", str(json_path)],
+        capture_output=True, text=True, check=False,
+        env={**os.environ, "VST_DLP_GITHUB_API_BASE": mock_server.base_url},
+    )
+
+    assert result.returncode == 1, f"expected exit 1 (drift), got {result.returncode}\n{result.stdout}\n{result.stderr}"
+    assert "FakeSynth" in result.stdout
+    assert "1.0.0" in result.stdout
+    assert "1.0.1" in result.stdout
+    assert "NEW VERSION" in result.stdout
+
+    # Crucially: read-only. plugins.json must be byte-identical.
+    assert json_path.read_text(encoding="utf-8") == original_text
+
+
+def test_check_updates_exit_zero_when_no_drift(mock_server, fixtures_dir, tmp_path) -> None:
+    # Mock returns the SAME version that's pinned in the fixture.
+    _serve_fake_release(mock_server, "fake/synth", "1.0.0",
+                        ["FakeSynth-1.0.0-mac.dmg", "FakeSynth-1.0.0-win.exe"])
+
+    json_path = tmp_path / "plugins.json"
+    _write_update_fixture(fixtures_dir / "plugins-update-fixture.json", json_path)
+
+    result = subprocess.run(
+        [sys.executable, str(SCRIPT), "--check-updates",
+         "--plugins-json", str(json_path)],
+        capture_output=True, text=True, check=False,
+        env={**os.environ, "VST_DLP_GITHUB_API_BASE": mock_server.base_url},
+    )
+
+    assert result.returncode == 0
+    assert "no update" in result.stdout.lower()
+
+
+def test_apply_writes_url_filename_version_and_recomputes_hash(mock_server, fixtures_dir, tmp_path) -> None:
+    # Mock-server-served release: simulates upstream having shipped 1.0.1.
+    _serve_fake_release(mock_server, "fake/synth", "1.0.1",
+                        ["FakeSynth-1.0.1-mac.dmg", "FakeSynth-1.0.1-win.exe"])
+
+    # Mock the actual download endpoints that recompute_hashes will hit.
+    mac_body = b"new-mac-installer-bytes"
+    win_body = b"new-win-installer-bytes"
+    mock_server.add("/FakeSynth-1.0.1-mac.dmg", mac_body)
+    mock_server.add("/FakeSynth-1.0.1-win.exe", win_body)
+
+    json_path = tmp_path / "plugins.json"
+    # Modify fixture: rewrite the example.invalid URLs to point at the mock server,
+    # so when --apply re-points URLs to the new asset URLs from the API response,
+    # the hashes can actually be computed against the mock's body.
+    fixture_text = (fixtures_dir / "plugins-update-fixture.json").read_text(encoding="utf-8")
+    json_path.write_text(fixture_text, encoding="utf-8")
+
+    # The API response uses browser_download_url=https://example.invalid/<name>; rewrite
+    # it to mock_server.base_url so recompute_hashes can fetch them.
+    # We do this by serving release JSON whose asset URLs point at the mock server.
+    body = json.dumps({
+        "tag_name": "1.0.1",
+        "assets": [
+            {"name": "FakeSynth-1.0.1-mac.dmg",
+             "browser_download_url": mock_server.url_for("/FakeSynth-1.0.1-mac.dmg"),
+             "size": len(mac_body)},
+            {"name": "FakeSynth-1.0.1-win.exe",
+             "browser_download_url": mock_server.url_for("/FakeSynth-1.0.1-win.exe"),
+             "size": len(win_body)},
+        ],
+    }).encode("utf-8")
+    mock_server.add("/repos/fake/synth/releases/latest", body)
+
+    result = subprocess.run(
+        [sys.executable, str(SCRIPT), "--check-updates", "--apply",
+         "--plugins-json", str(json_path)],
+        capture_output=True, text=True, check=False,
+        env={**os.environ, "VST_DLP_GITHUB_API_BASE": mock_server.base_url},
+    )
+
+    assert result.returncode == 0, f"stdout:\n{result.stdout}\nstderr:\n{result.stderr}"
+
+    data = json.loads(json_path.read_text(encoding="utf-8"))
+    plugin = data["plugins"]["synths"][0]
+    assert plugin["version"] == "1.0.1"
+
+    mac = plugin["urls"]["macos"]
+    win = plugin["urls"]["windows"]
+
+    import hashlib
+    assert mac["filename"] == "FakeSynth-1.0.1-mac.dmg"
+    assert mac["url"] == mock_server.url_for("/FakeSynth-1.0.1-mac.dmg")
+    assert mac["sha256"] == hashlib.sha256(mac_body).hexdigest()
+    assert mac["hash_source"] == "self"
+
+    assert win["filename"] == "FakeSynth-1.0.1-win.exe"
+    assert win["url"] == mock_server.url_for("/FakeSynth-1.0.1-win.exe")
+    assert win["sha256"] == hashlib.sha256(win_body).hexdigest()
+    assert win["hash_source"] == "self"
+
+
+def test_find_matching_asset_url_tokens_disambiguate_architecture() -> None:
+    # Maintainer's filename is the simpler form, but the URL has the full upstream name.
+    current_filename = "dragonfly-reverb-3.2.10-macos.dmg"
+    current_url = "https://example.invalid/dragonfly-reverb-3.2.10-macos-universal.dmg"
+    cands = _candidates(
+        "dragonfly-reverb-3.2.10-macos-intel.dmg",
+        "dragonfly-reverb-3.2.10-macos-universal.dmg",
+    )
+
+    # Without the URL, both arch variants would tie on tokens with the filename.
+    # With the URL, the universal variant scores higher because 'universal' appears in the URL.
+    result = dlp.find_matching_asset(current_filename, cands, current_url=current_url)
+
+    assert result is not None
+    assert result["name"] == "dragonfly-reverb-3.2.10-macos-universal.dmg"

@@ -17,6 +17,7 @@
       {
         "name": "Surge XT",
         "description": "Open-source hybrid synth - wavetable, FM, subtractive. 2800+ presets",
+        "update_strategy": "github:surge-synthesizer/releases-xt",
         "urls": {
           "macos": {
             "url": "https://github.com/surge-synthesizer/releases-xt/releases/download/1.3.4/surge-xt-macOS-1.3.4.dmg",
@@ -51,6 +52,7 @@
       {
         "name": "Dexed",
         "description": "Yamaha DX7 FM synth clone - loads thousands of classic patches",
+        "update_strategy": "github:asb2m10/dexed",
         "urls": {
           "macos": {
             "url": "https://github.com/asb2m10/dexed/releases/download/v1.0.1/Dexed-1.0.1-macOS.dmg",
@@ -85,6 +87,7 @@
       {
         "name": "OB-Xd",
         "description": "Oberheim OB-X emulation - fat analog polysynth",
+        "update_strategy": "github:reales/OB-Xd",
         "urls": {
           "macos": {
             "url": "https://github.com/reales/OB-Xd/releases/download/v2.19/OB-Xd.2.19.pkg",
@@ -323,6 +326,7 @@
       {
         "name": "Dragonfly Reverb",
         "description": "4 reverbs - Hall, Room, Plate, Early Reflections",
+        "update_strategy": "github:michaelwillis/dragonfly-reverb",
         "urls": {
           "macos": {
             "url": "https://github.com/michaelwillis/dragonfly-reverb/releases/download/3.2.10/dragonfly-reverb-3.2.10-macos-universal.dmg",
@@ -357,6 +361,7 @@
       {
         "name": "BYOD",
         "description": "Build-Your-Own-Distortion - modular effects chain",
+        "update_strategy": "github:Chowdhury-DSP/BYOD",
         "urls": {
           "macos": {
             "url": "https://github.com/Chowdhury-DSP/BYOD/releases/download/v1.3.0/BYOD-Mac-1.3.0.dmg",
@@ -420,6 +425,7 @@
       {
         "name": "Airwindows Consolidated",
         "description": "350+ effects in one plugin - saturation, tape, console, everything",
+        "update_strategy": "github:baconpaul/airwin2rack@DAWPlugin",
         "urls": {
           "macos": {
             "url": "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/airwindows-consolidated-macOS-2026-05-02-dc0ed69.dmg",

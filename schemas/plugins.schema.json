@@ -26,6 +26,10 @@
       "required": ["name", "urls"],
       "properties": {
         "name": { "type": "string" },
+        "update_strategy": {
+          "type": "string",
+          "pattern": "^github:[\\w.-]+/[\\w.-]+(@[\\w.-]+)?$"
+        },
         "urls": {
           "type": "object",
           "minProperties": 1,
