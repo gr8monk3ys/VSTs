@@ -474,3 +474,75 @@ def test_detect_drift_for_stable_url_no_drift_when_hash_matches(mock_server):
     assert result["drift"] is False
     assert result["platforms"]["macos"]["changed"] is False
     assert result["platforms"]["macos"]["new_sha256"] == stored
+
+
+def test_check_updates_drift_for_stable_url_plugin(mock_server, tmp_path):
+    new_body = b"<<<new build pushed silently by vendor>>>"
+    drifted_url = mock_server.add("/valhalla/supermassive-mac.zip", new_body)
+
+    plugins_data = {
+        "meta": {"name": "test", "version": "1", "description": "x",
+                 "updated": "2026-05-09", "author": "x", "license": "x",
+                 "platforms": ["macos"]},
+        "plugins": {
+            "effects": [{
+                "name": "FakeStable",
+                "version": "5.0.0",
+                "update_strategy": "stable-url",
+                "urls": {
+                    "macos": {
+                        "url": drifted_url,
+                        "filename": "supermassive-mac.zip",
+                        "sha256": "0" * 64,  # stale hash — will not match new_body
+                        "hash_source": "self",
+                    },
+                },
+            }],
+        },
+    }
+
+    report = dlp.check_updates(plugins_data)
+
+    assert len(report["updates"]) == 1
+    upd = report["updates"][0]
+    assert upd["name"] == "FakeStable"
+    assert upd["strategy"] == "stable-url"
+    assert upd["old_version"] == "5.0.0"
+    assert upd["new_version"] == "5.0.0"  # unchanged for stable-url
+    plats = {p["plat"]: p for p in upd["platforms"]}
+    assert "macos" in plats
+    assert plats["macos"]["changed"] is True
+    assert plats["macos"]["new_sha256"] == hashlib.sha256(new_body).hexdigest()
+
+
+def test_check_updates_no_drift_for_stable_url_plugin(mock_server, tmp_path):
+    body = b"<<<unchanged>>>"
+    url = mock_server.add("/static.zip", body)
+    stored = hashlib.sha256(body).hexdigest()
+
+    plugins_data = {
+        "meta": {"name": "test", "version": "1", "description": "x",
+                 "updated": "2026-05-09", "author": "x", "license": "x",
+                 "platforms": ["macos"]},
+        "plugins": {
+            "effects": [{
+                "name": "FakeStable",
+                "version": "1.0",
+                "update_strategy": "stable-url",
+                "urls": {
+                    "macos": {
+                        "url": url,
+                        "filename": "static.zip",
+                        "sha256": stored,
+                        "hash_source": "self",
+                    },
+                },
+            }],
+        },
+    }
+
+    report = dlp.check_updates(plugins_data)
+
+    assert len(report["updates"]) == 0
+    assert len(report["no_updates"]) == 1
+    assert report["no_updates"][0]["name"] == "FakeStable"

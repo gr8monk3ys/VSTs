@@ -482,6 +482,35 @@ def check_updates(plugins_data: dict, api_base: str = "https://api.github.com") 
                 })
                 continue
 
+            # stable-url is its own pipeline — no asset matching, just rehash + compare.
+            if parsed[0] == 'stable-url':
+                try:
+                    drift_result = detect_drift_for_stable_url(plugin)
+                except (urllib.error.HTTPError, urllib.error.URLError, ValueError) as e:
+                    report['failures'].append({
+                        'name': name, 'category': category,
+                        'reason': f'detection failed: {e}',
+                    })
+                    continue
+                if drift_result['drift']:
+                    platform_rows = [
+                        {'plat': plat, 'changed': info['changed'],
+                         'old_sha256': info['old_sha256'], 'new_sha256': info['new_sha256']}
+                        for plat, info in drift_result['platforms'].items()
+                    ]
+                    report['updates'].append({
+                        'name': name, 'category': category,
+                        'strategy': 'stable-url',
+                        'old_version': current_version,
+                        'new_version': current_version,  # vendor didn't bump a label
+                        'platforms': platform_rows,
+                    })
+                else:
+                    report['no_updates'].append({
+                        'name': name, 'category': category, 'version': current_version,
+                    })
+                continue
+
             try:
                 if parsed[0] == 'github':
                     _, repo, tag = parsed
