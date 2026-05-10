@@ -178,6 +178,7 @@
           }
         },
         "version": "5.0.6",
+        "update_strategy": "stable-url",
         "formats": [
           "VST3",
           "AU",
@@ -272,6 +273,7 @@
           }
         },
         "version": "5.0.0",
+        "update_strategy": "stable-url",
         "formats": [
           "VST3",
           "AU",
@@ -294,6 +296,7 @@
           }
         },
         "version": "1.2.8",
+        "update_strategy": "stable-url",
         "formats": [
           "VST3",
           "AU",
@@ -316,6 +319,7 @@
           }
         },
         "version": "1.37",
+        "update_strategy": "stable-url",
         "formats": [
           "VST",
           "AU",
@@ -483,6 +487,7 @@
           }
         },
         "version": "3.0.4",
+        "update_strategy": "stable-url",
         "formats": [
           "VST3",
           "AU",
