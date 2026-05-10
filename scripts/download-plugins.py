@@ -238,8 +238,7 @@ def detect_latest_for_github(repo: str, tag: str | None = None,
 def find_matching_asset(current_filename: str, candidates: list[dict],
                         current_url: str | None = None,
                         old_tag: str | None = None,
-                        new_tag: str | None = None,
-                        target_size: int | None = None) -> dict | None:
+                        new_tag: str | None = None) -> dict | None:
     """Pick the candidate asset that should replace `current_filename`.
 
     Strategy A (exact substitution): if old_tag and new_tag are both set and differ
@@ -248,8 +247,8 @@ def find_matching_asset(current_filename: str, candidates: list[dict],
 
     Strategy B (token-overlap fallback): split current and each candidate name on
       `-_.`, lowercase, count shared tokens. Highest score wins; ties broken by
-      smallest absolute size delta from target_size if provided; further ties by
-      iteration order.
+      iteration order (the GitHub API returns assets in a deterministic order
+      per release, so this is reproducible).
 
     If `current_url` is provided, its tokens are merged with the filename tokens —
     useful when the maintainer's filename field is a shortened form of the upstream
@@ -274,19 +273,13 @@ def find_matching_asset(current_filename: str, candidates: list[dict],
         current_toks = current_toks | tokens(current_url)
     best = None
     best_score = 2
-    best_size_delta = float('inf')
     for cand in candidates:
         score = len(current_toks & tokens(cand['name']))
-        if score < best_score:
-            continue
-        if target_size is not None:
-            size_delta = abs(cand.get('size', 0) - target_size)
-        else:
-            size_delta = 0
-        if score > best_score or (score == best_score and size_delta < best_size_delta):
+        if score > best_score:
             best = cand
             best_score = score
-            best_size_delta = size_delta
+        # Ties (score == best_score) are broken by iteration order (first-wins)
+        # because the GitHub API returns assets in a deterministic order per release.
 
     return best
 
@@ -389,9 +382,13 @@ def check_updates(plugins_data: dict, api_base: str = "https://api.github.com") 
                     'reason': f'no matching asset for: {", ".join(missing)}',
                 })
             elif any_drift:
+                # When the strategy pins a rolling tag (e.g. github:owner/repo@DAWPlugin),
+                # the tag string never changes — display old_version on both sides so the
+                # report shows "filename changed" rather than a misleading version diff.
+                shown_new = current_version if (tag and new_tag == tag) else new_tag
                 report['updates'].append({
                     'name': name, 'category': category,
-                    'old_version': current_version, 'new_version': new_tag,
+                    'old_version': current_version, 'new_version': shown_new,
                     'platforms': platform_updates,
                 })
             else:
