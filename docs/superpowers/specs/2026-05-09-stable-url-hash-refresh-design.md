@@ -158,15 +158,15 @@ What does *not* change for stable-URL applies:
 
 ### 6. Reporting
 
-The existing report formatter handles github/u-he by showing `version → new_version`. For stable-URL, both versions are equal but the row is still actionable. The format becomes:
+The existing report formatter handles github/u-he by showing `version → new_version` followed by a yellow `⬆ NEW VERSION` marker. For stable-URL, both versions are equal but the row is still actionable. To keep the visual convention, the marker becomes `⬆ CONTENT DRIFT` and the per-platform detail line shows the sha256 prefix change instead of a filename:
 
 ```
-OTT                            1.37     → 1.37*    apply
+OTT                            1.37     → 1.37     ⬆ CONTENT DRIFT
+    macos    sha256 abc12345 → def67890
+    windows  unchanged
 ```
 
-The trailing `*` distinguishes "content drifted, version label unchanged" from "no update." A short legend at the bottom of the report (`* = stable-url content drift`) keeps the meaning discoverable without inflating the row width.
-
-For the no-drift case, the row reads as it does today for entries with no detectable change:
+For the no-drift case, the row matches the existing `no_updates` formatting:
 ```
 OTT                            1.37     → 1.37     no update
 ```
