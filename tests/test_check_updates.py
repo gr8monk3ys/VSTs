@@ -412,3 +412,12 @@ def test_check_updates_apply_for_uhe_plugin(mock_server, fixtures_dir, tmp_path)
     assert mac["url"] == mock_server.url_for("/releases/TyrellN6_301_public_beta_17000_Mac.zip")
     assert mac["sha256"] == hashlib.sha256(mac_body).hexdigest()
     assert mac["hash_source"] == "self"
+
+
+def test_parse_update_strategy_recognizes_stable_url():
+    assert dlp._parse_update_strategy("stable-url") == ("stable-url",)
+
+
+def test_parse_update_strategy_rejects_stable_url_with_slug():
+    # `stable-url:something` is not a recognized variant — must be exactly "stable-url".
+    assert dlp._parse_update_strategy("stable-url:foo") is None

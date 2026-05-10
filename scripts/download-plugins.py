@@ -363,6 +363,7 @@ def _parse_update_strategy(strategy: str):
     Returns one of:
       ('github', repo: str, tag: str | None)
       ('u-he', product: str)
+      ('stable-url',)
       None  if the value is missing or unrecognized.
     """
     if not strategy:
@@ -382,6 +383,8 @@ def _parse_update_strategy(strategy: str):
         if not product:
             return None
         return ('u-he', product)
+    if strategy == 'stable-url':
+        return ('stable-url',)
     return None
 
 
