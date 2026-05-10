@@ -155,3 +155,50 @@ def test_schema_rejects_uhe_strategy_with_empty_product() -> None:
     }
     with __import__("pytest").raises(jsonschema.ValidationError):
         jsonschema.validate(instance=bad, schema=schema)
+
+
+def test_schema_accepts_stable_url_strategy() -> None:
+    schema = json.loads((REPO / "schemas" / "plugins.schema.json").read_text(encoding="utf-8"))
+    good = {
+        "meta": {
+            "name": "x", "version": "0", "description": "x",
+            "updated": "2026-05-09", "author": "x", "license": "MIT",
+            "platforms": ["macos"],
+        },
+        "plugins": {"synths": [{
+            "name": "x", "description": "x",
+            "update_strategy": "stable-url",
+            "urls": {"macos": {
+                "url": "https://example.invalid/", "filename": "x",
+                "sha256": "a" * 64, "hash_source": "self",
+            }},
+            "version": "0", "formats": ["VST3"], "website": "https://example.invalid/",
+            "open_source": False,
+        }]},
+        "manual_download": [],
+    }
+    jsonschema.validate(instance=good, schema=schema)
+
+
+def test_schema_rejects_stable_url_with_slug() -> None:
+    schema = json.loads((REPO / "schemas" / "plugins.schema.json").read_text(encoding="utf-8"))
+    bad = {
+        "meta": {
+            "name": "x", "version": "0", "description": "x",
+            "updated": "2026-05-09", "author": "x", "license": "MIT",
+            "platforms": ["macos"],
+        },
+        "plugins": {"synths": [{
+            "name": "x", "description": "x",
+            "update_strategy": "stable-url:foo",
+            "urls": {"macos": {
+                "url": "https://example.invalid/", "filename": "x",
+                "sha256": "a" * 64, "hash_source": "self",
+            }},
+            "version": "0", "formats": ["VST3"], "website": "https://example.invalid/",
+            "open_source": False,
+        }]},
+        "manual_download": [],
+    }
+    with __import__("pytest").raises(jsonschema.ValidationError):
+        jsonschema.validate(instance=bad, schema=schema)
