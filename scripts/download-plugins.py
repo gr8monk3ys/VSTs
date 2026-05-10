@@ -235,6 +235,78 @@ def detect_latest_for_github(repo: str, tag: str | None = None,
         ],
     }
 
+UHE_PRODUCTS = {
+    'TyrellN6': {
+        'page_url': 'https://u-he.com/products/tyrelln6/',
+        'version_re': re.compile(r'TyrellN6\s+(?:Beta\s+)?(\d+)\.(\d+)\.(\d+)\s*\(revision\s+(\d+)\)'),
+        'asset_template': '{dl_base}/releases/TyrellN6_{vcode}_public_beta_{rev}_{platform}.{ext}',
+        'platforms': {
+            'macos':   ('Mac',   'zip'),
+            'windows': ('Win',   'zip'),
+            'linux':   ('Linux', 'tar.xz'),
+        },
+    },
+    'Zebralette': {
+        'page_url': 'https://u-he.com/products/zebralette/',
+        'version_re': re.compile(r'Zebralette\s+(\d+)\.(\d+)\.(\d+)\s*\(revision\s+(\d+)\)'),
+        'asset_template': '{dl_base}/releases/Zebra_Legacy_{vcode}_{rev}_{platform}.{ext}',
+        'platforms': {
+            'macos':   ('Mac',   'zip'),
+            'windows': ('Win',   'zip'),
+            'linux':   ('Linux', 'zip'),
+        },
+    },
+}
+
+
+def detect_latest_for_uhe(product: str, page_url: str | None = None,
+                          dl_base: str | None = None) -> dict:
+    """Fetch a u-he product page and return the latest release as
+    {'tag': str, 'assets': [{'name', 'url', 'size': 0}, ...]}.
+
+    The 'tag' is f'{major}.{minor}.{patch}-r{rev}', stable string-comparable.
+    Asset 'size' is 0 — u-he doesn't expose sizes from a list endpoint.
+
+    page_url and dl_base override the values from UHE_PRODUCTS for testing.
+
+    Raises:
+      ValueError if `product` is not in UHE_PRODUCTS.
+      RuntimeError if the page doesn't contain a recognizable version string.
+      urllib.error.HTTPError / URLError on network problems (propagated).
+    """
+    if product not in UHE_PRODUCTS:
+        raise ValueError(f"unknown u-he product: {product!r}")
+
+    cfg = UHE_PRODUCTS[product]
+    url = page_url or cfg['page_url']
+    base = dl_base or 'https://dl.u-he.com'
+
+    req = urllib.request.Request(url, headers={
+        'User-Agent': 'Mozilla/5.0 (compatible; VST-Downloader/1.0)',
+    })
+    with urllib.request.urlopen(req, timeout=30) as response:
+        body = response.read().decode('utf-8', errors='replace')
+
+    m = cfg['version_re'].search(body)
+    if not m:
+        raise RuntimeError(
+            f"u-he page does not contain a recognizable version string for {product}"
+        )
+    major, minor, patch, rev = m.group(1), m.group(2), m.group(3), m.group(4)
+    vcode = f"{major}{minor}{patch}"
+    tag = f"{major}.{minor}.{patch}-r{rev}"
+
+    assets = []
+    for plat, (plat_name, ext) in cfg['platforms'].items():
+        asset_url = cfg['asset_template'].format(
+            dl_base=base, vcode=vcode, rev=rev, platform=plat_name, ext=ext,
+        )
+        # Strip the dl_base prefix to derive the asset filename.
+        name = asset_url.rsplit('/', 1)[-1]
+        assets.append({'name': name, 'url': asset_url, 'size': 0})
+
+    return {'tag': tag, 'assets': assets}
+
 def find_matching_asset(current_filename: str, candidates: list[dict],
                         current_url: str | None = None,
                         old_tag: str | None = None,
@@ -268,30 +340,49 @@ def find_matching_asset(current_filename: str, candidates: list[dict],
         # contribute its repo path components as discrete tokens.
         return {t for t in re.split(r'[-_./:]', name.lower()) if t}
 
-    current_toks = tokens(current_filename)
-    if current_url:
-        current_toks = current_toks | tokens(current_url)
+    filename_toks = tokens(current_filename)
+    url_toks = tokens(current_url) if current_url else set()
+
     best = None
-    best_score = 2
+    # Two-tier score: (filename-overlap, url-overlap). Prefers candidates that
+    # match the current filename's tokens (which carry platform/extension info)
+    # over candidates that only match URL path components.
+    best_score = (1, 0)  # filename-overlap floor of 2 (must beat 1)
     for cand in candidates:
-        score = len(current_toks & tokens(cand['name']))
+        cand_toks = tokens(cand['name'])
+        score = (len(filename_toks & cand_toks), len(url_toks & cand_toks))
         if score > best_score:
             best = cand
             best_score = score
-        # Ties (score == best_score) are broken by iteration order (first-wins)
-        # because the GitHub API returns assets in a deterministic order per release.
 
     return best
 
-def _parse_update_strategy(strategy: str) -> tuple[str, str | None] | None:
-    """Parse 'github:owner/repo' or 'github:owner/repo@tag'. Returns (repo, tag) or None."""
-    if not strategy or not strategy.startswith('github:'):
+def _parse_update_strategy(strategy: str):
+    """Parse known update_strategy values.
+
+    Returns one of:
+      ('github', repo: str, tag: str | None)
+      ('u-he', product: str)
+      None  if the value is missing or unrecognized.
+    """
+    if not strategy:
         return None
-    rest = strategy[len('github:'):]
-    if '@' in rest:
-        repo, tag = rest.rsplit('@', 1)
-        return repo, tag
-    return rest, None
+    if strategy.startswith('github:'):
+        rest = strategy[len('github:'):]
+        if not rest:
+            return None
+        if '@' in rest:
+            repo, tag = rest.rsplit('@', 1)
+            if not repo or not tag:
+                return None
+            return ('github', repo, tag)
+        return ('github', rest, None)
+    if strategy.startswith('u-he:'):
+        product = strategy[len('u-he:'):]
+        if not product:
+            return None
+        return ('u-he', product)
+    return None
 
 
 def check_updates(plugins_data: dict, api_base: str = "https://api.github.com") -> dict:
@@ -331,25 +422,34 @@ def check_updates(plugins_data: dict, api_base: str = "https://api.github.com") 
                 })
                 continue
 
-            repo, tag = parsed
-
             try:
-                release = detect_latest_for_github(repo, tag=tag, api_base=api_base)
-            except urllib.error.HTTPError as e:
+                if parsed[0] == 'github':
+                    _, repo, tag = parsed
+                    release = detect_latest_for_github(repo, tag=tag, api_base=api_base)
+                    old_tag = tag if tag else current_version
+                elif parsed[0] == 'u-he':
+                    _, product = parsed
+                    # Test-only env-var overrides; production uses UHE_PRODUCTS defaults.
+                    # VST_DLP_UHE_PAGE_URL_<Product>: alternate product-page URL (e.g. mock server)
+                    # VST_DLP_UHE_DL_BASE: alternate download base URL
+                    page_url = os.environ.get(f'VST_DLP_UHE_PAGE_URL_{product}')
+                    dl_base = os.environ.get('VST_DLP_UHE_DL_BASE')
+                    release = detect_latest_for_uhe(product, page_url=page_url, dl_base=dl_base)
+                    # u-he tags carry a revision (e.g. "3.0.1-r17000") that won't
+                    # substring-match current_version (e.g. "3.0.0"); Strategy A
+                    # skips and Strategy B does the matching.
+                    old_tag = current_version
+                    tag = None  # for the rolling-tag display logic later
+                else:
+                    raise RuntimeError(f"unknown strategy kind: {parsed[0]}")
+            except (urllib.error.HTTPError, urllib.error.URLError, ValueError, RuntimeError) as e:
                 report['failures'].append({
                     'name': name, 'category': category,
-                    'reason': f'GitHub API HTTP {e.code}: {e.reason}',
-                })
-                continue
-            except urllib.error.URLError as e:
-                report['failures'].append({
-                    'name': name, 'category': category,
-                    'reason': f'GitHub API connection error: {e.reason}',
+                    'reason': f'detection failed: {e}',
                 })
                 continue
 
             new_tag = release['tag']
-            old_tag = tag if tag else current_version  # for substitution-strategy
 
             platform_updates = []
             any_drift = False
@@ -408,7 +508,7 @@ def print_check_updates_report(report: dict) -> None:
 
     total_with_strategy = len(report['updates']) + len(report['no_updates']) + len(report['failures'])
     total_manual = len(report['manual'])
-    print(f"\nChecking {total_with_strategy + total_manual} plugins ({total_with_strategy} with github strategy, {total_manual} manual)...\n")
+    print(f"\nChecking {total_with_strategy + total_manual} plugins ({total_with_strategy} with update_strategy, {total_manual} manual)...\n")
 
     for cat in sorted(by_cat):
         print(f"{cat.title()}")

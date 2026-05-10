@@ -241,3 +241,174 @@ def test_find_matching_asset_url_tokens_disambiguate_architecture() -> None:
 
     assert result is not None
     assert result["name"] == "dragonfly-reverb-3.2.10-macos-universal.dmg"
+
+
+TYRELL_N6_PAGE_HTML = (
+    b"<html><body><h1>TyrellN6</h1>"
+    b"<p>TyrellN6 Beta 3.0.1 (revision 17000) released April 1, 2026.</p>"
+    b"</body></html>"
+)
+
+
+def test_detect_latest_for_uhe_parses_version_and_builds_asset_urls(mock_server) -> None:
+    mock_server.add("/products/tyrelln6/", TYRELL_N6_PAGE_HTML)
+
+    result = dlp.detect_latest_for_uhe(
+        "TyrellN6",
+        page_url=mock_server.url_for("/products/tyrelln6/"),
+        dl_base=mock_server.base_url,
+    )
+
+    assert result["tag"] == "3.0.1-r17000"
+    asset_names = sorted(a["name"] for a in result["assets"])
+    assert asset_names == [
+        "TyrellN6_301_public_beta_17000_Linux.tar.xz",
+        "TyrellN6_301_public_beta_17000_Mac.zip",
+        "TyrellN6_301_public_beta_17000_Win.zip",
+    ]
+    # Asset URLs must use the dl_base override.
+    for asset in result["assets"]:
+        assert asset["url"].startswith(mock_server.base_url + "/releases/")
+
+
+def test_detect_latest_for_uhe_raises_on_unknown_product() -> None:
+    with pytest.raises(ValueError, match="unknown u-he product"):
+        dlp.detect_latest_for_uhe("NotAProduct")
+
+
+def test_detect_latest_for_uhe_raises_when_version_regex_fails(mock_server) -> None:
+    mock_server.add("/products/tyrelln6/", b"<html>nothing useful here</html>")
+
+    with pytest.raises(RuntimeError, match="recognizable version"):
+        dlp.detect_latest_for_uhe(
+            "TyrellN6",
+            page_url=mock_server.url_for("/products/tyrelln6/"),
+            dl_base=mock_server.base_url,
+        )
+
+
+def test_find_matching_asset_prefers_filename_over_url_tokens() -> None:
+    # OB-Xd-style: current entry's URL has `OB-Xd` which splits into 'ob','xd'
+    # tokens. Without filename-first scoring, the macOS .pkg candidate would
+    # win for the Windows entry because its tokens include 'ob','xd','19'.
+    current_filename = "Obxd219.exe"
+    current_url = "https://github.com/reales/OB-Xd/releases/download/v2.19/Obxd219.exe"
+    cands = _candidates(
+        "OB-Xd.2.19.pkg",       # macOS installer (would win on URL-token boost)
+        "Obxd219.exe",          # actual Windows installer
+        "Obxd219.deb",          # Linux installer
+    )
+
+    result = dlp.find_matching_asset(current_filename, cands, current_url=current_url)
+
+    assert result is not None
+    assert result["name"] == "Obxd219.exe"
+
+
+def test_check_updates_drift_for_uhe_plugin(mock_server, fixtures_dir, tmp_path) -> None:
+    # Fake page advertises 3.0.1-r17000; fixture is pinned at 3.0.0-r16976.
+    mock_server.add("/products/tyrelln6/", TYRELL_N6_PAGE_HTML)
+
+    json_path = tmp_path / "plugins.json"
+    fixture = {
+        "meta": {
+            "name": "Test Fixture", "version": "0.0.0", "description": "uhe drift",
+            "updated": "2026-05-09", "author": "test", "license": "MIT",
+            "platforms": ["macos"],
+        },
+        "plugins": {"synths": [{
+            "name": "Tyrell N6",
+            "description": "fixture",
+            "update_strategy": "u-he:TyrellN6",
+            "urls": {"macos": {
+                "url": "https://example.invalid/TyrellN6_300_public_beta_16976_Mac.zip",
+                "filename": "TyrellN6_300_public_beta_16976_Mac.zip",
+                "sha256": "0" * 64,
+                "hash_source": "self",
+            }},
+            "version": "3.0.0",
+            "formats": ["VST3"],
+            "website": "https://u-he.com/products/tyrelln6/",
+            "open_source": False,
+        }]},
+        "manual_download": [],
+    }
+    json_path.write_text(json.dumps(fixture, indent=2), encoding="utf-8")
+    original_text = json_path.read_text(encoding="utf-8")
+
+    result = subprocess.run(
+        [sys.executable, str(SCRIPT), "--check-updates",
+         "--plugins-json", str(json_path)],
+        capture_output=True, text=True, check=False,
+        env={
+            **os.environ,
+            "VST_DLP_UHE_PAGE_URL_TyrellN6": mock_server.url_for("/products/tyrelln6/"),
+            "VST_DLP_UHE_DL_BASE": mock_server.base_url,
+        },
+    )
+
+    assert result.returncode == 1, f"expected exit 1\n{result.stdout}\n{result.stderr}"
+    assert "Tyrell N6" in result.stdout
+    assert "NEW VERSION" in result.stdout
+    assert "3.0.1" in result.stdout or "17000" in result.stdout
+
+    # Read-only: file unchanged.
+    assert json_path.read_text(encoding="utf-8") == original_text
+
+
+def test_check_updates_apply_for_uhe_plugin(mock_server, fixtures_dir, tmp_path) -> None:
+    mock_server.add("/products/tyrelln6/", TYRELL_N6_PAGE_HTML)
+
+    # The new asset bytes the apply path will fetch + hash.
+    mac_body = b"new-mac-tyrelln6"
+    mock_server.add("/releases/TyrellN6_301_public_beta_17000_Mac.zip", mac_body)
+
+    json_path = tmp_path / "plugins.json"
+    fixture = {
+        "meta": {
+            "name": "Test Fixture", "version": "0.0.0", "description": "uhe apply",
+            "updated": "2026-05-09", "author": "test", "license": "MIT",
+            "platforms": ["macos"],
+        },
+        "plugins": {"synths": [{
+            "name": "Tyrell N6",
+            "description": "fixture",
+            "update_strategy": "u-he:TyrellN6",
+            "urls": {"macos": {
+                "url": "https://example.invalid/TyrellN6_300_public_beta_16976_Mac.zip",
+                "filename": "TyrellN6_300_public_beta_16976_Mac.zip",
+                "sha256": "0" * 64,
+                "hash_source": "self",
+            }},
+            "version": "3.0.0",
+            "formats": ["VST3"],
+            "website": "https://u-he.com/products/tyrelln6/",
+            "open_source": False,
+        }]},
+        "manual_download": [],
+    }
+    json_path.write_text(json.dumps(fixture, indent=2), encoding="utf-8")
+
+    result = subprocess.run(
+        [sys.executable, str(SCRIPT), "--check-updates", "--apply",
+         "--plugins-json", str(json_path)],
+        capture_output=True, text=True, check=False,
+        env={
+            **os.environ,
+            "VST_DLP_UHE_PAGE_URL_TyrellN6": mock_server.url_for("/products/tyrelln6/"),
+            "VST_DLP_UHE_DL_BASE": mock_server.base_url,
+        },
+    )
+
+    assert result.returncode == 0, f"stdout:\n{result.stdout}\nstderr:\n{result.stderr}"
+
+    data = json.loads(json_path.read_text(encoding="utf-8"))
+    plugin = data["plugins"]["synths"][0]
+    assert plugin["version"] == "3.0.1-r17000"
+
+    mac = plugin["urls"]["macos"]
+    import hashlib
+    assert mac["filename"] == "TyrellN6_301_public_beta_17000_Mac.zip"
+    assert mac["url"] == mock_server.url_for("/releases/TyrellN6_301_public_beta_17000_Mac.zip")
+    assert mac["sha256"] == hashlib.sha256(mac_body).hexdigest()
+    assert mac["hash_source"] == "self"
