@@ -157,6 +157,7 @@
       {
         "name": "TAL-NoiseMaker",
         "description": "Classic VA synth - 256 presets, low CPU usage",
+        "update_strategy": "stable-url",
         "urls": {
           "macos": {
             "url": "https://tal-software.com/downloads/plugins/TAL-NoiseMaker-installer_macos.zip",
@@ -178,7 +179,6 @@
           }
         },
         "version": "5.0.6",
-        "update_strategy": "stable-url",
         "formats": [
           "VST3",
           "AU",
@@ -264,6 +264,7 @@
       {
         "name": "Valhalla Supermassive",
         "description": "Lush reverbs & delays - 21 modes, studio quality",
+        "update_strategy": "stable-url",
         "urls": {
           "macos": {
             "url": "https://valhallaproduction.s3.us-west-2.amazonaws.com/supermassive/ValhallaSupermassiveOSX_5_0_0.dmg",
@@ -273,7 +274,6 @@
           }
         },
         "version": "5.0.0",
-        "update_strategy": "stable-url",
         "formats": [
           "VST3",
           "AU",
@@ -287,6 +287,7 @@
       {
         "name": "Valhalla FreqEcho",
         "description": "Frequency shifter + analog echo emulation",
+        "update_strategy": "stable-url",
         "urls": {
           "macos": {
             "url": "https://valhallaproduction.s3.us-west-2.amazonaws.com/freqecho/ValhallaFreqEchoOSX_1_2_8.dmg",
@@ -296,7 +297,6 @@
           }
         },
         "version": "1.2.8",
-        "update_strategy": "stable-url",
         "formats": [
           "VST3",
           "AU",
@@ -310,6 +310,7 @@
       {
         "name": "OTT",
         "description": "THE multiband compressor - industry standard",
+        "update_strategy": "stable-url",
         "urls": {
           "macos": {
             "url": "https://xferrecords.com/product_downloads/24/freeware",
@@ -319,7 +320,6 @@
           }
         },
         "version": "1.37",
-        "update_strategy": "stable-url",
         "formats": [
           "VST",
           "AU",
@@ -466,6 +466,7 @@
       {
         "name": "TAL-Vocoder",
         "description": "Classic 80s vocoder sound - 11 bands",
+        "update_strategy": "stable-url",
         "urls": {
           "macos": {
             "url": "https://tal-software.com/downloads/plugins/TAL-Vocoder-2-installer_macos.zip",
@@ -487,7 +488,6 @@
           }
         },
         "version": "3.0.4",
-        "update_strategy": "stable-url",
         "formats": [
           "VST3",
           "AU",
