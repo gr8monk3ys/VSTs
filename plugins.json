@@ -33,7 +33,7 @@
           },
           "linux": {
             "url": "https://github.com/surge-synthesizer/releases-xt/releases/download/1.3.4/surge-xt-linux-x64-1.3.4.deb",
-            "filename": "surge-xt-linux-1.3.4.deb",
+            "filename": "surge-xt-linux-x64-1.3.4.deb",
             "sha256": "a6e55064487f624147d515b9ae5fc79a568b69746675b2083abde628ca7bb151",
             "hash_source": "self"
           }
@@ -195,24 +195,24 @@
         "urls": {
           "macos": {
             "url": "https://dl.u-he.com/releases/TyrellN6_300_public_beta_16976_Mac.zip",
-            "filename": "TyrellN6_Mac.zip",
+            "filename": "TyrellN6_300_public_beta_16976_Mac.zip",
             "sha256": "582b73c740daf309d6b4a6b64a7fe742b4b592c11f1de8165710226a8172b1ad",
             "hash_source": "self"
           },
           "windows": {
             "url": "https://dl.u-he.com/releases/TyrellN6_300_public_beta_16976_Win.zip",
-            "filename": "TyrellN6_Win.zip",
+            "filename": "TyrellN6_300_public_beta_16976_Win.zip",
             "sha256": "5a00b934f95da95ce03ff2c982367d727183101df910de1ef78af8500f9a6e5a",
             "hash_source": "self"
           },
           "linux": {
             "url": "https://dl.u-he.com/releases/TyrellN6_300_public_beta_16976_Linux.tar.xz",
-            "filename": "TyrellN6_Linux.tar.xz",
+            "filename": "TyrellN6_300_public_beta_16976_Linux.tar.xz",
             "sha256": "4d7a4ebd124dc2f341d9f53bc585b0ca508806accc32469bfe185ae99ba4c916",
             "hash_source": "self"
           }
         },
-        "version": "3.0.0",
+        "version": "3.0.0-r16976",
         "formats": [
           "VST3",
           "AU",
@@ -231,24 +231,24 @@
         "urls": {
           "macos": {
             "url": "https://dl.u-he.com/releases/Zebra_Legacy_294_16765_Mac.zip",
-            "filename": "Zebralette_Mac.zip",
+            "filename": "Zebra_Legacy_294_16765_Mac.zip",
             "sha256": "ac383a2dfa31267c62ae29747d6f0aca8b7d031c4e9ca171c321e7e0ddf00122",
             "hash_source": "self"
           },
           "windows": {
             "url": "https://dl.u-he.com/releases/Zebra_Legacy_294_16765_Win.zip",
-            "filename": "Zebralette_Win.zip",
+            "filename": "Zebra_Legacy_294_16765_Win.zip",
             "sha256": "0ad40081c8fa0b4ef004371802b66d9259d54e4b6022a98d9295680c2ed46bfd",
             "hash_source": "self"
           },
           "linux": {
             "url": "https://dl.u-he.com/releases/Zebra_Legacy_294_16765_Linux.zip",
-            "filename": "Zebralette_Linux.zip",
+            "filename": "Zebra_Legacy_294_16765_Linux.zip",
             "sha256": "3a0f957d09a11b1d06a93dfea814c2546f51cd9dd46c8caf35245ea72830eafd",
             "hash_source": "self"
           }
         },
-        "version": "2.9.4",
+        "version": "2.9.4-r16765",
         "formats": [
           "VST3",
           "AU",
@@ -332,7 +332,7 @@
         "urls": {
           "macos": {
             "url": "https://github.com/michaelwillis/dragonfly-reverb/releases/download/3.2.10/dragonfly-reverb-3.2.10-macos-universal.dmg",
-            "filename": "dragonfly-reverb-3.2.10-macos.dmg",
+            "filename": "dragonfly-reverb-3.2.10-macos-universal.dmg",
             "sha256": "e0b854b92a4e51ce5851320fb1a9f91ab1a4309f997de070e175b3e5cab4adaf",
             "hash_source": "self"
           },
@@ -344,7 +344,7 @@
           },
           "linux": {
             "url": "https://github.com/michaelwillis/dragonfly-reverb/releases/download/3.2.10/dragonfly-reverb-3.2.10-linux-x86_64.tar.xz",
-            "filename": "dragonfly-reverb-3.2.10-linux.tar.xz",
+            "filename": "dragonfly-reverb-3.2.10-linux-x86_64.tar.xz",
             "sha256": "59f1593120de82e31dd194e2ab1536af14fec2b3ec6ec45abf6d9c8ac02ef430",
             "hash_source": "self"
           }
@@ -430,21 +430,21 @@
         "update_strategy": "github:baconpaul/airwin2rack@DAWPlugin",
         "urls": {
           "macos": {
-            "url": "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/airwindows-consolidated-macOS-2026-05-02-dc0ed69.dmg",
-            "filename": "airwindows-consolidated-macOS.dmg",
-            "sha256": "dbe70dbc2ac35019d305864b3466bdd52ace6e532f19017b44319d39baf05c0f",
+            "url": "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/airwindows-consolidated-macOS-2026-05-10-dc0ed69.dmg",
+            "filename": "airwindows-consolidated-macOS-2026-05-10-dc0ed69.dmg",
+            "sha256": "d14a2804a2ff253c0c883af04fa17af7ecf58679f8c73ac4b93fe0a963338910",
             "hash_source": "self"
           },
           "windows": {
-            "url": "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/AirwindowsConsolidated-2026-05-02-dc0ed69-Windows-64bit-setup.exe",
-            "filename": "airwindows-consolidated-windows-setup.exe",
-            "sha256": "130c85ba76096885bce9201c35a2280c9b780cdcca021de492e52618dcb07af5",
+            "url": "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/AirwindowsConsolidated-2026-05-10-dc0ed69-Windows-64bit-setup.exe",
+            "filename": "AirwindowsConsolidated-2026-05-10-dc0ed69-Windows-64bit-setup.exe",
+            "sha256": "53c22dcf0f55f23395df7059db17893d4bfb7dcc04d31fa2cd44a82e5312f4de",
             "hash_source": "self"
           },
           "linux": {
-            "url": "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/AirwindowsConsolidated-2026-05-02-dc0ed69-Linux.zip",
-            "filename": "airwindows-consolidated-linux.zip",
-            "sha256": "13e7a2def0c5db15afe91106b92e00c39af099cc27ed90cfc49b83736bf945e9",
+            "url": "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/AirwindowsConsolidated-2026-05-10-dc0ed69-Linux.zip",
+            "filename": "AirwindowsConsolidated-2026-05-10-dc0ed69-Linux.zip",
+            "sha256": "8d4fac16185652551447c145dff1b502c13264617cf4f8c92c6851193d3aa422",
             "hash_source": "self"
           }
         },
