@@ -307,6 +307,63 @@ def detect_latest_for_uhe(product: str, page_url: str | None = None,
 
     return {'tag': tag, 'assets': assets}
 
+def detect_drift_for_stable_url(entry: dict) -> dict:
+    """Re-hash each platform URL in `entry` and report which platforms drifted.
+
+    Used by the 'stable-url' update strategy. The vendor URL is assumed to be
+    canonical (it never changes); the only signal that the upstream file has
+    been swapped is its sha256 differing from what we stored.
+
+    Returns:
+      {
+        'drift': bool,            # True if any platform's hash changed
+        'platforms': {
+          '<plat>': {
+            'url': str,
+            'old_sha256': str,
+            'new_sha256': str,
+            'changed': bool,
+          },
+          ...
+        },
+      }
+
+    Raises:
+      ValueError if `entry['urls']` is missing or empty, or if any URL serves
+        text/html or application/json (the existing compute_hash_for_url guard
+        — vendors sometimes replace a binary URL with a download-gate page,
+        and silently re-hashing that HTML would be wrong).
+      urllib.error.HTTPError / URLError on network failure.
+    """
+    urls = entry.get('urls') or {}
+    platforms_with_url = {p: e for p, e in urls.items()
+                          if isinstance(e, dict) and e.get('url')}
+    if not platforms_with_url:
+        raise ValueError(
+            f"stable-url entry {entry.get('name', '<unknown>')!r} has no platforms with URLs"
+        )
+
+    out = {'drift': False, 'platforms': {}}
+    for plat, urlentry in platforms_with_url.items():
+        url = urlentry['url']
+        stored = urlentry.get('sha256')
+        if not stored:
+            raise ValueError(
+                f"stable-url entry {entry.get('name', '<unknown>')!r} platform "
+                f"{plat!r} has no stored sha256 to compare against"
+            )
+        new_hash = compute_hash_for_url(url)
+        changed = new_hash != stored
+        if changed:
+            out['drift'] = True
+        out['platforms'][plat] = {
+            'url': url,
+            'old_sha256': stored,
+            'new_sha256': new_hash,
+            'changed': changed,
+        }
+    return out
+
 def find_matching_asset(current_filename: str, candidates: list[dict],
                         current_url: str | None = None,
                         old_tag: str | None = None,

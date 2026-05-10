@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import importlib.util
 import json
 import os
@@ -421,3 +422,55 @@ def test_parse_update_strategy_recognizes_stable_url():
 def test_parse_update_strategy_rejects_stable_url_with_slug():
     # `stable-url:something` is not a recognized variant — must be exactly "stable-url".
     assert dlp._parse_update_strategy("stable-url:foo") is None
+
+
+def test_detect_drift_for_stable_url_flags_changed_bytes(mock_server):
+    new_body = b"<<<new binary content>>>"
+    new_url = mock_server.add("/plugin.zip", new_body)
+
+    entry = {
+        "name": "FakePlugin",
+        "update_strategy": "stable-url",
+        "urls": {
+            "macos": {
+                "url": new_url,
+                "filename": "plugin.zip",
+                "sha256": "0" * 64,  # stored hash that won't match new_body
+                "hash_source": "self",
+            },
+        },
+    }
+
+    result = dlp.detect_drift_for_stable_url(entry)
+
+    assert result["drift"] is True
+    assert "macos" in result["platforms"]
+    macos = result["platforms"]["macos"]
+    assert macos["changed"] is True
+    assert macos["old_sha256"] == "0" * 64
+    assert macos["new_sha256"] == hashlib.sha256(new_body).hexdigest()
+
+
+def test_detect_drift_for_stable_url_no_drift_when_hash_matches(mock_server):
+    body = b"<<<unchanged binary content>>>"
+    url = mock_server.add("/plugin.zip", body)
+    stored = hashlib.sha256(body).hexdigest()
+
+    entry = {
+        "name": "FakePlugin",
+        "update_strategy": "stable-url",
+        "urls": {
+            "macos": {
+                "url": url,
+                "filename": "plugin.zip",
+                "sha256": stored,
+                "hash_source": "self",
+            },
+        },
+    }
+
+    result = dlp.detect_drift_for_stable_url(entry)
+
+    assert result["drift"] is False
+    assert result["platforms"]["macos"]["changed"] is False
+    assert result["platforms"]["macos"]["new_sha256"] == stored
