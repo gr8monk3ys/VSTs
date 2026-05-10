@@ -265,7 +265,9 @@ def find_matching_asset(current_filename: str, candidates: list[dict],
                 return cand
 
     def tokens(name: str) -> set[str]:
-        return {t for t in re.split(r'[-_.]', name.lower()) if t}
+        # Splits on URL/path separators too (`/`, `:`) so a current_url can
+        # contribute its repo path components as discrete tokens.
+        return {t for t in re.split(r'[-_./:]', name.lower()) if t}
 
     current_toks = tokens(current_filename)
     if current_url:
