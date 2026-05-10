@@ -287,6 +287,24 @@ def test_detect_latest_for_uhe_raises_when_version_regex_fails(mock_server) -> N
         )
 
 
+def test_find_matching_asset_prefers_filename_over_url_tokens() -> None:
+    # OB-Xd-style: current entry's URL has `OB-Xd` which splits into 'ob','xd'
+    # tokens. Without filename-first scoring, the macOS .pkg candidate would
+    # win for the Windows entry because its tokens include 'ob','xd','19'.
+    current_filename = "Obxd219.exe"
+    current_url = "https://github.com/reales/OB-Xd/releases/download/v2.19/Obxd219.exe"
+    cands = _candidates(
+        "OB-Xd.2.19.pkg",       # macOS installer (would win on URL-token boost)
+        "Obxd219.exe",          # actual Windows installer
+        "Obxd219.deb",          # Linux installer
+    )
+
+    result = dlp.find_matching_asset(current_filename, cands, current_url=current_url)
+
+    assert result is not None
+    assert result["name"] == "Obxd219.exe"
+
+
 def test_check_updates_drift_for_uhe_plugin(mock_server, fixtures_dir, tmp_path) -> None:
     # Fake page advertises 3.0.1-r17000; fixture is pinned at 3.0.0-r16976.
     mock_server.add("/products/tyrelln6/", TYRELL_N6_PAGE_HTML)

@@ -340,18 +340,20 @@ def find_matching_asset(current_filename: str, candidates: list[dict],
         # contribute its repo path components as discrete tokens.
         return {t for t in re.split(r'[-_./:]', name.lower()) if t}
 
-    current_toks = tokens(current_filename)
-    if current_url:
-        current_toks = current_toks | tokens(current_url)
+    filename_toks = tokens(current_filename)
+    url_toks = tokens(current_url) if current_url else set()
+
     best = None
-    best_score = 2
+    # Two-tier score: (filename-overlap, url-overlap). Prefers candidates that
+    # match the current filename's tokens (which carry platform/extension info)
+    # over candidates that only match URL path components.
+    best_score = (1, 0)  # filename-overlap floor of 2 (must beat 1)
     for cand in candidates:
-        score = len(current_toks & tokens(cand['name']))
+        cand_toks = tokens(cand['name'])
+        score = (len(filename_toks & cand_toks), len(url_toks & cand_toks))
         if score > best_score:
             best = cand
             best_score = score
-        # Ties (score == best_score) are broken by iteration order (first-wins)
-        # because the GitHub API returns assets in a deterministic order per release.
 
     return best
 
