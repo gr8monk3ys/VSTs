@@ -285,3 +285,112 @@ def test_detect_latest_for_uhe_raises_when_version_regex_fails(mock_server) -> N
             page_url=mock_server.url_for("/products/tyrelln6/"),
             dl_base=mock_server.base_url,
         )
+
+
+def test_check_updates_drift_for_uhe_plugin(mock_server, fixtures_dir, tmp_path) -> None:
+    # Fake page advertises 3.0.1-r17000; fixture is pinned at 3.0.0-r16976.
+    mock_server.add("/products/tyrelln6/", TYRELL_N6_PAGE_HTML)
+
+    json_path = tmp_path / "plugins.json"
+    fixture = {
+        "meta": {
+            "name": "Test Fixture", "version": "0.0.0", "description": "uhe drift",
+            "updated": "2026-05-09", "author": "test", "license": "MIT",
+            "platforms": ["macos"],
+        },
+        "plugins": {"synths": [{
+            "name": "Tyrell N6",
+            "description": "fixture",
+            "update_strategy": "u-he:TyrellN6",
+            "urls": {"macos": {
+                "url": "https://example.invalid/TyrellN6_300_public_beta_16976_Mac.zip",
+                "filename": "TyrellN6_300_public_beta_16976_Mac.zip",
+                "sha256": "0" * 64,
+                "hash_source": "self",
+            }},
+            "version": "3.0.0",
+            "formats": ["VST3"],
+            "website": "https://u-he.com/products/tyrelln6/",
+            "open_source": False,
+        }]},
+        "manual_download": [],
+    }
+    json_path.write_text(json.dumps(fixture, indent=2), encoding="utf-8")
+    original_text = json_path.read_text(encoding="utf-8")
+
+    result = subprocess.run(
+        [sys.executable, str(SCRIPT), "--check-updates",
+         "--plugins-json", str(json_path)],
+        capture_output=True, text=True, check=False,
+        env={
+            **os.environ,
+            "VST_DLP_UHE_PAGE_URL_TyrellN6": mock_server.url_for("/products/tyrelln6/"),
+            "VST_DLP_UHE_DL_BASE": mock_server.base_url,
+        },
+    )
+
+    assert result.returncode == 1, f"expected exit 1\n{result.stdout}\n{result.stderr}"
+    assert "Tyrell N6" in result.stdout
+    assert "NEW VERSION" in result.stdout
+    assert "3.0.1" in result.stdout or "17000" in result.stdout
+
+    # Read-only: file unchanged.
+    assert json_path.read_text(encoding="utf-8") == original_text
+
+
+def test_check_updates_apply_for_uhe_plugin(mock_server, fixtures_dir, tmp_path) -> None:
+    mock_server.add("/products/tyrelln6/", TYRELL_N6_PAGE_HTML)
+
+    # The new asset bytes the apply path will fetch + hash.
+    mac_body = b"new-mac-tyrelln6"
+    mock_server.add("/releases/TyrellN6_301_public_beta_17000_Mac.zip", mac_body)
+
+    json_path = tmp_path / "plugins.json"
+    fixture = {
+        "meta": {
+            "name": "Test Fixture", "version": "0.0.0", "description": "uhe apply",
+            "updated": "2026-05-09", "author": "test", "license": "MIT",
+            "platforms": ["macos"],
+        },
+        "plugins": {"synths": [{
+            "name": "Tyrell N6",
+            "description": "fixture",
+            "update_strategy": "u-he:TyrellN6",
+            "urls": {"macos": {
+                "url": "https://example.invalid/TyrellN6_300_public_beta_16976_Mac.zip",
+                "filename": "TyrellN6_300_public_beta_16976_Mac.zip",
+                "sha256": "0" * 64,
+                "hash_source": "self",
+            }},
+            "version": "3.0.0",
+            "formats": ["VST3"],
+            "website": "https://u-he.com/products/tyrelln6/",
+            "open_source": False,
+        }]},
+        "manual_download": [],
+    }
+    json_path.write_text(json.dumps(fixture, indent=2), encoding="utf-8")
+
+    result = subprocess.run(
+        [sys.executable, str(SCRIPT), "--check-updates", "--apply",
+         "--plugins-json", str(json_path)],
+        capture_output=True, text=True, check=False,
+        env={
+            **os.environ,
+            "VST_DLP_UHE_PAGE_URL_TyrellN6": mock_server.url_for("/products/tyrelln6/"),
+            "VST_DLP_UHE_DL_BASE": mock_server.base_url,
+        },
+    )
+
+    assert result.returncode == 0, f"stdout:\n{result.stdout}\nstderr:\n{result.stderr}"
+
+    data = json.loads(json_path.read_text(encoding="utf-8"))
+    plugin = data["plugins"]["synths"][0]
+    assert plugin["version"] == "3.0.1-r17000"
+
+    mac = plugin["urls"]["macos"]
+    import hashlib
+    assert mac["filename"] == "TyrellN6_301_public_beta_17000_Mac.zip"
+    assert mac["url"] == mock_server.url_for("/releases/TyrellN6_301_public_beta_17000_Mac.zip")
+    assert mac["sha256"] == hashlib.sha256(mac_body).hexdigest()
+    assert mac["hash_source"] == "self"

@@ -355,15 +355,32 @@ def find_matching_asset(current_filename: str, candidates: list[dict],
 
     return best
 
-def _parse_update_strategy(strategy: str) -> tuple[str, str | None] | None:
-    """Parse 'github:owner/repo' or 'github:owner/repo@tag'. Returns (repo, tag) or None."""
-    if not strategy or not strategy.startswith('github:'):
+def _parse_update_strategy(strategy: str):
+    """Parse known update_strategy values.
+
+    Returns one of:
+      ('github', repo: str, tag: str | None)
+      ('u-he', product: str)
+      None  if the value is missing or unrecognized.
+    """
+    if not strategy:
         return None
-    rest = strategy[len('github:'):]
-    if '@' in rest:
-        repo, tag = rest.rsplit('@', 1)
-        return repo, tag
-    return rest, None
+    if strategy.startswith('github:'):
+        rest = strategy[len('github:'):]
+        if not rest:
+            return None
+        if '@' in rest:
+            repo, tag = rest.rsplit('@', 1)
+            if not repo or not tag:
+                return None
+            return ('github', repo, tag)
+        return ('github', rest, None)
+    if strategy.startswith('u-he:'):
+        product = strategy[len('u-he:'):]
+        if not product:
+            return None
+        return ('u-he', product)
+    return None
 
 
 def check_updates(plugins_data: dict, api_base: str = "https://api.github.com") -> dict:
@@ -403,25 +420,31 @@ def check_updates(plugins_data: dict, api_base: str = "https://api.github.com") 
                 })
                 continue
 
-            repo, tag = parsed
-
             try:
-                release = detect_latest_for_github(repo, tag=tag, api_base=api_base)
-            except urllib.error.HTTPError as e:
+                if parsed[0] == 'github':
+                    _, repo, tag = parsed
+                    release = detect_latest_for_github(repo, tag=tag, api_base=api_base)
+                    old_tag = tag if tag else current_version
+                elif parsed[0] == 'u-he':
+                    _, product = parsed
+                    page_url = os.environ.get(f'VST_DLP_UHE_PAGE_URL_{product}')
+                    dl_base = os.environ.get('VST_DLP_UHE_DL_BASE')
+                    release = detect_latest_for_uhe(product, page_url=page_url, dl_base=dl_base)
+                    # u-he tags carry a revision (e.g. "3.0.1-r17000") that won't
+                    # substring-match current_version (e.g. "3.0.0"); Strategy A
+                    # skips and Strategy B does the matching.
+                    old_tag = current_version
+                    tag = None  # for the rolling-tag display logic later
+                else:
+                    raise RuntimeError(f"unknown strategy kind: {parsed[0]}")
+            except (urllib.error.HTTPError, urllib.error.URLError, ValueError, RuntimeError) as e:
                 report['failures'].append({
                     'name': name, 'category': category,
-                    'reason': f'GitHub API HTTP {e.code}: {e.reason}',
-                })
-                continue
-            except urllib.error.URLError as e:
-                report['failures'].append({
-                    'name': name, 'category': category,
-                    'reason': f'GitHub API connection error: {e.reason}',
+                    'reason': f'detection failed: {e}',
                 })
                 continue
 
             new_tag = release['tag']
-            old_tag = tag if tag else current_version  # for substitution-strategy
 
             platform_updates = []
             any_drift = False
