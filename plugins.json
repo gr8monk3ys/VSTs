@@ -191,6 +191,7 @@
       {
         "name": "Tyrell N6",
         "description": "u-he analog synth - 580+ presets, native binaries",
+        "update_strategy": "u-he:TyrellN6",
         "urls": {
           "macos": {
             "url": "https://dl.u-he.com/releases/TyrellN6_300_public_beta_16976_Mac.zip",
@@ -226,6 +227,7 @@
       {
         "name": "Zebralette",
         "description": "u-he wavetable oscillator - deep sound design capabilities",
+        "update_strategy": "u-he:Zebralette",
         "urls": {
           "macos": {
             "url": "https://dl.u-he.com/releases/Zebra_Legacy_294_16765_Mac.zip",
