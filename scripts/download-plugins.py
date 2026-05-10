@@ -235,6 +235,78 @@ def detect_latest_for_github(repo: str, tag: str | None = None,
         ],
     }
 
+UHE_PRODUCTS = {
+    'TyrellN6': {
+        'page_url': 'https://u-he.com/products/tyrelln6/',
+        'version_re': re.compile(r'TyrellN6\s+(?:Beta\s+)?(\d+)\.(\d+)\.(\d+)\s*\(revision\s+(\d+)\)'),
+        'asset_template': '{dl_base}/releases/TyrellN6_{vcode}_public_beta_{rev}_{platform}.{ext}',
+        'platforms': {
+            'macos':   ('Mac',   'zip'),
+            'windows': ('Win',   'zip'),
+            'linux':   ('Linux', 'tar.xz'),
+        },
+    },
+    'Zebralette': {
+        'page_url': 'https://u-he.com/products/zebralette/',
+        'version_re': re.compile(r'Zebralette\s+(\d+)\.(\d+)\.(\d+)\s*\(revision\s+(\d+)\)'),
+        'asset_template': '{dl_base}/releases/Zebra_Legacy_{vcode}_{rev}_{platform}.{ext}',
+        'platforms': {
+            'macos':   ('Mac',   'zip'),
+            'windows': ('Win',   'zip'),
+            'linux':   ('Linux', 'zip'),
+        },
+    },
+}
+
+
+def detect_latest_for_uhe(product: str, page_url: str | None = None,
+                          dl_base: str | None = None) -> dict:
+    """Fetch a u-he product page and return the latest release as
+    {'tag': str, 'assets': [{'name', 'url', 'size': 0}, ...]}.
+
+    The 'tag' is f'{major}.{minor}.{patch}-r{rev}', stable string-comparable.
+    Asset 'size' is 0 — u-he doesn't expose sizes from a list endpoint.
+
+    page_url and dl_base override the values from UHE_PRODUCTS for testing.
+
+    Raises:
+      ValueError if `product` is not in UHE_PRODUCTS.
+      RuntimeError if the page doesn't contain a recognizable version string.
+      urllib.error.HTTPError / URLError on network problems (propagated).
+    """
+    if product not in UHE_PRODUCTS:
+        raise ValueError(f"unknown u-he product: {product!r}")
+
+    cfg = UHE_PRODUCTS[product]
+    url = page_url or cfg['page_url']
+    base = dl_base or 'https://dl.u-he.com'
+
+    req = urllib.request.Request(url, headers={
+        'User-Agent': 'Mozilla/5.0 (compatible; VST-Downloader/1.0)',
+    })
+    with urllib.request.urlopen(req, timeout=30) as response:
+        body = response.read().decode('utf-8', errors='replace')
+
+    m = cfg['version_re'].search(body)
+    if not m:
+        raise RuntimeError(
+            f"u-he page does not contain a recognizable version string for {product}"
+        )
+    major, minor, patch, rev = m.group(1), m.group(2), m.group(3), m.group(4)
+    vcode = f"{major}{minor}{patch}"
+    tag = f"{major}.{minor}.{patch}-r{rev}"
+
+    assets = []
+    for plat, (plat_name, ext) in cfg['platforms'].items():
+        asset_url = cfg['asset_template'].format(
+            dl_base=base, vcode=vcode, rev=rev, platform=plat_name, ext=ext,
+        )
+        # Strip the dl_base prefix to derive the asset filename.
+        name = asset_url.rsplit('/', 1)[-1]
+        assets.append({'name': name, 'url': asset_url, 'size': 0})
+
+    return {'tag': tag, 'assets': assets}
+
 def find_matching_asset(current_filename: str, candidates: list[dict],
                         current_url: str | None = None,
                         old_tag: str | None = None,

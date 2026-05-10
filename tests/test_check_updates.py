@@ -241,3 +241,47 @@ def test_find_matching_asset_url_tokens_disambiguate_architecture() -> None:
 
     assert result is not None
     assert result["name"] == "dragonfly-reverb-3.2.10-macos-universal.dmg"
+
+
+TYRELL_N6_PAGE_HTML = (
+    b"<html><body><h1>TyrellN6</h1>"
+    b"<p>TyrellN6 Beta 3.0.1 (revision 17000) released April 1, 2026.</p>"
+    b"</body></html>"
+)
+
+
+def test_detect_latest_for_uhe_parses_version_and_builds_asset_urls(mock_server) -> None:
+    mock_server.add("/products/tyrelln6/", TYRELL_N6_PAGE_HTML)
+
+    result = dlp.detect_latest_for_uhe(
+        "TyrellN6",
+        page_url=mock_server.url_for("/products/tyrelln6/"),
+        dl_base=mock_server.base_url,
+    )
+
+    assert result["tag"] == "3.0.1-r17000"
+    asset_names = sorted(a["name"] for a in result["assets"])
+    assert asset_names == [
+        "TyrellN6_301_public_beta_17000_Linux.tar.xz",
+        "TyrellN6_301_public_beta_17000_Mac.zip",
+        "TyrellN6_301_public_beta_17000_Win.zip",
+    ]
+    # Asset URLs must use the dl_base override.
+    for asset in result["assets"]:
+        assert asset["url"].startswith(mock_server.base_url + "/releases/")
+
+
+def test_detect_latest_for_uhe_raises_on_unknown_product() -> None:
+    with pytest.raises(ValueError, match="unknown u-he product"):
+        dlp.detect_latest_for_uhe("NotAProduct")
+
+
+def test_detect_latest_for_uhe_raises_when_version_regex_fails(mock_server) -> None:
+    mock_server.add("/products/tyrelln6/", b"<html>nothing useful here</html>")
+
+    with pytest.raises(RuntimeError, match="recognizable version"):
+        dlp.detect_latest_for_uhe(
+            "TyrellN6",
+            page_url=mock_server.url_for("/products/tyrelln6/"),
+            dl_base=mock_server.base_url,
+        )
