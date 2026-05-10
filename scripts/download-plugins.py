@@ -604,9 +604,19 @@ def print_check_updates_report(report: dict) -> None:
         for kind, item in by_cat[cat]:
             name = item['name']
             if kind == 'updates':
-                print(f"  {name:<30} {item['old_version']:<8} → {item['new_version']:<8} {C.YELLOW}⬆ NEW VERSION{C.NC}")
-                for pu in item['platforms']:
-                    print(f"    {pu['plat']:8} {pu['new_asset']['name']}")
+                if item.get('strategy') == 'stable-url':
+                    print(f"  {name:<30} {item['old_version']:<8} → {item['new_version']:<8} {C.YELLOW}⬆ CONTENT DRIFT{C.NC}")
+                    for pu in item['platforms']:
+                        if pu.get('changed'):
+                            short_old = pu['old_sha256'][:8]
+                            short_new = pu['new_sha256'][:8]
+                            print(f"    {pu['plat']:8} sha256 {short_old} → {short_new}")
+                        else:
+                            print(f"    {pu['plat']:8} unchanged")
+                else:
+                    print(f"  {name:<30} {item['old_version']:<8} → {item['new_version']:<8} {C.YELLOW}⬆ NEW VERSION{C.NC}")
+                    for pu in item['platforms']:
+                        print(f"    {pu['plat']:8} {pu['new_asset']['name']}")
             elif kind == 'no_updates':
                 print(f"  {name:<30} {item['version']:<8} → {item['version']:<8} no update")
             elif kind == 'manual':
