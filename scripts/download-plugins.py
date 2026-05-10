@@ -675,6 +675,7 @@ def apply_updates(plugins_data: dict, report: dict) -> None:
             entry['filename'] = asset['name']
             entry.pop('sha256', None)
             entry.pop('hash_source', None)
+        # Bump version unless the tag is rolling (same string before and after).
         if upd['old_version'] != upd['new_version']:
             plugin['version'] = upd['new_version']
 
