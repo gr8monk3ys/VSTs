@@ -224,3 +224,20 @@ def test_apply_writes_url_filename_version_and_recomputes_hash(mock_server, fixt
     assert win["url"] == mock_server.url_for("/FakeSynth-1.0.1-win.exe")
     assert win["sha256"] == hashlib.sha256(win_body).hexdigest()
     assert win["hash_source"] == "self"
+
+
+def test_find_matching_asset_url_tokens_disambiguate_architecture() -> None:
+    # Maintainer's filename is the simpler form, but the URL has the full upstream name.
+    current_filename = "dragonfly-reverb-3.2.10-macos.dmg"
+    current_url = "https://example.invalid/dragonfly-reverb-3.2.10-macos-universal.dmg"
+    cands = _candidates(
+        "dragonfly-reverb-3.2.10-macos-intel.dmg",
+        "dragonfly-reverb-3.2.10-macos-universal.dmg",
+    )
+
+    # Without the URL, both arch variants would tie on tokens with the filename.
+    # With the URL, the universal variant scores higher because 'universal' appears in the URL.
+    result = dlp.find_matching_asset(current_filename, cands, current_url=current_url)
+
+    assert result is not None
+    assert result["name"] == "dragonfly-reverb-3.2.10-macos-universal.dmg"

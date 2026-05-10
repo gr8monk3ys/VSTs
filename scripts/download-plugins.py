@@ -236,6 +236,7 @@ def detect_latest_for_github(repo: str, tag: str | None = None,
     }
 
 def find_matching_asset(current_filename: str, candidates: list[dict],
+                        current_url: str | None = None,
                         old_tag: str | None = None,
                         new_tag: str | None = None,
                         target_size: int | None = None) -> dict | None:
@@ -250,6 +251,10 @@ def find_matching_asset(current_filename: str, candidates: list[dict],
       smallest absolute size delta from target_size if provided; further ties by
       iteration order.
 
+    If `current_url` is provided, its tokens are merged with the filename tokens —
+    useful when the maintainer's filename field is a shortened form of the upstream
+    asset name (e.g., `-macos.dmg` vs `-macos-universal.dmg`).
+
     Returns the matched candidate dict or None if no candidate scores at least 2
     shared tokens (prevents matching purely on file extension).
     """
@@ -263,6 +268,8 @@ def find_matching_asset(current_filename: str, candidates: list[dict],
         return {t for t in re.split(r'[-_.]', name.lower()) if t}
 
     current_toks = tokens(current_filename)
+    if current_url:
+        current_toks = current_toks | tokens(current_url)
     best = None
     best_score = 2
     best_size_delta = float('inf')
@@ -358,6 +365,7 @@ def check_updates(plugins_data: dict, api_base: str = "https://api.github.com") 
                 cur_filename = entry['filename']
                 matched = find_matching_asset(
                     cur_filename, release['assets'],
+                    current_url=entry.get('url'),
                     old_tag=old_tag, new_tag=new_tag,
                 )
                 if matched is None:
