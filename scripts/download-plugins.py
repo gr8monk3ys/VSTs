@@ -636,13 +636,16 @@ def print_check_updates_report(report: dict) -> None:
 
 
 def apply_updates(plugins_data: dict, report: dict) -> None:
-    """Mutate plugins_data in place: for each plugin in report['updates'],
-    update urls[plat].url + filename, clear sha256 + hash_source, and bump version.
+    """Mutate plugins_data in place.
 
-    Hashes are intentionally cleared (not computed) — main() then calls
-    recompute_hashes() which will repopulate only the cleared entries.
+    For github/u-he updates: rewrite urls[plat].url + filename, clear sha256 +
+    hash_source (recompute_hashes will re-fill them), bump version.
+
+    For stable-url updates: write the pre-computed new sha256 directly (no
+    re-fetch needed — detect_drift_for_stable_url already paid that cost), set
+    hash_source to 'self' (we just hashed it ourselves), leave url/filename/
+    version untouched (they didn't change).
     """
-    # Build a quick index: (category, name) → plugin dict.
     index = {}
     for cat, plugins in plugins_data.get('plugins', {}).items():
         for p in plugins:
@@ -652,6 +655,17 @@ def apply_updates(plugins_data: dict, report: dict) -> None:
         plugin = index.get((upd['category'], upd['name']))
         if plugin is None:
             continue
+
+        if upd.get('strategy') == 'stable-url':
+            for pu in upd['platforms']:
+                if not pu.get('changed'):
+                    continue
+                entry = plugin['urls'][pu['plat']]
+                entry['sha256'] = pu['new_sha256']
+                entry['hash_source'] = 'self'
+            continue  # url/filename/version unchanged for stable-url
+
+        # github/u-he path
         for pu in upd['platforms']:
             asset = pu['new_asset']
             if asset is None:
@@ -661,7 +675,6 @@ def apply_updates(plugins_data: dict, report: dict) -> None:
             entry['filename'] = asset['name']
             entry.pop('sha256', None)
             entry.pop('hash_source', None)
-        # Bump version unless the tag is rolling (same string before and after).
         if upd['old_version'] != upd['new_version']:
             plugin['version'] = upd['new_version']
 

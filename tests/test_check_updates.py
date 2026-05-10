@@ -546,3 +546,42 @@ def test_check_updates_no_drift_for_stable_url_plugin(mock_server, tmp_path):
     assert len(report["updates"]) == 0
     assert len(report["no_updates"]) == 1
     assert report["no_updates"][0]["name"] == "FakeStable"
+
+
+def test_apply_for_stable_url_plugin(mock_server):
+    new_body = b"<<<new build>>>"
+    drifted_url = mock_server.add("/valhalla/supermassive-mac.zip", new_body)
+    new_hash = hashlib.sha256(new_body).hexdigest()
+    old_hash = "0" * 64
+
+    plugins_data = {
+        "meta": {"name": "test", "version": "1", "description": "x",
+                 "updated": "2026-05-09", "author": "x", "license": "x",
+                 "platforms": ["macos"]},
+        "plugins": {
+            "effects": [{
+                "name": "FakeStable",
+                "version": "5.0.0",
+                "update_strategy": "stable-url",
+                "urls": {
+                    "macos": {
+                        "url": drifted_url,
+                        "filename": "supermassive-mac.zip",
+                        "sha256": old_hash,
+                        "hash_source": "publisher",  # gets reset to 'self' by apply
+                    },
+                },
+            }],
+        },
+    }
+
+    report = dlp.check_updates(plugins_data)
+    dlp.apply_updates(plugins_data, report)
+
+    plugin = plugins_data["plugins"]["effects"][0]
+    macos = plugin["urls"]["macos"]
+    assert macos["sha256"] == new_hash
+    assert macos["hash_source"] == "self"
+    assert macos["url"] == drifted_url
+    assert macos["filename"] == "supermassive-mac.zip"
+    assert plugin["version"] == "5.0.0"
