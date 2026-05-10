@@ -508,7 +508,7 @@ def print_check_updates_report(report: dict) -> None:
 
     total_with_strategy = len(report['updates']) + len(report['no_updates']) + len(report['failures'])
     total_manual = len(report['manual'])
-    print(f"\nChecking {total_with_strategy + total_manual} plugins ({total_with_strategy} with github strategy, {total_manual} manual)...\n")
+    print(f"\nChecking {total_with_strategy + total_manual} plugins ({total_with_strategy} with update_strategy, {total_manual} manual)...\n")
 
     for cat in sorted(by_cat):
         print(f"{cat.title()}")
