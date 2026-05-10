@@ -427,6 +427,9 @@ def check_updates(plugins_data: dict, api_base: str = "https://api.github.com") 
                     old_tag = tag if tag else current_version
                 elif parsed[0] == 'u-he':
                     _, product = parsed
+                    # Test-only env-var overrides; production uses UHE_PRODUCTS defaults.
+                    # VST_DLP_UHE_PAGE_URL_<Product>: alternate product-page URL (e.g. mock server)
+                    # VST_DLP_UHE_DL_BASE: alternate download base URL
                     page_url = os.environ.get(f'VST_DLP_UHE_PAGE_URL_{product}')
                     dl_base = os.environ.get('VST_DLP_UHE_DL_BASE')
                     release = detect_latest_for_uhe(product, page_url=page_url, dl_base=dl_base)
