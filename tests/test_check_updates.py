@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import importlib.util
 import json
 import os
@@ -412,3 +413,230 @@ def test_check_updates_apply_for_uhe_plugin(mock_server, fixtures_dir, tmp_path)
     assert mac["url"] == mock_server.url_for("/releases/TyrellN6_301_public_beta_17000_Mac.zip")
     assert mac["sha256"] == hashlib.sha256(mac_body).hexdigest()
     assert mac["hash_source"] == "self"
+
+
+def test_parse_update_strategy_recognizes_stable_url():
+    assert dlp._parse_update_strategy("stable-url") == ("stable-url",)
+
+
+def test_parse_update_strategy_rejects_stable_url_with_slug():
+    # `stable-url:something` is not a recognized variant — must be exactly "stable-url".
+    assert dlp._parse_update_strategy("stable-url:foo") is None
+
+
+def test_detect_drift_for_stable_url_flags_changed_bytes(mock_server):
+    new_body = b"<<<new binary content>>>"
+    new_url = mock_server.add("/plugin.zip", new_body)
+
+    entry = {
+        "name": "FakePlugin",
+        "update_strategy": "stable-url",
+        "urls": {
+            "macos": {
+                "url": new_url,
+                "filename": "plugin.zip",
+                "sha256": "0" * 64,  # stored hash that won't match new_body
+                "hash_source": "self",
+            },
+        },
+    }
+
+    result = dlp.detect_drift_for_stable_url(entry)
+
+    assert result["drift"] is True
+    assert "macos" in result["platforms"]
+    macos = result["platforms"]["macos"]
+    assert macos["changed"] is True
+    assert macos["old_sha256"] == "0" * 64
+    assert macos["new_sha256"] == hashlib.sha256(new_body).hexdigest()
+
+
+def test_detect_drift_for_stable_url_no_drift_when_hash_matches(mock_server):
+    body = b"<<<unchanged binary content>>>"
+    url = mock_server.add("/plugin.zip", body)
+    stored = hashlib.sha256(body).hexdigest()
+
+    entry = {
+        "name": "FakePlugin",
+        "update_strategy": "stable-url",
+        "urls": {
+            "macos": {
+                "url": url,
+                "filename": "plugin.zip",
+                "sha256": stored,
+                "hash_source": "self",
+            },
+        },
+    }
+
+    result = dlp.detect_drift_for_stable_url(entry)
+
+    assert result["drift"] is False
+    assert result["platforms"]["macos"]["changed"] is False
+    assert result["platforms"]["macos"]["new_sha256"] == stored
+
+
+def test_check_updates_drift_for_stable_url_plugin(mock_server):
+    new_body = b"<<<new build pushed silently by vendor>>>"
+    drifted_url = mock_server.add("/valhalla/supermassive-mac.zip", new_body)
+
+    plugins_data = {
+        "meta": {"name": "test", "version": "1", "description": "x",
+                 "updated": "2026-05-09", "author": "x", "license": "x",
+                 "platforms": ["macos"]},
+        "plugins": {
+            "effects": [{
+                "name": "FakeStable",
+                "version": "5.0.0",
+                "update_strategy": "stable-url",
+                "urls": {
+                    "macos": {
+                        "url": drifted_url,
+                        "filename": "supermassive-mac.zip",
+                        "sha256": "0" * 64,  # stale hash — will not match new_body
+                        "hash_source": "self",
+                    },
+                },
+            }],
+        },
+    }
+
+    report = dlp.check_updates(plugins_data)
+
+    assert len(report["updates"]) == 1
+    upd = report["updates"][0]
+    assert upd["name"] == "FakeStable"
+    assert upd["strategy"] == "stable-url"
+    assert upd["old_version"] == "5.0.0"
+    assert upd["new_version"] == "5.0.0"  # unchanged for stable-url
+    plats = {p["plat"]: p for p in upd["platforms"]}
+    assert "macos" in plats
+    assert plats["macos"]["changed"] is True
+    assert plats["macos"]["new_sha256"] == hashlib.sha256(new_body).hexdigest()
+
+
+def test_check_updates_no_drift_for_stable_url_plugin(mock_server):
+    body = b"<<<unchanged>>>"
+    url = mock_server.add("/static.zip", body)
+    stored = hashlib.sha256(body).hexdigest()
+
+    plugins_data = {
+        "meta": {"name": "test", "version": "1", "description": "x",
+                 "updated": "2026-05-09", "author": "x", "license": "x",
+                 "platforms": ["macos"]},
+        "plugins": {
+            "effects": [{
+                "name": "FakeStable",
+                "version": "1.0",
+                "update_strategy": "stable-url",
+                "urls": {
+                    "macos": {
+                        "url": url,
+                        "filename": "static.zip",
+                        "sha256": stored,
+                        "hash_source": "self",
+                    },
+                },
+            }],
+        },
+    }
+
+    report = dlp.check_updates(plugins_data)
+
+    assert len(report["updates"]) == 0
+    assert len(report["no_updates"]) == 1
+    assert report["no_updates"][0]["name"] == "FakeStable"
+
+
+def test_apply_for_stable_url_plugin(mock_server):
+    new_body = b"<<<new build>>>"
+    drifted_url = mock_server.add("/valhalla/supermassive-mac.zip", new_body)
+    new_hash = hashlib.sha256(new_body).hexdigest()
+    old_hash = "0" * 64
+
+    plugins_data = {
+        "meta": {"name": "test", "version": "1", "description": "x",
+                 "updated": "2026-05-09", "author": "x", "license": "x",
+                 "platforms": ["macos"]},
+        "plugins": {
+            "effects": [{
+                "name": "FakeStable",
+                "version": "5.0.0",
+                "update_strategy": "stable-url",
+                "urls": {
+                    "macos": {
+                        "url": drifted_url,
+                        "filename": "supermassive-mac.zip",
+                        "sha256": old_hash,
+                        "hash_source": "publisher",  # gets reset to 'self' by apply
+                    },
+                },
+            }],
+        },
+    }
+
+    report = dlp.check_updates(plugins_data)
+    dlp.apply_updates(plugins_data, report)
+
+    plugin = plugins_data["plugins"]["effects"][0]
+    macos = plugin["urls"]["macos"]
+    assert macos["sha256"] == new_hash
+    assert macos["hash_source"] == "self"
+    assert macos["url"] == drifted_url
+    assert macos["filename"] == "supermassive-mac.zip"
+    assert plugin["version"] == "5.0.0"
+
+
+def test_apply_for_stable_url_skips_unchanged_platforms(mock_server):
+    # macOS: bytes match the stored hash (no drift).
+    mac_body = b"<<<unchanged mac build>>>"
+    mac_url = mock_server.add("/stable/mac.zip", mac_body)
+    mac_stored = hashlib.sha256(mac_body).hexdigest()
+
+    # Windows: bytes do NOT match the stored hash (drifted).
+    win_body = b"<<<new windows build pushed silently>>>"
+    win_url = mock_server.add("/stable/win.zip", win_body)
+    win_stale = "0" * 64
+    win_new = hashlib.sha256(win_body).hexdigest()
+
+    plugins_data = {
+        "meta": {"name": "test", "version": "1", "description": "x",
+                 "updated": "2026-05-09", "author": "x", "license": "x",
+                 "platforms": ["macos", "windows"]},
+        "plugins": {
+            "effects": [{
+                "name": "FakeStable",
+                "version": "5.0.0",
+                "update_strategy": "stable-url",
+                "urls": {
+                    "macos": {
+                        "url": mac_url,
+                        "filename": "mac.zip",
+                        "sha256": mac_stored,
+                        "hash_source": "publisher",
+                    },
+                    "windows": {
+                        "url": win_url,
+                        "filename": "win.zip",
+                        "sha256": win_stale,
+                        "hash_source": "publisher",
+                    },
+                },
+            }],
+        },
+    }
+
+    report = dlp.check_updates(plugins_data)
+    dlp.apply_updates(plugins_data, report)
+
+    plugin = plugins_data["plugins"]["effects"][0]
+    macos = plugin["urls"]["macos"]
+    windows = plugin["urls"]["windows"]
+
+    # Drifted platform: sha256 updated, hash_source reset to 'self'.
+    assert windows["sha256"] == win_new
+    assert windows["hash_source"] == "self"
+
+    # Unchanged platform: sha256 untouched, hash_source untouched.
+    assert macos["sha256"] == mac_stored
+    assert macos["hash_source"] == "publisher"

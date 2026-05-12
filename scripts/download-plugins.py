@@ -307,6 +307,63 @@ def detect_latest_for_uhe(product: str, page_url: str | None = None,
 
     return {'tag': tag, 'assets': assets}
 
+def detect_drift_for_stable_url(entry: dict) -> dict:
+    """Re-hash each platform URL in `entry` and report which platforms drifted.
+
+    Used by the 'stable-url' update strategy. The vendor URL is assumed to be
+    canonical (it never changes); the only signal that the upstream file has
+    been swapped is its sha256 differing from what we stored.
+
+    Returns:
+      {
+        'drift': bool,            # True if any platform's hash changed
+        'platforms': {
+          '<plat>': {
+            'url': str,
+            'old_sha256': str,
+            'new_sha256': str,
+            'changed': bool,
+          },
+          ...
+        },
+      }
+
+    Raises:
+      ValueError if `entry['urls']` is missing or empty, or if any URL serves
+        text/html or application/json (the existing compute_hash_for_url guard
+        — vendors sometimes replace a binary URL with a download-gate page,
+        and silently re-hashing that HTML would be wrong).
+      urllib.error.HTTPError / URLError on network failure.
+    """
+    urls = entry.get('urls') or {}
+    platforms_with_url = {p: e for p, e in urls.items()
+                          if isinstance(e, dict) and e.get('url')}
+    if not platforms_with_url:
+        raise ValueError(
+            f"stable-url entry {entry.get('name', '<unknown>')!r} has no platforms with URLs"
+        )
+
+    out = {'drift': False, 'platforms': {}}
+    for plat, urlentry in platforms_with_url.items():
+        url = urlentry['url']
+        stored = urlentry.get('sha256')
+        if not stored:
+            raise ValueError(
+                f"stable-url entry {entry.get('name', '<unknown>')!r} platform "
+                f"{plat!r} has no stored sha256 to compare against"
+            )
+        new_hash = compute_hash_for_url(url)
+        changed = new_hash != stored
+        if changed:
+            out['drift'] = True
+        out['platforms'][plat] = {
+            'url': url,
+            'old_sha256': stored,
+            'new_sha256': new_hash,
+            'changed': changed,
+        }
+    return out
+
 def find_matching_asset(current_filename: str, candidates: list[dict],
                         current_url: str | None = None,
                         old_tag: str | None = None,
@@ -363,6 +420,7 @@ def _parse_update_strategy(strategy: str):
     Returns one of:
       ('github', repo: str, tag: str | None)
       ('u-he', product: str)
+      ('stable-url',)
       None  if the value is missing or unrecognized.
     """
     if not strategy:
@@ -382,6 +440,8 @@ def _parse_update_strategy(strategy: str):
         if not product:
             return None
         return ('u-he', product)
+    if strategy == 'stable-url':
+        return ('stable-url',)
     return None
 
 
@@ -420,6 +480,35 @@ def check_updates(plugins_data: dict, api_base: str = "https://api.github.com") 
                     'name': name, 'category': category,
                     'reason': f'malformed update_strategy: {strategy}',
                 })
+                continue
+
+            # stable-url is its own pipeline — no asset matching, just rehash + compare.
+            if parsed[0] == 'stable-url':
+                try:
+                    drift_result = detect_drift_for_stable_url(plugin)
+                except (urllib.error.HTTPError, urllib.error.URLError, ValueError) as e:
+                    report['failures'].append({
+                        'name': name, 'category': category,
+                        'reason': f'detection failed: {e}',
+                    })
+                    continue
+                if drift_result['drift']:
+                    platform_rows = [
+                        {'plat': plat, 'changed': info['changed'],
+                         'old_sha256': info['old_sha256'], 'new_sha256': info['new_sha256']}
+                        for plat, info in drift_result['platforms'].items()
+                    ]
+                    report['updates'].append({
+                        'name': name, 'category': category,
+                        'strategy': 'stable-url',
+                        'old_version': current_version,
+                        'new_version': current_version,  # vendor didn't bump a label
+                        'platforms': platform_rows,
+                    })
+                else:
+                    report['no_updates'].append({
+                        'name': name, 'category': category, 'version': current_version,
+                    })
                 continue
 
             try:
@@ -515,9 +604,19 @@ def print_check_updates_report(report: dict) -> None:
         for kind, item in by_cat[cat]:
             name = item['name']
             if kind == 'updates':
-                print(f"  {name:<30} {item['old_version']:<8} → {item['new_version']:<8} {C.YELLOW}⬆ NEW VERSION{C.NC}")
-                for pu in item['platforms']:
-                    print(f"    {pu['plat']:8} {pu['new_asset']['name']}")
+                if item.get('strategy') == 'stable-url':
+                    print(f"  {name:<30} {item['old_version']:<8} → {item['new_version']:<8} {C.YELLOW}⬆ CONTENT DRIFT{C.NC}")
+                    for pu in item['platforms']:
+                        if pu.get('changed'):
+                            short_old = pu['old_sha256'][:8]
+                            short_new = pu['new_sha256'][:8]
+                            print(f"    {pu['plat']:8} sha256 {short_old} → {short_new}")
+                        else:
+                            print(f"    {pu['plat']:8} unchanged")
+                else:
+                    print(f"  {name:<30} {item['old_version']:<8} → {item['new_version']:<8} {C.YELLOW}⬆ NEW VERSION{C.NC}")
+                    for pu in item['platforms']:
+                        print(f"    {pu['plat']:8} {pu['new_asset']['name']}")
             elif kind == 'no_updates':
                 print(f"  {name:<30} {item['version']:<8} → {item['version']:<8} no update")
             elif kind == 'manual':
@@ -537,13 +636,16 @@ def print_check_updates_report(report: dict) -> None:
 
 
 def apply_updates(plugins_data: dict, report: dict) -> None:
-    """Mutate plugins_data in place: for each plugin in report['updates'],
-    update urls[plat].url + filename, clear sha256 + hash_source, and bump version.
+    """Mutate plugins_data in place.
 
-    Hashes are intentionally cleared (not computed) — main() then calls
-    recompute_hashes() which will repopulate only the cleared entries.
+    For github/u-he updates: rewrite urls[plat].url + filename, clear sha256 +
+    hash_source (recompute_hashes will re-fill them), bump version.
+
+    For stable-url updates: write the pre-computed new sha256 directly (no
+    re-fetch needed — detect_drift_for_stable_url already paid that cost), set
+    hash_source to 'self' (we just hashed it ourselves), leave url/filename/
+    version untouched (they didn't change).
     """
-    # Build a quick index: (category, name) → plugin dict.
     index = {}
     for cat, plugins in plugins_data.get('plugins', {}).items():
         for p in plugins:
@@ -553,6 +655,17 @@ def apply_updates(plugins_data: dict, report: dict) -> None:
         plugin = index.get((upd['category'], upd['name']))
         if plugin is None:
             continue
+
+        if upd.get('strategy') == 'stable-url':
+            for pu in upd['platforms']:
+                if not pu.get('changed'):
+                    continue
+                entry = plugin['urls'][pu['plat']]
+                entry['sha256'] = pu['new_sha256']
+                entry['hash_source'] = 'self'
+            continue  # url/filename/version unchanged for stable-url
+
+        # github/u-he path
         for pu in upd['platforms']:
             asset = pu['new_asset']
             if asset is None:

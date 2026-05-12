@@ -157,6 +157,7 @@
       {
         "name": "TAL-NoiseMaker",
         "description": "Classic VA synth - 256 presets, low CPU usage",
+        "update_strategy": "stable-url",
         "urls": {
           "macos": {
             "url": "https://tal-software.com/downloads/plugins/TAL-NoiseMaker-installer_macos.zip",
@@ -263,6 +264,7 @@
       {
         "name": "Valhalla Supermassive",
         "description": "Lush reverbs & delays - 21 modes, studio quality",
+        "update_strategy": "stable-url",
         "urls": {
           "macos": {
             "url": "https://valhallaproduction.s3.us-west-2.amazonaws.com/supermassive/ValhallaSupermassiveOSX_5_0_0.dmg",
@@ -285,6 +287,7 @@
       {
         "name": "Valhalla FreqEcho",
         "description": "Frequency shifter + analog echo emulation",
+        "update_strategy": "stable-url",
         "urls": {
           "macos": {
             "url": "https://valhallaproduction.s3.us-west-2.amazonaws.com/freqecho/ValhallaFreqEchoOSX_1_2_8.dmg",
@@ -307,6 +310,7 @@
       {
         "name": "OTT",
         "description": "THE multiband compressor - industry standard",
+        "update_strategy": "stable-url",
         "urls": {
           "macos": {
             "url": "https://xferrecords.com/product_downloads/24/freeware",
@@ -462,6 +466,7 @@
       {
         "name": "TAL-Vocoder",
         "description": "Classic 80s vocoder sound - 11 bands",
+        "update_strategy": "stable-url",
         "urls": {
           "macos": {
             "url": "https://tal-software.com/downloads/plugins/TAL-Vocoder-2-installer_macos.zip",

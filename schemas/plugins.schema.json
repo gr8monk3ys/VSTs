@@ -28,7 +28,7 @@
         "name": { "type": "string" },
         "update_strategy": {
           "type": "string",
-          "pattern": "^(github:[\\w.-]+/[\\w.-]+(@[\\w.-]+)?|u-he:[\\w.-]+)$"
+          "pattern": "^(github:[\\w.-]+/[\\w.-]+(@[\\w.-]+)?|u-he:[\\w.-]+|stable-url)$"
         },
         "urls": {
           "type": "object",
