@@ -1,32 +1,12 @@
-# Free VST Plugins Downloader for Windows
-# PowerShell wrapper for the Python download script
-
-param(
-    [switch]$All,
-    [switch]$Synths,
-    [switch]$Effects,
-    [switch]$Instruments,
-    [switch]$Bundles,
-    [switch]$List,
-    [string]$Dir,
-    [switch]$Help
-)
+# Thin wrapper around download-plugins.py — all arguments pass through unchanged.
+# The Python script is the single source of truth for plugin URLs, hash
+# verification, and platform detection. See download-plugins.py for the real
+# logic; this file exists so users can run `.\scripts\download-plugins.ps1` out
+# of muscle memory.
 
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+$PythonScript = Join-Path $ScriptDir "download-plugins.py"
 
-# Build arguments for Python script
-$args = @()
-
-if ($Help) { $args += "--help" }
-if ($All) { $args += "--all" }
-if ($Synths) { $args += "--synths" }
-if ($Effects) { $args += "--effects" }
-if ($Instruments) { $args += "--instruments" }
-if ($Bundles) { $args += "--bundles" }
-if ($List) { $args += "--list" }
-if ($Dir) { $args += "--dir"; $args += $Dir }
-
-# Check for Python
 $python = $null
 foreach ($cmd in @("python3", "python", "py")) {
     try {
@@ -39,10 +19,8 @@ foreach ($cmd in @("python3", "python", "py")) {
 }
 
 if (-not $python) {
-    Write-Host "Error: Python 3 not found. Please install Python 3 from https://python.org" -ForegroundColor Red
+    Write-Host "Error: Python 3 not found. Install from https://python.org" -ForegroundColor Red
     exit 1
 }
 
-# Run the Python script
-$pythonScript = Join-Path $ScriptDir "download-plugins.py"
-& $python $pythonScript @args
+& $python $PythonScript @args

@@ -197,9 +197,9 @@ free-vst-plugins/
 │       ├── ci.yml            # CI/CD pipeline (lint, test, URL check)
 │       └── docker-publish.yml # Docker image publishing to GHCR
 └── scripts/
-    ├── download-plugins.py   # Cross-platform Python script (recommended)
-    ├── download-plugins.sh   # macOS/Linux Bash script
-    └── download-plugins.ps1  # Windows PowerShell script
+    ├── download-plugins.py   # Cross-platform downloader (single source of truth)
+    ├── download-plugins.sh   # Bash wrapper — delegates to download-plugins.py
+    └── download-plugins.ps1  # PowerShell wrapper — delegates to download-plugins.py
 ```
 
 ## CI/CD
