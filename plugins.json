@@ -434,21 +434,21 @@
         "update_strategy": "github:baconpaul/airwin2rack@DAWPlugin",
         "urls": {
           "macos": {
-            "url": "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/airwindows-consolidated-macOS-2026-05-10-dc0ed69.dmg",
-            "filename": "airwindows-consolidated-macOS-2026-05-10-dc0ed69.dmg",
-            "sha256": "d14a2804a2ff253c0c883af04fa17af7ecf58679f8c73ac4b93fe0a963338910",
+            "url": "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/airwindows-consolidated-macOS-2026-06-27-9cf9ddf.dmg",
+            "filename": "airwindows-consolidated-macOS-2026-06-27-9cf9ddf.dmg",
+            "sha256": "b2761decace8f8b11bc944c44fe9d69ce05ce9989f696061436c5032c8ea991f",
             "hash_source": "self"
           },
           "windows": {
-            "url": "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/AirwindowsConsolidated-2026-05-10-dc0ed69-Windows-64bit-setup.exe",
-            "filename": "AirwindowsConsolidated-2026-05-10-dc0ed69-Windows-64bit-setup.exe",
-            "sha256": "53c22dcf0f55f23395df7059db17893d4bfb7dcc04d31fa2cd44a82e5312f4de",
+            "url": "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/AirwindowsConsolidated-2026-06-27-9cf9ddf-Windows-64bit-setup.exe",
+            "filename": "AirwindowsConsolidated-2026-06-27-9cf9ddf-Windows-64bit-setup.exe",
+            "sha256": "7a2be93276d1d191429eabb82c1fd99b0f4955904941a911dee3f6cf1908c457",
             "hash_source": "self"
           },
           "linux": {
-            "url": "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/AirwindowsConsolidated-2026-05-10-dc0ed69-Linux.zip",
-            "filename": "AirwindowsConsolidated-2026-05-10-dc0ed69-Linux.zip",
-            "sha256": "8d4fac16185652551447c145dff1b502c13264617cf4f8c92c6851193d3aa422",
+            "url": "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/AirwindowsConsolidated-2026-06-27-9cf9ddf-Linux.zip",
+            "filename": "AirwindowsConsolidated-2026-06-27-9cf9ddf-Linux.zip",
+            "sha256": "826a3ac7757cd84e7c15463b14a8f2f8085bd0b8073330c404d15237953bae35",
             "hash_source": "self"
           }
         },
