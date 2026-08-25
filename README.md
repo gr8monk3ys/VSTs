@@ -105,6 +105,7 @@ These require account registration but are worth it:
 | **[Kilohearts Essentials](https://kilohearts.com/products/kilohearts_essentials)** | macOS/Win | 30+ modular effects |
 | **[Komplete Start](https://www.native-instruments.com/en/products/komplete/bundles/komplete-start/)** | macOS/Win | NI's free starter bundle |
 | **[LSP Plugins](https://lsp-plug.in/)** | Linux/Win | 70+ professional Linux-native plugins |
+| **[Odin 2](https://thewavewarden.com/pages/odin-2)** | All | Open-source hybrid synth — analog/wavetable/FM/vector oscillators, no pinned release URL yet |
 
 ## Usage
 

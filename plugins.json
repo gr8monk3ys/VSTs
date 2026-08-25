@@ -647,6 +647,17 @@
         "windows"
       ],
       "reason": "Available via package managers on Linux"
+    },
+    {
+      "name": "Odin 2",
+      "description": "24-voice hybrid synth - analog, wavetable, FM, vector & chiptune oscillators",
+      "website": "https://thewavewarden.com/pages/odin-2",
+      "platforms": [
+        "macos",
+        "windows",
+        "linux"
+      ],
+      "reason": "Open source (GitHub: TheWaveWarden/odin2) but the stable installer ships from the vendor's own site, not a versioned GitHub release, so there's no pinnable per-platform URL+sha256 yet"
     }
   ]
 }
