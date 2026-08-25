@@ -43,13 +43,14 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Lint Python script
+      - name: Lint Python
         run: |
           pip install ruff
-          ruff check scripts/download-plugins.py
+          ruff check src/ scripts/ tests/
+          ruff format --check src/ scripts/ tests/
 
-      - name: Check script syntax
-        run: python -m py_compile scripts/download-plugins.py
+      - name: Check syntax
+        run: python -m py_compile src/free_vst_plugins/cli.py scripts/download-plugins.py
 
   test-script:
     name: Test Script (${{ matrix.os }})

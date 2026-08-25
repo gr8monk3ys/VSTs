@@ -2,16 +2,7 @@
 
 from __future__ import annotations
 
-import importlib.util
-import sys
-from pathlib import Path
-
-# Load the script as a module (it has a hyphen in the name so we can't `import`).
-_SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "download-plugins.py"
-_spec = importlib.util.spec_from_file_location("dlp", _SCRIPT)
-dlp = importlib.util.module_from_spec(_spec)
-sys.modules["dlp"] = dlp
-_spec.loader.exec_module(dlp)
+from free_vst_plugins import cli as dlp
 
 
 def test_compute_hash_returns_sha256_of_stream(mock_server) -> None:

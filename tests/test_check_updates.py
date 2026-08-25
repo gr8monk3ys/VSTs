@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import hashlib
-import importlib.util
 import json
 import os
 import subprocess
@@ -12,11 +11,9 @@ from pathlib import Path
 
 import pytest
 
+from free_vst_plugins import cli as dlp
+
 SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "download-plugins.py"
-_spec = importlib.util.spec_from_file_location("dlp", SCRIPT)
-dlp = importlib.util.module_from_spec(_spec)
-sys.modules["dlp"] = dlp
-_spec.loader.exec_module(dlp)
 
 
 def _fake_release(tag: str, asset_names: list[str]) -> bytes:

@@ -23,3 +23,9 @@ downloads/
 # IDE
 .vscode/
 .idea/
+
+# Packaging
+build/
+dist/
+*.egg-info/
+.ruff_cache/

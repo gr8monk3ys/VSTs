@@ -3,6 +3,11 @@
 from __future__ import annotations
 
 import hashlib
+import sys
+from pathlib import Path as _Path
+
+# Make the src layout importable without installation.
+sys.path.insert(0, str(_Path(__file__).resolve().parents[1] / "src"))
 import http.server
 import socketserver
 import threading

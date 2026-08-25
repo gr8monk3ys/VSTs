@@ -12,6 +12,7 @@ WORKDIR /app
 
 # Copy only what's needed
 COPY plugins.json .
+COPY src/ src/
 COPY scripts/download-plugins.py scripts/
 
 # Create downloads directory

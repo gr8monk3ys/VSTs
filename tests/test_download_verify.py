@@ -2,17 +2,12 @@
 
 from __future__ import annotations
 
-import importlib.util
 import sys
 from pathlib import Path
 
 import pytest
 
-SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "download-plugins.py"
-_spec = importlib.util.spec_from_file_location("dlp", SCRIPT)
-dlp = importlib.util.module_from_spec(_spec)
-sys.modules["dlp"] = dlp
-_spec.loader.exec_module(dlp)
+from free_vst_plugins import cli as dlp
 
 
 def _write_fixture(template: Path, dest: Path, base_url: str, mac_hash: str) -> None:
