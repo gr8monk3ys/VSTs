@@ -8,6 +8,7 @@ All plugins are legally free from their official sources.
 from __future__ import annotations
 
 import argparse
+import datetime
 import hashlib
 import json
 import os
@@ -774,6 +775,10 @@ def apply_updates(plugins_data: dict, report: dict) -> None:
         # Bump version unless the tag is rolling (same string before and after).
         if upd["old_version"] != upd["new_version"]:
             plugin["version"] = upd["new_version"]
+
+    # Keep the manifest's own freshness stamp honest.
+    if report["updates"] and isinstance(plugins_data.get("meta"), dict):
+        plugins_data["meta"]["updated"] = datetime.date.today().isoformat()
 
 
 def extract_archives(download_dir):
