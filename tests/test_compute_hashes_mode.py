@@ -15,18 +15,31 @@ def _write_fixture(template_path: Path, dest_path: Path, base_url: str) -> None:
     dest_path.write_text(text, encoding="utf-8")
 
 
-def test_compute_hashes_in_place_populates_sha256_and_source(mock_server, fixtures_dir, tmp_path) -> None:
+def test_compute_hashes_in_place_populates_sha256_and_source(
+    mock_server, fixtures_dir, tmp_path
+) -> None:
     mac_body = b"fake-mac-installer"
     win_body = b"fake-windows-installer"
     mock_server.add("/fakesynth-mac.dmg", mac_body)
     mock_server.add("/fakesynth-win.exe", win_body)
 
     json_path = tmp_path / "plugins.json"
-    _write_fixture(fixtures_dir / "plugins-empty-hashes.json", json_path, mock_server.base_url)
+    _write_fixture(
+        fixtures_dir / "plugins-empty-hashes.json", json_path, mock_server.base_url
+    )
 
     result = subprocess.run(
-        [sys.executable, str(SCRIPT), "--compute-hashes", "--in-place", "--plugins-json", str(json_path)],
-        capture_output=True, text=True, check=False,
+        [
+            sys.executable,
+            str(SCRIPT),
+            "--compute-hashes",
+            "--in-place",
+            "--plugins-json",
+            str(json_path),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
     )
     assert result.returncode == 0, result.stderr
 
@@ -40,12 +53,16 @@ def test_compute_hashes_in_place_populates_sha256_and_source(mock_server, fixtur
     assert win["hash_source"] == "self"
 
 
-def test_compute_hashes_does_not_overwrite_existing_without_force(mock_server, fixtures_dir, tmp_path) -> None:
+def test_compute_hashes_does_not_overwrite_existing_without_force(
+    mock_server, fixtures_dir, tmp_path
+) -> None:
     mock_server.add("/fakesynth-mac.dmg", b"fake-mac")
     mock_server.add("/fakesynth-win.exe", b"fake-win")
 
     json_path = tmp_path / "plugins.json"
-    _write_fixture(fixtures_dir / "plugins-empty-hashes.json", json_path, mock_server.base_url)
+    _write_fixture(
+        fixtures_dir / "plugins-empty-hashes.json", json_path, mock_server.base_url
+    )
 
     # Pre-populate macos with a "publisher" hash that the test pretends a maintainer added.
     data = json.loads(json_path.read_text(encoding="utf-8"))
@@ -54,8 +71,17 @@ def test_compute_hashes_does_not_overwrite_existing_without_force(mock_server, f
     json_path.write_text(json.dumps(data), encoding="utf-8")
 
     result = subprocess.run(
-        [sys.executable, str(SCRIPT), "--compute-hashes", "--in-place", "--plugins-json", str(json_path)],
-        capture_output=True, text=True, check=False,
+        [
+            sys.executable,
+            str(SCRIPT),
+            "--compute-hashes",
+            "--in-place",
+            "--plugins-json",
+            str(json_path),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
     )
     assert result.returncode == 0, result.stderr
 
@@ -70,14 +96,18 @@ def test_compute_hashes_does_not_overwrite_existing_without_force(mock_server, f
     assert win["hash_source"] == "self"
 
 
-def test_compute_hashes_force_recompute_overwrites_publisher_hash(mock_server, fixtures_dir, tmp_path) -> None:
+def test_compute_hashes_force_recompute_overwrites_publisher_hash(
+    mock_server, fixtures_dir, tmp_path
+) -> None:
     mac_body = b"fake-mac-installer"
     win_body = b"fake-windows-installer"
     mock_server.add("/fakesynth-mac.dmg", mac_body)
     mock_server.add("/fakesynth-win.exe", win_body)
 
     json_path = tmp_path / "plugins.json"
-    _write_fixture(fixtures_dir / "plugins-empty-hashes.json", json_path, mock_server.base_url)
+    _write_fixture(
+        fixtures_dir / "plugins-empty-hashes.json", json_path, mock_server.base_url
+    )
 
     # Pre-populate both URLs with publisher-tier hashes that should be overwritten.
     data = json.loads(json_path.read_text(encoding="utf-8"))
@@ -87,9 +117,18 @@ def test_compute_hashes_force_recompute_overwrites_publisher_hash(mock_server, f
     json_path.write_text(json.dumps(data), encoding="utf-8")
 
     result = subprocess.run(
-        [sys.executable, str(SCRIPT), "--compute-hashes", "--in-place", "--force-recompute",
-         "--plugins-json", str(json_path)],
-        capture_output=True, text=True, check=False,
+        [
+            sys.executable,
+            str(SCRIPT),
+            "--compute-hashes",
+            "--in-place",
+            "--force-recompute",
+            "--plugins-json",
+            str(json_path),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
     )
     assert result.returncode == 0, result.stderr
 

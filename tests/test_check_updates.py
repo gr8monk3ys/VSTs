@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import hashlib
-import importlib.util
 import json
 import os
 import subprocess
@@ -12,22 +11,26 @@ from pathlib import Path
 
 import pytest
 
+from free_vst_plugins import cli as dlp
+
 SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "download-plugins.py"
-_spec = importlib.util.spec_from_file_location("dlp", SCRIPT)
-dlp = importlib.util.module_from_spec(_spec)
-sys.modules["dlp"] = dlp
-_spec.loader.exec_module(dlp)
 
 
 def _fake_release(tag: str, asset_names: list[str]) -> bytes:
     """Build a JSON body matching the GitHub API release shape."""
-    return json.dumps({
-        "tag_name": tag,
-        "assets": [
-            {"name": n, "browser_download_url": f"https://example.invalid/{n}", "size": 1234}
-            for n in asset_names
-        ],
-    }).encode("utf-8")
+    return json.dumps(
+        {
+            "tag_name": tag,
+            "assets": [
+                {
+                    "name": n,
+                    "browser_download_url": f"https://example.invalid/{n}",
+                    "size": 1234,
+                }
+                for n in asset_names
+            ],
+        }
+    ).encode("utf-8")
 
 
 def test_detect_latest_for_github_uses_latest_endpoint(mock_server) -> None:
@@ -57,16 +60,23 @@ def test_detect_latest_for_github_uses_tagged_endpoint(mock_server) -> None:
     assert result["tag"] == "DAWPlugin"
     assert len(result["assets"]) == 1
     assert result["assets"][0]["name"] == "airwindows-2026-06-15-abc.dmg"
-    assert result["assets"][0]["url"] == "https://example.invalid/airwindows-2026-06-15-abc.dmg"
+    assert (
+        result["assets"][0]["url"]
+        == "https://example.invalid/airwindows-2026-06-15-abc.dmg"
+    )
 
 
 def _candidates(*names: str) -> list[dict]:
-    return [{"name": n, "url": f"https://example.invalid/{n}", "size": 1000} for n in names]
+    return [
+        {"name": n, "url": f"https://example.invalid/{n}", "size": 1000} for n in names
+    ]
 
 
 def test_find_matching_asset_exact_substitution() -> None:
     current = "Surge-XT-1.3.4-mac.dmg"
-    cands = _candidates("Surge-XT-1.3.5-mac.dmg", "Surge-XT-1.3.5-win.exe", "Surge-XT-1.3.5-linux.deb")
+    cands = _candidates(
+        "Surge-XT-1.3.5-mac.dmg", "Surge-XT-1.3.5-win.exe", "Surge-XT-1.3.5-linux.deb"
+    )
 
     result = dlp.find_matching_asset(current, cands, old_tag="1.3.4", new_tag="1.3.5")
 
@@ -85,7 +95,9 @@ def test_find_matching_asset_token_overlap_fallback() -> None:
 
     # old_tag == new_tag (rolling DAWPlugin). Strategy A produces no substitution
     # because old_tag != new_tag is False. Falls through to Strategy B.
-    result = dlp.find_matching_asset(current, cands, old_tag="DAWPlugin", new_tag="DAWPlugin")
+    result = dlp.find_matching_asset(
+        current, cands, old_tag="DAWPlugin", new_tag="DAWPlugin"
+    )
 
     assert result is not None
     assert result["name"] == "airwindows-consolidated-macOS-2026-06-15-newcommit.dmg"
@@ -109,7 +121,9 @@ def test_find_matching_asset_returns_none_for_extension_only_match() -> None:
     assert result is None
 
 
-def _serve_fake_release(mock_server, repo: str, tag: str, asset_names: list[str]) -> None:
+def _serve_fake_release(
+    mock_server, repo: str, tag: str, asset_names: list[str]
+) -> None:
     body = _fake_release(tag, asset_names)
     mock_server.add(f"/repos/{repo}/releases/latest", body)
 
@@ -121,22 +135,37 @@ def _write_update_fixture(template: Path, dest: Path) -> None:
     dest.write_text(template.read_text(encoding="utf-8"), encoding="utf-8")
 
 
-def test_check_updates_reports_drift_without_writing(mock_server, fixtures_dir, tmp_path) -> None:
-    _serve_fake_release(mock_server, "fake/synth", "v1.0.1",
-                        ["FakeSynth-1.0.1-mac.dmg", "FakeSynth-1.0.1-win.exe"])
+def test_check_updates_reports_drift_without_writing(
+    mock_server, fixtures_dir, tmp_path
+) -> None:
+    _serve_fake_release(
+        mock_server,
+        "fake/synth",
+        "v1.0.1",
+        ["FakeSynth-1.0.1-mac.dmg", "FakeSynth-1.0.1-win.exe"],
+    )
 
     json_path = tmp_path / "plugins.json"
     _write_update_fixture(fixtures_dir / "plugins-update-fixture.json", json_path)
     original_text = json_path.read_text(encoding="utf-8")
 
     result = subprocess.run(
-        [sys.executable, str(SCRIPT), "--check-updates",
-         "--plugins-json", str(json_path)],
-        capture_output=True, text=True, check=False,
+        [
+            sys.executable,
+            str(SCRIPT),
+            "--check-updates",
+            "--plugins-json",
+            str(json_path),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
         env={**os.environ, "VST_DLP_GITHUB_API_BASE": mock_server.base_url},
     )
 
-    assert result.returncode == 1, f"expected exit 1 (drift), got {result.returncode}\n{result.stdout}\n{result.stderr}"
+    assert result.returncode == 1, (
+        f"expected exit 1 (drift), got {result.returncode}\n{result.stdout}\n{result.stderr}"
+    )
     assert "FakeSynth" in result.stdout
     assert "1.0.0" in result.stdout
     assert "1.0.1" in result.stdout
@@ -146,18 +175,31 @@ def test_check_updates_reports_drift_without_writing(mock_server, fixtures_dir, 
     assert json_path.read_text(encoding="utf-8") == original_text
 
 
-def test_check_updates_exit_zero_when_no_drift(mock_server, fixtures_dir, tmp_path) -> None:
+def test_check_updates_exit_zero_when_no_drift(
+    mock_server, fixtures_dir, tmp_path
+) -> None:
     # Mock returns the SAME version that's pinned in the fixture.
-    _serve_fake_release(mock_server, "fake/synth", "1.0.0",
-                        ["FakeSynth-1.0.0-mac.dmg", "FakeSynth-1.0.0-win.exe"])
+    _serve_fake_release(
+        mock_server,
+        "fake/synth",
+        "1.0.0",
+        ["FakeSynth-1.0.0-mac.dmg", "FakeSynth-1.0.0-win.exe"],
+    )
 
     json_path = tmp_path / "plugins.json"
     _write_update_fixture(fixtures_dir / "plugins-update-fixture.json", json_path)
 
     result = subprocess.run(
-        [sys.executable, str(SCRIPT), "--check-updates",
-         "--plugins-json", str(json_path)],
-        capture_output=True, text=True, check=False,
+        [
+            sys.executable,
+            str(SCRIPT),
+            "--check-updates",
+            "--plugins-json",
+            str(json_path),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
         env={**os.environ, "VST_DLP_GITHUB_API_BASE": mock_server.base_url},
     )
 
@@ -165,10 +207,16 @@ def test_check_updates_exit_zero_when_no_drift(mock_server, fixtures_dir, tmp_pa
     assert "no update" in result.stdout.lower()
 
 
-def test_apply_writes_url_filename_version_and_recomputes_hash(mock_server, fixtures_dir, tmp_path) -> None:
+def test_apply_writes_url_filename_version_and_recomputes_hash(
+    mock_server, fixtures_dir, tmp_path
+) -> None:
     # Mock-server-served release: simulates upstream having shipped 1.0.1.
-    _serve_fake_release(mock_server, "fake/synth", "1.0.1",
-                        ["FakeSynth-1.0.1-mac.dmg", "FakeSynth-1.0.1-win.exe"])
+    _serve_fake_release(
+        mock_server,
+        "fake/synth",
+        "1.0.1",
+        ["FakeSynth-1.0.1-mac.dmg", "FakeSynth-1.0.1-win.exe"],
+    )
 
     # Mock the actual download endpoints that recompute_hashes will hit.
     mac_body = b"new-mac-installer-bytes"
@@ -180,29 +228,49 @@ def test_apply_writes_url_filename_version_and_recomputes_hash(mock_server, fixt
     # Modify fixture: rewrite the example.invalid URLs to point at the mock server,
     # so when --apply re-points URLs to the new asset URLs from the API response,
     # the hashes can actually be computed against the mock's body.
-    fixture_text = (fixtures_dir / "plugins-update-fixture.json").read_text(encoding="utf-8")
+    fixture_text = (fixtures_dir / "plugins-update-fixture.json").read_text(
+        encoding="utf-8"
+    )
     json_path.write_text(fixture_text, encoding="utf-8")
 
     # The API response uses browser_download_url=https://example.invalid/<name>; rewrite
     # it to mock_server.base_url so recompute_hashes can fetch them.
     # We do this by serving release JSON whose asset URLs point at the mock server.
-    body = json.dumps({
-        "tag_name": "1.0.1",
-        "assets": [
-            {"name": "FakeSynth-1.0.1-mac.dmg",
-             "browser_download_url": mock_server.url_for("/FakeSynth-1.0.1-mac.dmg"),
-             "size": len(mac_body)},
-            {"name": "FakeSynth-1.0.1-win.exe",
-             "browser_download_url": mock_server.url_for("/FakeSynth-1.0.1-win.exe"),
-             "size": len(win_body)},
-        ],
-    }).encode("utf-8")
+    body = json.dumps(
+        {
+            "tag_name": "1.0.1",
+            "assets": [
+                {
+                    "name": "FakeSynth-1.0.1-mac.dmg",
+                    "browser_download_url": mock_server.url_for(
+                        "/FakeSynth-1.0.1-mac.dmg"
+                    ),
+                    "size": len(mac_body),
+                },
+                {
+                    "name": "FakeSynth-1.0.1-win.exe",
+                    "browser_download_url": mock_server.url_for(
+                        "/FakeSynth-1.0.1-win.exe"
+                    ),
+                    "size": len(win_body),
+                },
+            ],
+        }
+    ).encode("utf-8")
     mock_server.add("/repos/fake/synth/releases/latest", body)
 
     result = subprocess.run(
-        [sys.executable, str(SCRIPT), "--check-updates", "--apply",
-         "--plugins-json", str(json_path)],
-        capture_output=True, text=True, check=False,
+        [
+            sys.executable,
+            str(SCRIPT),
+            "--check-updates",
+            "--apply",
+            "--plugins-json",
+            str(json_path),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
         env={**os.environ, "VST_DLP_GITHUB_API_BASE": mock_server.base_url},
     )
 
@@ -216,6 +284,7 @@ def test_apply_writes_url_filename_version_and_recomputes_hash(mock_server, fixt
     win = plugin["urls"]["windows"]
 
     import hashlib
+
     assert mac["filename"] == "FakeSynth-1.0.1-mac.dmg"
     assert mac["url"] == mock_server.url_for("/FakeSynth-1.0.1-mac.dmg")
     assert mac["sha256"] == hashlib.sha256(mac_body).hexdigest()
@@ -251,7 +320,9 @@ TYRELL_N6_PAGE_HTML = (
 )
 
 
-def test_detect_latest_for_uhe_parses_version_and_builds_asset_urls(mock_server) -> None:
+def test_detect_latest_for_uhe_parses_version_and_builds_asset_urls(
+    mock_server,
+) -> None:
     mock_server.add("/products/tyrelln6/", TYRELL_N6_PAGE_HTML)
 
     result = dlp.detect_latest_for_uhe(
@@ -295,9 +366,9 @@ def test_find_matching_asset_prefers_filename_over_url_tokens() -> None:
     current_filename = "Obxd219.exe"
     current_url = "https://github.com/reales/OB-Xd/releases/download/v2.19/Obxd219.exe"
     cands = _candidates(
-        "OB-Xd.2.19.pkg",       # macOS installer (would win on URL-token boost)
-        "Obxd219.exe",          # actual Windows installer
-        "Obxd219.deb",          # Linux installer
+        "OB-Xd.2.19.pkg",  # macOS installer (would win on URL-token boost)
+        "Obxd219.exe",  # actual Windows installer
+        "Obxd219.deb",  # Linux installer
     )
 
     result = dlp.find_matching_asset(current_filename, cands, current_url=current_url)
@@ -306,41 +377,60 @@ def test_find_matching_asset_prefers_filename_over_url_tokens() -> None:
     assert result["name"] == "Obxd219.exe"
 
 
-def test_check_updates_drift_for_uhe_plugin(mock_server, fixtures_dir, tmp_path) -> None:
+def test_check_updates_drift_for_uhe_plugin(
+    mock_server, fixtures_dir, tmp_path
+) -> None:
     # Fake page advertises 3.0.1-r17000; fixture is pinned at 3.0.0-r16976.
     mock_server.add("/products/tyrelln6/", TYRELL_N6_PAGE_HTML)
 
     json_path = tmp_path / "plugins.json"
     fixture = {
         "meta": {
-            "name": "Test Fixture", "version": "0.0.0", "description": "uhe drift",
-            "updated": "2026-05-09", "author": "test", "license": "MIT",
+            "name": "Test Fixture",
+            "version": "0.0.0",
+            "description": "uhe drift",
+            "updated": "2026-05-09",
+            "author": "test",
+            "license": "MIT",
             "platforms": ["macos"],
         },
-        "plugins": {"synths": [{
-            "name": "Tyrell N6",
-            "description": "fixture",
-            "update_strategy": "u-he:TyrellN6",
-            "urls": {"macos": {
-                "url": "https://example.invalid/TyrellN6_300_public_beta_16976_Mac.zip",
-                "filename": "TyrellN6_300_public_beta_16976_Mac.zip",
-                "sha256": "0" * 64,
-                "hash_source": "self",
-            }},
-            "version": "3.0.0",
-            "formats": ["VST3"],
-            "website": "https://u-he.com/products/tyrelln6/",
-            "open_source": False,
-        }]},
+        "plugins": {
+            "synths": [
+                {
+                    "name": "Tyrell N6",
+                    "description": "fixture",
+                    "update_strategy": "u-he:TyrellN6",
+                    "urls": {
+                        "macos": {
+                            "url": "https://example.invalid/TyrellN6_300_public_beta_16976_Mac.zip",
+                            "filename": "TyrellN6_300_public_beta_16976_Mac.zip",
+                            "sha256": "0" * 64,
+                            "hash_source": "self",
+                        }
+                    },
+                    "version": "3.0.0",
+                    "formats": ["VST3"],
+                    "website": "https://u-he.com/products/tyrelln6/",
+                    "open_source": False,
+                }
+            ]
+        },
         "manual_download": [],
     }
     json_path.write_text(json.dumps(fixture, indent=2), encoding="utf-8")
     original_text = json_path.read_text(encoding="utf-8")
 
     result = subprocess.run(
-        [sys.executable, str(SCRIPT), "--check-updates",
-         "--plugins-json", str(json_path)],
-        capture_output=True, text=True, check=False,
+        [
+            sys.executable,
+            str(SCRIPT),
+            "--check-updates",
+            "--plugins-json",
+            str(json_path),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
         env={
             **os.environ,
             "VST_DLP_UHE_PAGE_URL_TyrellN6": mock_server.url_for("/products/tyrelln6/"),
@@ -357,7 +447,9 @@ def test_check_updates_drift_for_uhe_plugin(mock_server, fixtures_dir, tmp_path)
     assert json_path.read_text(encoding="utf-8") == original_text
 
 
-def test_check_updates_apply_for_uhe_plugin(mock_server, fixtures_dir, tmp_path) -> None:
+def test_check_updates_apply_for_uhe_plugin(
+    mock_server, fixtures_dir, tmp_path
+) -> None:
     mock_server.add("/products/tyrelln6/", TYRELL_N6_PAGE_HTML)
 
     # The new asset bytes the apply path will fetch + hash.
@@ -367,33 +459,51 @@ def test_check_updates_apply_for_uhe_plugin(mock_server, fixtures_dir, tmp_path)
     json_path = tmp_path / "plugins.json"
     fixture = {
         "meta": {
-            "name": "Test Fixture", "version": "0.0.0", "description": "uhe apply",
-            "updated": "2026-05-09", "author": "test", "license": "MIT",
+            "name": "Test Fixture",
+            "version": "0.0.0",
+            "description": "uhe apply",
+            "updated": "2026-05-09",
+            "author": "test",
+            "license": "MIT",
             "platforms": ["macos"],
         },
-        "plugins": {"synths": [{
-            "name": "Tyrell N6",
-            "description": "fixture",
-            "update_strategy": "u-he:TyrellN6",
-            "urls": {"macos": {
-                "url": "https://example.invalid/TyrellN6_300_public_beta_16976_Mac.zip",
-                "filename": "TyrellN6_300_public_beta_16976_Mac.zip",
-                "sha256": "0" * 64,
-                "hash_source": "self",
-            }},
-            "version": "3.0.0",
-            "formats": ["VST3"],
-            "website": "https://u-he.com/products/tyrelln6/",
-            "open_source": False,
-        }]},
+        "plugins": {
+            "synths": [
+                {
+                    "name": "Tyrell N6",
+                    "description": "fixture",
+                    "update_strategy": "u-he:TyrellN6",
+                    "urls": {
+                        "macos": {
+                            "url": "https://example.invalid/TyrellN6_300_public_beta_16976_Mac.zip",
+                            "filename": "TyrellN6_300_public_beta_16976_Mac.zip",
+                            "sha256": "0" * 64,
+                            "hash_source": "self",
+                        }
+                    },
+                    "version": "3.0.0",
+                    "formats": ["VST3"],
+                    "website": "https://u-he.com/products/tyrelln6/",
+                    "open_source": False,
+                }
+            ]
+        },
         "manual_download": [],
     }
     json_path.write_text(json.dumps(fixture, indent=2), encoding="utf-8")
 
     result = subprocess.run(
-        [sys.executable, str(SCRIPT), "--check-updates", "--apply",
-         "--plugins-json", str(json_path)],
-        capture_output=True, text=True, check=False,
+        [
+            sys.executable,
+            str(SCRIPT),
+            "--check-updates",
+            "--apply",
+            "--plugins-json",
+            str(json_path),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
         env={
             **os.environ,
             "VST_DLP_UHE_PAGE_URL_TyrellN6": mock_server.url_for("/products/tyrelln6/"),
@@ -409,8 +519,11 @@ def test_check_updates_apply_for_uhe_plugin(mock_server, fixtures_dir, tmp_path)
 
     mac = plugin["urls"]["macos"]
     import hashlib
+
     assert mac["filename"] == "TyrellN6_301_public_beta_17000_Mac.zip"
-    assert mac["url"] == mock_server.url_for("/releases/TyrellN6_301_public_beta_17000_Mac.zip")
+    assert mac["url"] == mock_server.url_for(
+        "/releases/TyrellN6_301_public_beta_17000_Mac.zip"
+    )
     assert mac["sha256"] == hashlib.sha256(mac_body).hexdigest()
     assert mac["hash_source"] == "self"
 
@@ -481,23 +594,31 @@ def test_check_updates_drift_for_stable_url_plugin(mock_server):
     drifted_url = mock_server.add("/valhalla/supermassive-mac.zip", new_body)
 
     plugins_data = {
-        "meta": {"name": "test", "version": "1", "description": "x",
-                 "updated": "2026-05-09", "author": "x", "license": "x",
-                 "platforms": ["macos"]},
+        "meta": {
+            "name": "test",
+            "version": "1",
+            "description": "x",
+            "updated": "2026-05-09",
+            "author": "x",
+            "license": "x",
+            "platforms": ["macos"],
+        },
         "plugins": {
-            "effects": [{
-                "name": "FakeStable",
-                "version": "5.0.0",
-                "update_strategy": "stable-url",
-                "urls": {
-                    "macos": {
-                        "url": drifted_url,
-                        "filename": "supermassive-mac.zip",
-                        "sha256": "0" * 64,  # stale hash — will not match new_body
-                        "hash_source": "self",
+            "effects": [
+                {
+                    "name": "FakeStable",
+                    "version": "5.0.0",
+                    "update_strategy": "stable-url",
+                    "urls": {
+                        "macos": {
+                            "url": drifted_url,
+                            "filename": "supermassive-mac.zip",
+                            "sha256": "0" * 64,  # stale hash — will not match new_body
+                            "hash_source": "self",
+                        },
                     },
-                },
-            }],
+                }
+            ],
         },
     }
 
@@ -521,23 +642,31 @@ def test_check_updates_no_drift_for_stable_url_plugin(mock_server):
     stored = hashlib.sha256(body).hexdigest()
 
     plugins_data = {
-        "meta": {"name": "test", "version": "1", "description": "x",
-                 "updated": "2026-05-09", "author": "x", "license": "x",
-                 "platforms": ["macos"]},
+        "meta": {
+            "name": "test",
+            "version": "1",
+            "description": "x",
+            "updated": "2026-05-09",
+            "author": "x",
+            "license": "x",
+            "platforms": ["macos"],
+        },
         "plugins": {
-            "effects": [{
-                "name": "FakeStable",
-                "version": "1.0",
-                "update_strategy": "stable-url",
-                "urls": {
-                    "macos": {
-                        "url": url,
-                        "filename": "static.zip",
-                        "sha256": stored,
-                        "hash_source": "self",
+            "effects": [
+                {
+                    "name": "FakeStable",
+                    "version": "1.0",
+                    "update_strategy": "stable-url",
+                    "urls": {
+                        "macos": {
+                            "url": url,
+                            "filename": "static.zip",
+                            "sha256": stored,
+                            "hash_source": "self",
+                        },
                     },
-                },
-            }],
+                }
+            ],
         },
     }
 
@@ -555,23 +684,31 @@ def test_apply_for_stable_url_plugin(mock_server):
     old_hash = "0" * 64
 
     plugins_data = {
-        "meta": {"name": "test", "version": "1", "description": "x",
-                 "updated": "2026-05-09", "author": "x", "license": "x",
-                 "platforms": ["macos"]},
+        "meta": {
+            "name": "test",
+            "version": "1",
+            "description": "x",
+            "updated": "2026-05-09",
+            "author": "x",
+            "license": "x",
+            "platforms": ["macos"],
+        },
         "plugins": {
-            "effects": [{
-                "name": "FakeStable",
-                "version": "5.0.0",
-                "update_strategy": "stable-url",
-                "urls": {
-                    "macos": {
-                        "url": drifted_url,
-                        "filename": "supermassive-mac.zip",
-                        "sha256": old_hash,
-                        "hash_source": "publisher",  # gets reset to 'self' by apply
+            "effects": [
+                {
+                    "name": "FakeStable",
+                    "version": "5.0.0",
+                    "update_strategy": "stable-url",
+                    "urls": {
+                        "macos": {
+                            "url": drifted_url,
+                            "filename": "supermassive-mac.zip",
+                            "sha256": old_hash,
+                            "hash_source": "publisher",  # gets reset to 'self' by apply
+                        },
                     },
-                },
-            }],
+                }
+            ],
         },
     }
 
@@ -600,29 +737,37 @@ def test_apply_for_stable_url_skips_unchanged_platforms(mock_server):
     win_new = hashlib.sha256(win_body).hexdigest()
 
     plugins_data = {
-        "meta": {"name": "test", "version": "1", "description": "x",
-                 "updated": "2026-05-09", "author": "x", "license": "x",
-                 "platforms": ["macos", "windows"]},
+        "meta": {
+            "name": "test",
+            "version": "1",
+            "description": "x",
+            "updated": "2026-05-09",
+            "author": "x",
+            "license": "x",
+            "platforms": ["macos", "windows"],
+        },
         "plugins": {
-            "effects": [{
-                "name": "FakeStable",
-                "version": "5.0.0",
-                "update_strategy": "stable-url",
-                "urls": {
-                    "macos": {
-                        "url": mac_url,
-                        "filename": "mac.zip",
-                        "sha256": mac_stored,
-                        "hash_source": "publisher",
+            "effects": [
+                {
+                    "name": "FakeStable",
+                    "version": "5.0.0",
+                    "update_strategy": "stable-url",
+                    "urls": {
+                        "macos": {
+                            "url": mac_url,
+                            "filename": "mac.zip",
+                            "sha256": mac_stored,
+                            "hash_source": "publisher",
+                        },
+                        "windows": {
+                            "url": win_url,
+                            "filename": "win.zip",
+                            "sha256": win_stale,
+                            "hash_source": "publisher",
+                        },
                     },
-                    "windows": {
-                        "url": win_url,
-                        "filename": "win.zip",
-                        "sha256": win_stale,
-                        "hash_source": "publisher",
-                    },
-                },
-            }],
+                }
+            ],
         },
     }
 

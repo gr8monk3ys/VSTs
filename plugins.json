@@ -434,21 +434,21 @@
         "update_strategy": "github:baconpaul/airwin2rack@DAWPlugin",
         "urls": {
           "macos": {
-            "url": "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/airwindows-consolidated-macOS-2026-06-27-9cf9ddf.dmg",
-            "filename": "airwindows-consolidated-macOS-2026-06-27-9cf9ddf.dmg",
-            "sha256": "b2761decace8f8b11bc944c44fe9d69ce05ce9989f696061436c5032c8ea991f",
+            "url": "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/airwindows-consolidated-macOS-2026-08-23-0767d15.dmg",
+            "filename": "airwindows-consolidated-macOS-2026-08-23-0767d15.dmg",
+            "sha256": "800884e5af555deaaca207a8d7eb4471b6f10a84b6b2dab6fb522722b30ba89f",
             "hash_source": "self"
           },
           "windows": {
-            "url": "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/AirwindowsConsolidated-2026-06-27-9cf9ddf-Windows-64bit-setup.exe",
-            "filename": "AirwindowsConsolidated-2026-06-27-9cf9ddf-Windows-64bit-setup.exe",
-            "sha256": "7a2be93276d1d191429eabb82c1fd99b0f4955904941a911dee3f6cf1908c457",
+            "url": "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/AirwindowsConsolidated-2026-08-23-0767d15-Windows-64bit-setup.exe",
+            "filename": "AirwindowsConsolidated-2026-08-23-0767d15-Windows-64bit-setup.exe",
+            "sha256": "143124132749fc8b2cdfc308ca3d2328443e617902bf2ebd0b6894f3feeb2589",
             "hash_source": "self"
           },
           "linux": {
-            "url": "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/AirwindowsConsolidated-2026-06-27-9cf9ddf-Linux.zip",
-            "filename": "AirwindowsConsolidated-2026-06-27-9cf9ddf-Linux.zip",
-            "sha256": "826a3ac7757cd84e7c15463b14a8f2f8085bd0b8073330c404d15237953bae35",
+            "url": "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/AirwindowsConsolidated-2026-08-23-0767d15-Linux.zip",
+            "filename": "AirwindowsConsolidated-2026-08-23-0767d15-Linux.zip",
+            "sha256": "9b20d198f84bcf7a7ad4f3506af32b943e9349e62c52473422e293bc8e9c4193",
             "hash_source": "self"
           }
         },
@@ -647,6 +647,17 @@
         "windows"
       ],
       "reason": "Available via package managers on Linux"
+    },
+    {
+      "name": "Odin 2",
+      "description": "24-voice hybrid synth - analog, wavetable, FM, vector & chiptune oscillators",
+      "website": "https://thewavewarden.com/pages/odin-2",
+      "platforms": [
+        "macos",
+        "windows",
+        "linux"
+      ],
+      "reason": "Open source (GitHub: TheWaveWarden/odin2) but the stable installer ships from the vendor's own site, not a versioned GitHub release, so there's no pinnable per-platform URL+sha256 yet"
     }
   ]
 }

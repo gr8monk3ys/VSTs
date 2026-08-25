@@ -1,16 +1,32 @@
 # Free VST Plugins
 
+<p align="center">
+  <img src="docs/assets/hero.png" alt="free-vst-plugins preview" width="640">
+</p>
+
 [![CI](https://github.com/gr8monk3ys/free-vst-plugins/actions/workflows/ci.yml/badge.svg)](https://github.com/gr8monk3ys/free-vst-plugins/actions/workflows/ci.yml)
 [![Docker](https://github.com/gr8monk3ys/free-vst-plugins/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/gr8monk3ys/free-vst-plugins/pkgs/container/free-vst-plugins)
 
-A curated collection of **high-quality, legally free** VST plugins for music production. Works on **macOS**, **Windows**, and **Linux**.
+A curated collection of **high-quality, legally free** VST plugins for music production. Works on **macOS**, **Windows**, and **Linux**. Every download is pinned to a URL + SHA-256 hash in a version-controlled manifest.
+
+**Browse the catalog:** https://gr8monk3ys.github.io/free-vst-plugins/
 
 ## Quick Start
 
-### Python (Recommended - All Platforms)
+Requires Python 3.9+.
+
+### pipx (no clone needed)
 
 ```bash
-# Clone the repo
+pipx install git+https://github.com/gr8monk3ys/free-vst-plugins.git
+
+free-vst-plugins --list         # uses the latest manifest from this repo
+free-vst-plugins --synths
+```
+
+### From a checkout
+
+```bash
 git clone https://github.com/gr8monk3ys/free-vst-plugins.git
 cd free-vst-plugins
 
@@ -105,6 +121,7 @@ These require account registration but are worth it:
 | **[Kilohearts Essentials](https://kilohearts.com/products/kilohearts_essentials)** | macOS/Win | 30+ modular effects |
 | **[Komplete Start](https://www.native-instruments.com/en/products/komplete/bundles/komplete-start/)** | macOS/Win | NI's free starter bundle |
 | **[LSP Plugins](https://lsp-plug.in/)** | Linux/Win | 70+ professional Linux-native plugins |
+| **[Odin 2](https://thewavewarden.com/pages/odin-2)** | All | Open-source hybrid synth — analog/wavetable/FM/vector oscillators, no pinned release URL yet |
 
 ## Usage
 
@@ -127,9 +144,26 @@ python3 scripts/download-plugins.py --bundles
 # Custom download directory
 python3 scripts/download-plugins.py --dir ~/Music/Plugins
 
+# Only specific plugins (case-insensitive substring, repeatable)
+python3 scripts/download-plugins.py --only surge --only dexed
+
+# Re-verify already-downloaded files against the manifest (no downloads)
+python3 scripts/download-plugins.py --verify
+
 # Force a specific platform (useful for testing)
 python3 scripts/download-plugins.py --platform windows
 ```
+
+## How verification works
+
+Each entry in `plugins.json` pins a download URL, filename, and SHA-256 hash.
+The downloader verifies every file against its pinned hash (including cached
+files) and deletes anything that doesn't match. `hash_source` records where a
+hash came from: `publisher` means the vendor published it; `self` means it was
+computed from the download at pin time (trust-on-first-use). A weekly workflow
+re-checks upstream releases and opens a PR when URLs or hashes drift — that PR
+diff is the moment a new upstream binary gets trusted, so it's worth a look
+before merging.
 
 ## Installation
 
@@ -188,41 +222,43 @@ sudo dpkg -i plugin-name.deb
 
 ```
 free-vst-plugins/
-├── README.md
-├── plugins.json              # Plugin database with URLs for all platforms
-├── Dockerfile                # Docker image for containerized downloads
-├── docker-compose.yml        # Docker Compose for easy usage
-├── .github/
-│   └── workflows/
-│       ├── ci.yml            # CI/CD pipeline (lint, test, URL check)
-│       └── docker-publish.yml # Docker image publishing to GHCR
-└── scripts/
-    ├── download-plugins.py   # Cross-platform downloader (single source of truth)
-    ├── download-plugins.sh   # Bash wrapper — delegates to download-plugins.py
-    └── download-plugins.ps1  # PowerShell wrapper — delegates to download-plugins.py
+├── plugins.json              # The manifest: URLs + SHA-256 hashes for every plugin
+├── schemas/
+│   └── plugins.schema.json   # JSON Schema the manifest must satisfy
+├── src/free_vst_plugins/
+│   └── cli.py                # The downloader (single source of truth)
+├── scripts/
+│   ├── download-plugins.py   # Shim so checkout users don't need to install
+│   ├── download-plugins.sh   # Bash wrapper
+│   ├── download-plugins.ps1  # PowerShell wrapper
+│   ├── build_site.py         # Generates the catalog site from plugins.json
+│   ├── validate_manifest.py  # JSON + schema validation (used by CI)
+│   └── validate_urls.py      # URL reachability check (used by CI)
+├── tests/                    # pytest suite (mock HTTP server, no live network)
+├── Dockerfile
+└── docker-compose.yml
 ```
 
 ## CI/CD
 
-This project uses GitHub Actions for continuous integration:
-
 | Workflow | Description |
 |----------|-------------|
-| **CI** | Lints code, validates JSON, tests script on all platforms |
-| **Docker Publish** | Builds and pushes Docker image to GHCR |
-| **URL Check** | Weekly validation of plugin download URLs |
+| **CI** | Lint, schema validation, tests on 3 OSes, weekly URL check, Docker build |
+| **update-manifest** | Weekly upstream-drift check; opens a PR with refreshed URLs/hashes |
+| **pages** | Rebuilds the catalog site whenever plugins.json changes |
+| **CodeQL / gitleaks / OSV** | Security scanning |
+| **release-please** | Cuts releases from conventional commits |
+| **Docker Publish** | Pushes the image to GHCR on release |
 
-### Running Tests Locally
+### Running Checks Locally
 
 ```bash
-# Validate JSON
-python -m json.tool plugins.json > /dev/null
+pip install ruff pytest jsonschema
 
-# Lint Python script
-pip install ruff && ruff check scripts/download-plugins.py
-
-# Test script
-python scripts/download-plugins.py --list
+python scripts/validate_manifest.py     # JSON + schema
+ruff check src/ scripts/ tests/         # lint
+ruff format --check src/ scripts/ tests/
+pytest tests/                           # full suite, no network needed
 ```
 
 ### Building Docker Locally
@@ -244,11 +280,12 @@ docker run -v $(pwd)/downloads:/downloads free-vst-plugins --all
 
 ## Contributing
 
-Found a great free plugin? PRs welcome!
+Found a great free plugin? [Open a plugin suggestion](https://github.com/gr8monk3ys/free-vst-plugins/issues/new?template=plugin-suggestion.yml) or send a PR:
 
 1. Fork the repo
-2. Add plugin to `plugins.json` with URLs for all available platforms
-3. Test the download script
+2. Add the plugin to `plugins.json` with URLs for all available platforms
+   (compute hashes with `python3 scripts/download-plugins.py --compute-hashes --in-place`)
+3. Run `python scripts/validate_manifest.py` and `pytest tests/`
 4. Submit PR
 
 ### Plugin Criteria

@@ -17,24 +17,17 @@ jobs:
     name: Lint & Validate
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
 
       - name: Set up Python
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: '3.11'
 
-      - name: Validate JSON
-        run: python -m json.tool plugins.json > /dev/null
-
-      - name: Validate plugins.json against schema
+      - name: Validate plugins.json (JSON + schema)
         run: |
           pip install jsonschema
-          python -c "import json, jsonschema; \
-            schema = json.load(open('schemas/plugins.schema.json')); \
-            data = json.load(open('plugins.json')); \
-            jsonschema.validate(instance=data, schema=schema); \
-            print('plugins.json validates against schema')"
+          python scripts/validate_manifest.py
 
       - name: Check for upstream version drift
         run: |
@@ -43,13 +36,14 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Lint Python script
+      - name: Lint Python
         run: |
           pip install ruff
-          ruff check scripts/download-plugins.py
+          ruff check src/ scripts/ tests/
+          ruff format --check src/ scripts/ tests/
 
-      - name: Check script syntax
-        run: python -m py_compile scripts/download-plugins.py
+      - name: Check syntax
+        run: python -m py_compile src/free_vst_plugins/cli.py scripts/download-plugins.py
 
   test-script:
     name: Test Script (${{ matrix.os }})
@@ -73,7 +67,7 @@ jobs:
       PYTHONUTF8: '1'  # Ensure UTF-8 output on Windows (fixes UnicodeEncodeError for box-drawing chars)
 
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
@@ -106,7 +100,7 @@ jobs:
     name: Validate Plugin URLs
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
 
       - name: Set up Python
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
@@ -114,73 +108,19 @@ jobs:
           python-version: '3.11'
 
       - name: Check URLs are reachable
-        run: |
-          python << 'EOF'
-          import json
-          import urllib.request
-          import urllib.error
-          import sys
-
-          with open('plugins.json', 'r') as f:
-              data = json.load(f)
-
-          failed = []
-          checked = 0
-
-          def check_url(name, url, platform):
-              global checked, failed
-              if not url or url == 'github-api':
-                  return
-
-              checked += 1
-              try:
-                  req = urllib.request.Request(url, method='HEAD', headers={
-                      'User-Agent': 'Mozilla/5.0 (compatible; CI-Check/1.0)'
-                  })
-                  with urllib.request.urlopen(req, timeout=30) as resp:
-                      print(f"✓ {name} ({platform}): {resp.status}")
-              except urllib.error.HTTPError as e:
-                  if e.code in [403, 405]:  # Some servers don't allow HEAD
-                      print(f"~ {name} ({platform}): {e.code} (may still work)")
-                  else:
-                      print(f"✗ {name} ({platform}): HTTP {e.code}")
-                      failed.append(f"{name} ({platform}): HTTP {e.code}")
-              except Exception as e:
-                  print(f"✗ {name} ({platform}): {e}")
-                  failed.append(f"{name} ({platform}): {e}")
-
-          for category in data.get('plugins', {}).values():
-              for plugin in category:
-                  name = plugin.get('name', 'Unknown')
-                  urls = plugin.get('urls', {})
-
-                  for platform, url_info in urls.items():
-                      if isinstance(url_info, dict):
-                          url = url_info.get('url')
-                      else:
-                          url = url_info
-                      check_url(name, url, platform)
-
-          print(f"\n{checked} URLs checked, {len(failed)} failed")
-
-          if failed:
-              print("\nFailed URLs:")
-              for f in failed:
-                  print(f"  - {f}")
-              sys.exit(1)
-          EOF
+        run: python scripts/validate_urls.py
 
   docker:
     name: Build Docker Image
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f
+        uses: docker/setup-buildx-action@d7f5e7f509e45cec5c76c4d5afdd7de93d0b3df5
 
       - name: Build Docker image
-        uses: docker/build-push-action@ca052bb54ab0790a636c9b5f226502c73d547a25
+        uses: docker/build-push-action@f9f3042f7e2789586610d6e8b85c8f03e5195baf
         with:
           context: .
           push: false
@@ -193,52 +133,3 @@ jobs:
         run: |
           docker run --rm free-vst-plugins:test --list
           docker run --rm free-vst-plugins:test --help
-
-  release:
-    name: Create Release
-    runs-on: ubuntu-latest
-    needs: [lint, test-script, docker]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
-
-      - name: Get version from plugins.json
-        id: version
-        run: |
-          VERSION=$(python -c "import json; print(json.load(open('plugins.json'))['meta']['version'])")
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-
-      - name: Check if tag exists
-        id: check_tag
-        run: |
-          if git rev-parse "v${{ steps.version.outputs.version }}" >/dev/null 2>&1; then
-            echo "exists=true" >> $GITHUB_OUTPUT
-          else
-            echo "exists=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Create Release
-        if: steps.check_tag.outputs.exists == 'false'
-        uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844
-        with:
-          tag_name: v${{ steps.version.outputs.version }}
-          name: Release v${{ steps.version.outputs.version }}
-          body: |
-            ## Free VST Plugins v${{ steps.version.outputs.version }}
-
-            Cross-platform downloader for free VST plugins.
-
-            ### Usage
-            ```bash
-            git clone https://github.com/gr8monk3ys/free-vst-plugins.git
-            cd free-vst-plugins
-            python3 scripts/download-plugins.py
-            ```
-
-            Or with Docker:
-            ```bash
-            docker run -v ~/Downloads/VST-Plugins:/downloads ghcr.io/gr8monk3ys/free-vst-plugins
-            ```
-          generate_release_notes: true

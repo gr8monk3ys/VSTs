@@ -3,12 +3,17 @@
 from __future__ import annotations
 
 import hashlib
+import sys
+from pathlib import Path as _Path
+
+# Make the src layout importable without installation.
+sys.path.insert(0, str(_Path(__file__).resolve().parents[1] / "src"))
 import http.server
 import socketserver
 import threading
+from collections.abc import Iterator
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterator
 
 import pytest
 
@@ -16,6 +21,7 @@ import pytest
 @dataclass
 class MockServer:
     """A running mock HTTP server. Use `add(path, body)` to register responses."""
+
     host: str
     port: int
     _routes: dict[str, bytes]
@@ -45,7 +51,7 @@ def mock_server() -> Iterator[MockServer]:
     routes: dict[str, bytes] = {}
 
     class Handler(http.server.BaseHTTPRequestHandler):
-        def do_GET(self) -> None:  # noqa: N802 — http.server interface
+        def do_GET(self) -> None:
             body = routes.get(self.path)
             if body is None:
                 self.send_response(404)

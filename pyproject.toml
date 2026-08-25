@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "free-vst-plugins"
+version = "2.0.0"
+description = "Cross-platform downloader for curated, hash-verified free VST plugins"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "gr8monk3ys" }]
+keywords = ["vst", "vst3", "audio", "plugins", "music-production", "downloader"]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Environment :: Console",
+  "Intended Audience :: End Users/Desktop",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Topic :: Multimedia :: Sound/Audio",
+]
+
+[project.urls]
+Homepage = "https://github.com/gr8monk3ys/free-vst-plugins"
+Issues = "https://github.com/gr8monk3ys/free-vst-plugins/issues"
+
+[project.scripts]
+free-vst-plugins = "free_vst_plugins.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
