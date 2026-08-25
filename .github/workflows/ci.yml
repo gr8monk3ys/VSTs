@@ -133,4 +133,3 @@ jobs:
         run: |
           docker run --rm free-vst-plugins:test --list
           docker run --rm free-vst-plugins:test --help
-

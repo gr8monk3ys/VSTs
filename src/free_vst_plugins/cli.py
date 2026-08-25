@@ -845,12 +845,29 @@ def get_plugin_url(plugin, plat):
     return None
 
 
-def download_category(plugins_data, category, download_dir, plat):
-    """Download all plugins in a category."""
+def matches_only(name: str, only: list[str] | None) -> bool:
+    """True when `name` matches any --only filter (case-insensitive substring).
+
+    No filters means everything matches.
+    """
+    if not only:
+        return True
+    lowered = name.lower()
+    return any(needle.lower() in lowered for needle in only)
+
+
+def download_category(plugins_data, category, download_dir, plat, only=None):
+    """Download all plugins in a category (optionally filtered by --only)."""
     if category not in plugins_data.get("plugins", {}):
         return 0
 
-    plugins = plugins_data["plugins"][category]
+    plugins = [
+        p
+        for p in plugins_data["plugins"][category]
+        if matches_only(p.get("name", "Unknown"), only)
+    ]
+    if not plugins:
+        return 0
     failed = 0
 
     print_section(category.title())
@@ -875,6 +892,48 @@ def download_category(plugins_data, category, download_dir, plat):
             failed += 1
 
     return failed
+
+
+def verify_downloads(plugins_data, download_dir, plat, only=None) -> int:
+    """Re-hash already-downloaded files against the manifest. No downloads.
+
+    Prints one line per plugin (verified / MISMATCH / not downloaded) and
+    returns the number of hash mismatches found.
+    """
+    print_section("Verifying Downloads")
+    mismatched = 0
+    checked = 0
+
+    for category_plugins in plugins_data.get("plugins", {}).values():
+        for plugin in category_plugins:
+            name = plugin.get("name", "Unknown")
+            if not matches_only(name, only):
+                continue
+            entry = get_plugin_url(plugin, plat)
+            if entry is None:
+                continue
+            filename = entry.get("filename") or urllib.request.unquote(
+                entry["url"].split("/")[-1].split("?")[0]
+            )
+            filepath = download_dir / filename
+            if not filepath.exists():
+                print(f"  {C.YELLOW}⏭{C.NC}  {name} - not downloaded")
+                continue
+
+            checked += 1
+            h = hashlib.sha256()
+            with open(filepath, "rb") as f:
+                for chunk in iter(lambda: f.read(65536), b""):
+                    h.update(chunk)
+            if h.hexdigest() == entry["sha256"]:
+                print(f"  {C.GREEN}✓{C.NC}  {name} - verified ({entry['hash_source']})")
+            else:
+                mismatched += 1
+                print(f"  {C.RED}✗{C.NC}  {name} - HASH MISMATCH ({filepath.name})")
+
+    print()
+    print(f"  {checked} file(s) checked, {mismatched} mismatch(es)")
+    return mismatched
 
 
 def print_summary(download_dir, plat):
@@ -1020,7 +1079,18 @@ Examples:
     parser.add_argument(
         "--plugins-json",
         type=str,
-        help="Path to plugins.json (defaults to ../plugins.json relative to script)",
+        help="Path to plugins.json (defaults to the repo checkout, then the canonical remote manifest)",
+    )
+    parser.add_argument(
+        "--only",
+        action="append",
+        metavar="NAME",
+        help="Only process plugins whose name contains NAME (case-insensitive; repeatable)",
+    )
+    parser.add_argument(
+        "--verify",
+        action="store_true",
+        help="Re-hash already-downloaded files against the manifest; no downloads",
     )
 
     args = parser.parse_args()
@@ -1088,6 +1158,14 @@ Examples:
         n_fail = len(report["failures"])
         sys.exit(1 if (n_up or n_fail) else 0)
 
+    # Verify mode: re-hash what's already on disk, download nothing.
+    if args.verify:
+        print_header()
+        print(f"  Platform: {C.CYAN}{plat}{C.NC}")
+        print(f"  Download directory: {C.CYAN}{download_dir}{C.NC}")
+        mismatched = verify_downloads(plugins_data, download_dir, plat, only=args.only)
+        sys.exit(1 if mismatched else 0)
+
     # Determine which categories to download
     download_all = not (args.synths or args.effects or args.instruments or args.bundles)
     categories = []
@@ -1111,7 +1189,9 @@ Examples:
     failed = 0
     try:
         for category in categories:
-            failed += download_category(plugins_data, category, download_dir, plat)
+            failed += download_category(
+                plugins_data, category, download_dir, plat, only=args.only
+            )
     except ChecksumMismatch as e:
         print(f"\n{C.RED}HASH MISMATCH detected for {e.name}.{C.NC}")
         print(f"{C.RED}Aborting. The bad file has been deleted.{C.NC}")

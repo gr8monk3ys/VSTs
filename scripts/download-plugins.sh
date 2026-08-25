@@ -13,7 +13,7 @@ PYTHON_SCRIPT="${SCRIPT_DIR}/download-plugins.py"
 PYTHON=""
 for cmd in python3 python; do
   if command -v "$cmd" >/dev/null 2>&1; then
-    if "$cmd" -c 'import sys; sys.exit(0 if sys.version_info >= (3, 10) else 1)' 2>/dev/null; then
+    if "$cmd" -c 'import sys; sys.exit(0 if sys.version_info >= (3, 9) else 1)' 2>/dev/null; then
       PYTHON="$cmd"
       break
     fi
@@ -21,7 +21,7 @@ for cmd in python3 python; do
 done
 
 if [ -z "$PYTHON" ]; then
-  echo "Error: Python 3.10+ not found. Install from https://python.org or via your package manager." >&2
+  echo "Error: Python 3.9+ not found. Install from https://python.org or via your package manager." >&2
   exit 1
 fi
 
