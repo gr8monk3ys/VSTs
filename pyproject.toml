@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "free-vst-plugins"
-version = "2.0.0"
+version = "0.1.0"
 description = "Cross-platform downloader for curated, hash-verified free VST plugins"
 readme = "README.md"
 requires-python = ">=3.9"
