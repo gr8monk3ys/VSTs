@@ -5,6 +5,8 @@ Downloads high-quality free VST plugins for macOS, Windows, and Linux.
 All plugins are legally free from their official sources.
 """
 
+from __future__ import annotations
+
 import argparse
 import hashlib
 import json
@@ -12,21 +14,25 @@ import os
 import platform
 import re
 import sys
-import urllib.request
 import urllib.error
+import urllib.request
 import zipfile
 from pathlib import Path
 
+
 # ANSI colors (disabled on Windows unless in modern terminal)
 class Colors:
-    ENABLED = sys.stdout.isatty() and (platform.system() != 'Windows' or os.environ.get('WT_SESSION'))
+    ENABLED = sys.stdout.isatty() and (
+        platform.system() != "Windows" or os.environ.get("WT_SESSION")
+    )
 
-    RED = '\033[0;31m' if ENABLED else ''
-    GREEN = '\033[0;32m' if ENABLED else ''
-    YELLOW = '\033[1;33m' if ENABLED else ''
-    BLUE = '\033[0;34m' if ENABLED else ''
-    CYAN = '\033[0;36m' if ENABLED else ''
-    NC = '\033[0m' if ENABLED else ''
+    RED = "\033[0;31m" if ENABLED else ""
+    GREEN = "\033[0;32m" if ENABLED else ""
+    YELLOW = "\033[1;33m" if ENABLED else ""
+    BLUE = "\033[0;34m" if ENABLED else ""
+    CYAN = "\033[0;36m" if ENABLED else ""
+    NC = "\033[0m" if ENABLED else ""
+
 
 C = Colors()
 
@@ -44,46 +50,39 @@ class ChecksumMismatch(Exception):
 def get_platform():
     """Detect current platform."""
     system = platform.system().lower()
-    if system == 'darwin':
-        return 'macos'
-    elif system == 'windows':
-        return 'windows'
-    elif system == 'linux':
-        return 'linux'
-    return system
+    return {"darwin": "macos", "windows": "windows", "linux": "linux"}.get(
+        system, system
+    )
+
 
 def get_default_download_dir():
     """Get default download directory based on platform."""
-    home = Path.home()
-    plat = get_platform()
+    return Path.home() / "Downloads" / "VST-Plugins"
 
-    if plat == 'macos':
-        return home / 'Downloads' / 'VST-Plugins'
-    elif plat == 'windows':
-        return home / 'Downloads' / 'VST-Plugins'
-    else:  # Linux
-        return home / 'Downloads' / 'VST-Plugins'
 
 def load_plugins(json_path):
     """Load plugins from JSON file."""
-    with open(json_path, 'r', encoding='utf-8') as f:
+    with open(json_path, encoding="utf-8") as f:
         return json.load(f)
+
 
 def print_header():
     """Print script header."""
     print()
-    print(f"{C.CYAN}{'='*64}{C.NC}")
+    print(f"{C.CYAN}{'=' * 64}{C.NC}")
     print(f"{C.CYAN}  {C.GREEN}Free VST Plugins Downloader{C.NC}")
     print(f"{C.CYAN}  {C.NC}Cross-platform: macOS | Windows | Linux")
-    print(f"{C.CYAN}{'='*64}{C.NC}")
+    print(f"{C.CYAN}{'=' * 64}{C.NC}")
     print()
+
 
 def print_section(title):
     """Print section header."""
     print()
-    print(f"{C.BLUE}{'─'*64}{C.NC}")
+    print(f"{C.BLUE}{'─' * 64}{C.NC}")
     print(f"{C.BLUE}  {title}{C.NC}")
-    print(f"{C.BLUE}{'─'*64}{C.NC}")
+    print(f"{C.BLUE}{'─' * 64}{C.NC}")
+
 
 def download_file(url, filepath, name, expected_sha256, hash_source):
     """Download `url` to `filepath`, verifying SHA-256 in a single I/O pass.
@@ -95,25 +94,30 @@ def download_file(url, filepath, name, expected_sha256, hash_source):
     """
     if filepath.exists():
         h_existing = hashlib.sha256()
-        with open(filepath, 'rb') as f:
-            for chunk in iter(lambda: f.read(65536), b''):
+        with open(filepath, "rb") as f:
+            for chunk in iter(lambda: f.read(65536), b""):
                 h_existing.update(chunk)
         if h_existing.hexdigest() == expected_sha256:
             print(f"  {C.YELLOW}⏭{C.NC}  {name} - already verified ({hash_source})")
             return True
         # Cached file is bad — delete and fall through to re-download.
         filepath.unlink()
-        print(f"  {C.YELLOW}⚠{C.NC}  {name} - cached file failed verification, redownloading")
+        print(
+            f"  {C.YELLOW}⚠{C.NC}  {name} - cached file failed verification, redownloading"
+        )
 
     print(f"  {C.CYAN}⬇{C.NC}  Downloading {name}...")
 
-    req = urllib.request.Request(url, headers={
-        'User-Agent': 'Mozilla/5.0 (compatible; VST-Downloader/1.0)'
-    })
+    req = urllib.request.Request(
+        url, headers={"User-Agent": "Mozilla/5.0 (compatible; VST-Downloader/1.0)"}
+    )
 
     h = hashlib.sha256()
     try:
-        with urllib.request.urlopen(req, timeout=60) as response, open(filepath, 'wb') as f:
+        with (
+            urllib.request.urlopen(req, timeout=60) as response,
+            open(filepath, "wb") as f,
+        ):
             while True:
                 chunk = response.read(65536)
                 if not chunk:
@@ -142,6 +146,7 @@ def download_file(url, filepath, name, expected_sha256, hash_source):
     print(f"  {C.GREEN}✓{C.NC}  {name} - verified ({hash_source})")
     return True
 
+
 def compute_hash_for_url(url: str, chunk_size: int = 65536) -> str:
     """Stream the URL and return the lowercase hex SHA-256 of its body.
 
@@ -152,13 +157,13 @@ def compute_hash_for_url(url: str, chunk_size: int = 65536) -> str:
     typically indicate a download-gate page or API error rather than a
     real installer (the hash would be valid but verify the wrong content).
     """
-    req = urllib.request.Request(url, headers={
-        'User-Agent': 'Mozilla/5.0 (compatible; VST-Downloader/1.0)'
-    })
+    req = urllib.request.Request(
+        url, headers={"User-Agent": "Mozilla/5.0 (compatible; VST-Downloader/1.0)"}
+    )
     h = hashlib.sha256()
     with urllib.request.urlopen(req, timeout=60) as response:
-        ct = (response.getheader('Content-Type') or '').lower()
-        if ct.startswith('text/html') or ct.startswith('application/json'):
+        ct = (response.getheader("Content-Type") or "").lower()
+        if ct.startswith(("text/html", "application/json")):
             raise ValueError(
                 f"refusing to hash {url} — Content-Type is {ct!r}; "
                 "this URL probably serves a download-gate page or API error, "
@@ -171,6 +176,7 @@ def compute_hash_for_url(url: str, chunk_size: int = 65536) -> str:
             h.update(chunk)
     return h.hexdigest()
 
+
 def recompute_hashes(plugins_data: dict, force: bool) -> dict:
     """Walk plugins_data, compute SHA-256 for every URL, return updated dict.
 
@@ -178,21 +184,23 @@ def recompute_hashes(plugins_data: dict, force: bool) -> dict:
     'publisher' hashes are not clobbered). With force=True, every URL is
     recomputed and tagged 'self'.
     """
-    for category_plugins in plugins_data.get('plugins', {}).values():
+    for category_plugins in plugins_data.get("plugins", {}).values():
         for plugin in category_plugins:
-            urls = plugin.get('urls', {})
-            for plat, entry in urls.items():
-                if not isinstance(entry, dict) or 'url' not in entry:
+            urls = plugin.get("urls", {})
+            for entry in urls.values():
+                if not isinstance(entry, dict) or "url" not in entry:
                     continue
-                if entry.get('sha256') and not force:
+                if entry.get("sha256") and not force:
                     continue
-                digest = compute_hash_for_url(entry['url'])
-                entry['sha256'] = digest
-                entry['hash_source'] = 'self'
+                digest = compute_hash_for_url(entry["url"])
+                entry["sha256"] = digest
+                entry["hash_source"] = "self"
     return plugins_data
 
-def detect_latest_for_github(repo: str, tag: str | None = None,
-                             api_base: str = "https://api.github.com") -> dict:
+
+def detect_latest_for_github(
+    repo: str, tag: str | None = None, api_base: str = "https://api.github.com"
+) -> dict:
     """Fetch a release from the GitHub API.
 
     repo: 'owner/name'.
@@ -212,55 +220,61 @@ def detect_latest_for_github(repo: str, tag: str | None = None,
         path = f"/repos/{repo}/releases/latest"
 
     headers = {
-        'User-Agent': 'Mozilla/5.0 (compatible; VST-Downloader/1.0)',
-        'Accept': 'application/vnd.github+json',
+        "User-Agent": "Mozilla/5.0 (compatible; VST-Downloader/1.0)",
+        "Accept": "application/vnd.github+json",
     }
-    token = os.environ.get('GITHUB_TOKEN')
+    token = os.environ.get("GITHUB_TOKEN")
     if token:
-        headers['Authorization'] = f'Bearer {token}'
+        headers["Authorization"] = f"Bearer {token}"
 
     req = urllib.request.Request(api_base + path, headers=headers)
     with urllib.request.urlopen(req, timeout=30) as response:
-        data = json.loads(response.read().decode('utf-8'))
+        data = json.loads(response.read().decode("utf-8"))
 
     return {
-        'tag': data.get('tag_name', ''),
-        'assets': [
+        "tag": data.get("tag_name", ""),
+        "assets": [
             {
-                'name': a.get('name', ''),
-                'url': a.get('browser_download_url', ''),
-                'size': a.get('size', 0),
+                "name": a.get("name", ""),
+                "url": a.get("browser_download_url", ""),
+                "size": a.get("size", 0),
             }
-            for a in data.get('assets', [])
+            for a in data.get("assets", [])
         ],
     }
 
+
 UHE_PRODUCTS = {
-    'TyrellN6': {
-        'page_url': 'https://u-he.com/products/tyrelln6/',
-        'version_re': re.compile(r'TyrellN6\s+(?:Beta\s+)?(\d+)\.(\d+)\.(\d+)\s*\(revision\s+(\d+)\)'),
-        'asset_template': '{dl_base}/releases/TyrellN6_{vcode}_public_beta_{rev}_{platform}.{ext}',
-        'platforms': {
-            'macos':   ('Mac',   'zip'),
-            'windows': ('Win',   'zip'),
-            'linux':   ('Linux', 'tar.xz'),
+    "TyrellN6": {
+        "page_url": "https://u-he.com/products/tyrelln6/",
+        "version_re": re.compile(
+            r"TyrellN6\s+(?:Beta\s+)?(\d+)\.(\d+)\.(\d+)\s*\(revision\s+(\d+)\)"
+        ),
+        "asset_template": "{dl_base}/releases/TyrellN6_{vcode}_public_beta_{rev}_{platform}.{ext}",
+        "platforms": {
+            "macos": ("Mac", "zip"),
+            "windows": ("Win", "zip"),
+            "linux": ("Linux", "tar.xz"),
         },
     },
-    'Zebralette': {
-        'page_url': 'https://u-he.com/products/zebralette/',
-        'version_re': re.compile(r'Zebralette\s+(\d+)\.(\d+)\.(\d+)\s*\(revision\s+(\d+)\)'),
-        'asset_template': '{dl_base}/releases/Zebra_Legacy_{vcode}_{rev}_{platform}.{ext}',
-        'platforms': {
-            'macos':   ('Mac',   'zip'),
-            'windows': ('Win',   'zip'),
-            'linux':   ('Linux', 'zip'),
+    "Zebralette": {
+        "page_url": "https://u-he.com/products/zebralette/",
+        "version_re": re.compile(
+            r"Zebralette\s+(\d+)\.(\d+)\.(\d+)\s*\(revision\s+(\d+)\)"
+        ),
+        "asset_template": "{dl_base}/releases/Zebra_Legacy_{vcode}_{rev}_{platform}.{ext}",
+        "platforms": {
+            "macos": ("Mac", "zip"),
+            "windows": ("Win", "zip"),
+            "linux": ("Linux", "zip"),
         },
     },
 }
 
 
-def detect_latest_for_uhe(product: str, page_url: str | None = None,
-                          dl_base: str | None = None) -> dict:
+def detect_latest_for_uhe(
+    product: str, page_url: str | None = None, dl_base: str | None = None
+) -> dict:
     """Fetch a u-he product page and return the latest release as
     {'tag': str, 'assets': [{'name', 'url', 'size': 0}, ...]}.
 
@@ -278,16 +292,19 @@ def detect_latest_for_uhe(product: str, page_url: str | None = None,
         raise ValueError(f"unknown u-he product: {product!r}")
 
     cfg = UHE_PRODUCTS[product]
-    url = page_url or cfg['page_url']
-    base = dl_base or 'https://dl.u-he.com'
+    url = page_url or cfg["page_url"]
+    base = dl_base or "https://dl.u-he.com"
 
-    req = urllib.request.Request(url, headers={
-        'User-Agent': 'Mozilla/5.0 (compatible; VST-Downloader/1.0)',
-    })
+    req = urllib.request.Request(
+        url,
+        headers={
+            "User-Agent": "Mozilla/5.0 (compatible; VST-Downloader/1.0)",
+        },
+    )
     with urllib.request.urlopen(req, timeout=30) as response:
-        body = response.read().decode('utf-8', errors='replace')
+        body = response.read().decode("utf-8", errors="replace")
 
-    m = cfg['version_re'].search(body)
+    m = cfg["version_re"].search(body)
     if not m:
         raise RuntimeError(
             f"u-he page does not contain a recognizable version string for {product}"
@@ -297,15 +314,20 @@ def detect_latest_for_uhe(product: str, page_url: str | None = None,
     tag = f"{major}.{minor}.{patch}-r{rev}"
 
     assets = []
-    for plat, (plat_name, ext) in cfg['platforms'].items():
-        asset_url = cfg['asset_template'].format(
-            dl_base=base, vcode=vcode, rev=rev, platform=plat_name, ext=ext,
+    for plat_name, ext in cfg["platforms"].values():
+        asset_url = cfg["asset_template"].format(
+            dl_base=base,
+            vcode=vcode,
+            rev=rev,
+            platform=plat_name,
+            ext=ext,
         )
         # Strip the dl_base prefix to derive the asset filename.
-        name = asset_url.rsplit('/', 1)[-1]
-        assets.append({'name': name, 'url': asset_url, 'size': 0})
+        name = asset_url.rsplit("/", 1)[-1]
+        assets.append({"name": name, "url": asset_url, "size": 0})
 
-    return {'tag': tag, 'assets': assets}
+    return {"tag": tag, "assets": assets}
+
 
 def detect_drift_for_stable_url(entry: dict) -> dict:
     """Re-hash each platform URL in `entry` and report which platforms drifted.
@@ -335,18 +357,19 @@ def detect_drift_for_stable_url(entry: dict) -> dict:
         and silently re-hashing that HTML would be wrong).
       urllib.error.HTTPError / URLError on network failure.
     """
-    urls = entry.get('urls') or {}
-    platforms_with_url = {p: e for p, e in urls.items()
-                          if isinstance(e, dict) and e.get('url')}
+    urls = entry.get("urls") or {}
+    platforms_with_url = {
+        p: e for p, e in urls.items() if isinstance(e, dict) and e.get("url")
+    }
     if not platforms_with_url:
         raise ValueError(
             f"stable-url entry {entry.get('name', '<unknown>')!r} has no platforms with URLs"
         )
 
-    out = {'drift': False, 'platforms': {}}
+    out = {"drift": False, "platforms": {}}
     for plat, urlentry in platforms_with_url.items():
-        url = urlentry['url']
-        stored = urlentry.get('sha256')
+        url = urlentry["url"]
+        stored = urlentry.get("sha256")
         if not stored:
             raise ValueError(
                 f"stable-url entry {entry.get('name', '<unknown>')!r} platform "
@@ -355,19 +378,23 @@ def detect_drift_for_stable_url(entry: dict) -> dict:
         new_hash = compute_hash_for_url(url)
         changed = new_hash != stored
         if changed:
-            out['drift'] = True
-        out['platforms'][plat] = {
-            'url': url,
-            'old_sha256': stored,
-            'new_sha256': new_hash,
-            'changed': changed,
+            out["drift"] = True
+        out["platforms"][plat] = {
+            "url": url,
+            "old_sha256": stored,
+            "new_sha256": new_hash,
+            "changed": changed,
         }
     return out
 
-def find_matching_asset(current_filename: str, candidates: list[dict],
-                        current_url: str | None = None,
-                        old_tag: str | None = None,
-                        new_tag: str | None = None) -> dict | None:
+
+def find_matching_asset(
+    current_filename: str,
+    candidates: list[dict],
+    current_url: str | None = None,
+    old_tag: str | None = None,
+    new_tag: str | None = None,
+) -> dict | None:
     """Pick the candidate asset that should replace `current_filename`.
 
     Strategy A (exact substitution): if old_tag and new_tag are both set and differ
@@ -389,13 +416,13 @@ def find_matching_asset(current_filename: str, candidates: list[dict],
     if old_tag and new_tag and old_tag != new_tag and old_tag in current_filename:
         expected = current_filename.replace(old_tag, new_tag)
         for cand in candidates:
-            if cand['name'] == expected:
+            if cand["name"] == expected:
                 return cand
 
     def tokens(name: str) -> set[str]:
         # Splits on URL/path separators too (`/`, `:`) so a current_url can
         # contribute its repo path components as discrete tokens.
-        return {t for t in re.split(r'[-_./:]', name.lower()) if t}
+        return {t for t in re.split(r"[-_./:]", name.lower()) if t}
 
     filename_toks = tokens(current_filename)
     url_toks = tokens(current_url) if current_url else set()
@@ -406,13 +433,14 @@ def find_matching_asset(current_filename: str, candidates: list[dict],
     # over candidates that only match URL path components.
     best_score = (1, 0)  # filename-overlap floor of 2 (must beat 1)
     for cand in candidates:
-        cand_toks = tokens(cand['name'])
+        cand_toks = tokens(cand["name"])
         score = (len(filename_toks & cand_toks), len(url_toks & cand_toks))
         if score > best_score:
             best = cand
             best_score = score
 
     return best
+
 
 def _parse_update_strategy(strategy: str):
     """Parse known update_strategy values.
@@ -425,23 +453,23 @@ def _parse_update_strategy(strategy: str):
     """
     if not strategy:
         return None
-    if strategy.startswith('github:'):
-        rest = strategy[len('github:'):]
+    if strategy.startswith("github:"):
+        rest = strategy[len("github:") :]
         if not rest:
             return None
-        if '@' in rest:
-            repo, tag = rest.rsplit('@', 1)
+        if "@" in rest:
+            repo, tag = rest.rsplit("@", 1)
             if not repo or not tag:
                 return None
-            return ('github', repo, tag)
-        return ('github', rest, None)
-    if strategy.startswith('u-he:'):
-        product = strategy[len('u-he:'):]
+            return ("github", repo, tag)
+        return ("github", rest, None)
+    if strategy.startswith("u-he:"):
+        product = strategy[len("u-he:") :]
         if not product:
             return None
-        return ('u-he', product)
-    if strategy == 'stable-url':
-        return ('stable-url',)
+        return ("u-he", product)
+    if strategy == "stable-url":
+        return ("stable-url",)
     return None
 
 
@@ -460,70 +488,93 @@ def check_updates(plugins_data: dict, api_base: str = "https://api.github.com") 
         'failures': [{'name', 'category', 'reason'}, ...],
       }
     """
-    report = {'updates': [], 'no_updates': [], 'manual': [], 'failures': []}
+    report = {"updates": [], "no_updates": [], "manual": [], "failures": []}
 
-    for category, plugins in plugins_data.get('plugins', {}).items():
+    for category, plugins in plugins_data.get("plugins", {}).items():
         for plugin in plugins:
-            name = plugin.get('name', 'Unknown')
-            current_version = plugin.get('version', '?')
-            strategy = plugin.get('update_strategy')
+            name = plugin.get("name", "Unknown")
+            current_version = plugin.get("version", "?")
+            strategy = plugin.get("update_strategy")
 
             if not strategy:
-                report['manual'].append({
-                    'name': name, 'category': category, 'version': current_version,
-                })
+                report["manual"].append(
+                    {
+                        "name": name,
+                        "category": category,
+                        "version": current_version,
+                    }
+                )
                 continue
 
             parsed = _parse_update_strategy(strategy)
             if not parsed:
-                report['failures'].append({
-                    'name': name, 'category': category,
-                    'reason': f'malformed update_strategy: {strategy}',
-                })
+                report["failures"].append(
+                    {
+                        "name": name,
+                        "category": category,
+                        "reason": f"malformed update_strategy: {strategy}",
+                    }
+                )
                 continue
 
             # stable-url is its own pipeline — no asset matching, just rehash + compare.
-            if parsed[0] == 'stable-url':
+            if parsed[0] == "stable-url":
                 try:
                     drift_result = detect_drift_for_stable_url(plugin)
                 except (urllib.error.HTTPError, urllib.error.URLError, ValueError) as e:
-                    report['failures'].append({
-                        'name': name, 'category': category,
-                        'reason': f'detection failed: {e}',
-                    })
+                    report["failures"].append(
+                        {
+                            "name": name,
+                            "category": category,
+                            "reason": f"detection failed: {e}",
+                        }
+                    )
                     continue
-                if drift_result['drift']:
+                if drift_result["drift"]:
                     platform_rows = [
-                        {'plat': plat, 'changed': info['changed'],
-                         'old_sha256': info['old_sha256'], 'new_sha256': info['new_sha256']}
-                        for plat, info in drift_result['platforms'].items()
+                        {
+                            "plat": plat,
+                            "changed": info["changed"],
+                            "old_sha256": info["old_sha256"],
+                            "new_sha256": info["new_sha256"],
+                        }
+                        for plat, info in drift_result["platforms"].items()
                     ]
-                    report['updates'].append({
-                        'name': name, 'category': category,
-                        'strategy': 'stable-url',
-                        'old_version': current_version,
-                        'new_version': current_version,  # vendor didn't bump a label
-                        'platforms': platform_rows,
-                    })
+                    report["updates"].append(
+                        {
+                            "name": name,
+                            "category": category,
+                            "strategy": "stable-url",
+                            "old_version": current_version,
+                            "new_version": current_version,  # vendor didn't bump a label
+                            "platforms": platform_rows,
+                        }
+                    )
                 else:
-                    report['no_updates'].append({
-                        'name': name, 'category': category, 'version': current_version,
-                    })
+                    report["no_updates"].append(
+                        {
+                            "name": name,
+                            "category": category,
+                            "version": current_version,
+                        }
+                    )
                 continue
 
             try:
-                if parsed[0] == 'github':
+                if parsed[0] == "github":
                     _, repo, tag = parsed
                     release = detect_latest_for_github(repo, tag=tag, api_base=api_base)
                     old_tag = tag if tag else current_version
-                elif parsed[0] == 'u-he':
+                elif parsed[0] == "u-he":
                     _, product = parsed
                     # Test-only env-var overrides; production uses UHE_PRODUCTS defaults.
                     # VST_DLP_UHE_PAGE_URL_<Product>: alternate product-page URL (e.g. mock server)
                     # VST_DLP_UHE_DL_BASE: alternate download base URL
-                    page_url = os.environ.get(f'VST_DLP_UHE_PAGE_URL_{product}')
-                    dl_base = os.environ.get('VST_DLP_UHE_DL_BASE')
-                    release = detect_latest_for_uhe(product, page_url=page_url, dl_base=dl_base)
+                    page_url = os.environ.get(f"VST_DLP_UHE_PAGE_URL_{product}")
+                    dl_base = os.environ.get("VST_DLP_UHE_DL_BASE")
+                    release = detect_latest_for_uhe(
+                        product, page_url=page_url, dl_base=dl_base
+                    )
                     # u-he tags carry a revision (e.g. "3.0.1-r17000") that won't
                     # substring-match current_version (e.g. "3.0.0"); Strategy A
                     # skips and Strategy B does the matching.
@@ -531,59 +582,90 @@ def check_updates(plugins_data: dict, api_base: str = "https://api.github.com") 
                     tag = None  # for the rolling-tag display logic later
                 else:
                     raise RuntimeError(f"unknown strategy kind: {parsed[0]}")
-            except (urllib.error.HTTPError, urllib.error.URLError, ValueError, RuntimeError) as e:
-                report['failures'].append({
-                    'name': name, 'category': category,
-                    'reason': f'detection failed: {e}',
-                })
+            except (
+                urllib.error.HTTPError,
+                urllib.error.URLError,
+                ValueError,
+                RuntimeError,
+            ) as e:
+                report["failures"].append(
+                    {
+                        "name": name,
+                        "category": category,
+                        "reason": f"detection failed: {e}",
+                    }
+                )
                 continue
 
-            new_tag = release['tag']
+            new_tag = release["tag"]
 
             platform_updates = []
             any_drift = False
             any_failure = False
-            for plat, entry in plugin.get('urls', {}).items():
-                if not isinstance(entry, dict) or 'filename' not in entry:
+            for plat, entry in plugin.get("urls", {}).items():
+                if not isinstance(entry, dict) or "filename" not in entry:
                     continue
-                cur_filename = entry['filename']
+                cur_filename = entry["filename"]
                 matched = find_matching_asset(
-                    cur_filename, release['assets'],
-                    current_url=entry.get('url'),
-                    old_tag=old_tag, new_tag=new_tag,
+                    cur_filename,
+                    release["assets"],
+                    current_url=entry.get("url"),
+                    old_tag=old_tag,
+                    new_tag=new_tag,
                 )
                 if matched is None:
                     any_failure = True
-                    platform_updates.append({
-                        'plat': plat, 'old_filename': cur_filename, 'new_asset': None,
-                    })
+                    platform_updates.append(
+                        {
+                            "plat": plat,
+                            "old_filename": cur_filename,
+                            "new_asset": None,
+                        }
+                    )
                     continue
-                if matched['name'] != cur_filename:
+                if matched["name"] != cur_filename:
                     any_drift = True
-                platform_updates.append({
-                    'plat': plat, 'old_filename': cur_filename, 'new_asset': matched,
-                })
+                platform_updates.append(
+                    {
+                        "plat": plat,
+                        "old_filename": cur_filename,
+                        "new_asset": matched,
+                    }
+                )
 
             if any_failure:
-                missing = [p['plat'] for p in platform_updates if p['new_asset'] is None]
-                report['failures'].append({
-                    'name': name, 'category': category,
-                    'reason': f'no matching asset for: {", ".join(missing)}',
-                })
+                missing = [
+                    p["plat"] for p in platform_updates if p["new_asset"] is None
+                ]
+                report["failures"].append(
+                    {
+                        "name": name,
+                        "category": category,
+                        "reason": f"no matching asset for: {', '.join(missing)}",
+                    }
+                )
             elif any_drift:
                 # When the strategy pins a rolling tag (e.g. github:owner/repo@DAWPlugin),
                 # the tag string never changes — display old_version on both sides so the
                 # report shows "filename changed" rather than a misleading version diff.
                 shown_new = current_version if (tag and new_tag == tag) else new_tag
-                report['updates'].append({
-                    'name': name, 'category': category,
-                    'old_version': current_version, 'new_version': shown_new,
-                    'platforms': platform_updates,
-                })
+                report["updates"].append(
+                    {
+                        "name": name,
+                        "category": category,
+                        "old_version": current_version,
+                        "new_version": shown_new,
+                        "platforms": platform_updates,
+                    }
+                )
             else:
-                report['no_updates'].append({
-                    'name': name, 'category': category, 'version': current_version,
-                })
+                report["no_updates"].append(
+                    {
+                        "name": name,
+                        "category": category,
+                        "version": current_version,
+                    }
+                )
 
     return report
 
@@ -591,46 +673,60 @@ def check_updates(plugins_data: dict, api_base: str = "https://api.github.com") 
 def print_check_updates_report(report: dict) -> None:
     """Pretty-print the drift report grouped by category."""
     by_cat: dict[str, list] = {}
-    for kind in ('updates', 'no_updates', 'manual', 'failures'):
+    for kind in ("updates", "no_updates", "manual", "failures"):
         for item in report[kind]:
-            by_cat.setdefault(item['category'], []).append((kind, item))
+            by_cat.setdefault(item["category"], []).append((kind, item))
 
-    total_with_strategy = len(report['updates']) + len(report['no_updates']) + len(report['failures'])
-    total_manual = len(report['manual'])
-    print(f"\nChecking {total_with_strategy + total_manual} plugins ({total_with_strategy} with update_strategy, {total_manual} manual)...\n")
+    total_with_strategy = (
+        len(report["updates"]) + len(report["no_updates"]) + len(report["failures"])
+    )
+    total_manual = len(report["manual"])
+    print(
+        f"\nChecking {total_with_strategy + total_manual} plugins ({total_with_strategy} with update_strategy, {total_manual} manual)...\n"
+    )
 
     for cat in sorted(by_cat):
         print(f"{cat.title()}")
         for kind, item in by_cat[cat]:
-            name = item['name']
-            if kind == 'updates':
-                if item.get('strategy') == 'stable-url':
-                    print(f"  {name:<30} {item['old_version']:<8} → {item['new_version']:<8} {C.YELLOW}⬆ CONTENT DRIFT{C.NC}")
-                    for pu in item['platforms']:
-                        if pu.get('changed'):
-                            short_old = pu['old_sha256'][:8]
-                            short_new = pu['new_sha256'][:8]
-                            print(f"    {pu['plat']:8} sha256 {short_old} → {short_new}")
+            name = item["name"]
+            if kind == "updates":
+                if item.get("strategy") == "stable-url":
+                    print(
+                        f"  {name:<30} {item['old_version']:<8} → {item['new_version']:<8} {C.YELLOW}⬆ CONTENT DRIFT{C.NC}"
+                    )
+                    for pu in item["platforms"]:
+                        if pu.get("changed"):
+                            short_old = pu["old_sha256"][:8]
+                            short_new = pu["new_sha256"][:8]
+                            print(
+                                f"    {pu['plat']:8} sha256 {short_old} → {short_new}"
+                            )
                         else:
                             print(f"    {pu['plat']:8} unchanged")
                 else:
-                    print(f"  {name:<30} {item['old_version']:<8} → {item['new_version']:<8} {C.YELLOW}⬆ NEW VERSION{C.NC}")
-                    for pu in item['platforms']:
+                    print(
+                        f"  {name:<30} {item['old_version']:<8} → {item['new_version']:<8} {C.YELLOW}⬆ NEW VERSION{C.NC}"
+                    )
+                    for pu in item["platforms"]:
                         print(f"    {pu['plat']:8} {pu['new_asset']['name']}")
-            elif kind == 'no_updates':
-                print(f"  {name:<30} {item['version']:<8} → {item['version']:<8} no update")
-            elif kind == 'manual':
+            elif kind == "no_updates":
+                print(
+                    f"  {name:<30} {item['version']:<8} → {item['version']:<8} no update"
+                )
+            elif kind == "manual":
                 print(f"  {name:<30} {item['version']:<8} → ?       manual")
-            elif kind == 'failures':
+            elif kind == "failures":
                 print(f"  {name:<30} {C.RED}DETECTION FAILED{C.NC} — {item['reason']}")
         print()
 
-    n_up = len(report['updates'])
-    n_fail = len(report['failures'])
+    n_up = len(report["updates"])
+    n_fail = len(report["failures"])
     if n_up:
         print(f"{n_up} update(s) available. Run with --apply to update plugins.json.")
     if n_fail:
-        print(f"{n_fail} detection failure(s). See lines marked DETECTION FAILED above.")
+        print(
+            f"{n_fail} detection failure(s). See lines marked DETECTION FAILED above."
+        )
     if not n_up and not n_fail:
         print("Everything up to date.")
 
@@ -647,44 +743,44 @@ def apply_updates(plugins_data: dict, report: dict) -> None:
     version untouched (they didn't change).
     """
     index = {}
-    for cat, plugins in plugins_data.get('plugins', {}).items():
+    for cat, plugins in plugins_data.get("plugins", {}).items():
         for p in plugins:
-            index[(cat, p.get('name'))] = p
+            index[(cat, p.get("name"))] = p
 
-    for upd in report['updates']:
-        plugin = index.get((upd['category'], upd['name']))
+    for upd in report["updates"]:
+        plugin = index.get((upd["category"], upd["name"]))
         if plugin is None:
             continue
 
-        if upd.get('strategy') == 'stable-url':
-            for pu in upd['platforms']:
-                if not pu.get('changed'):
+        if upd.get("strategy") == "stable-url":
+            for pu in upd["platforms"]:
+                if not pu.get("changed"):
                     continue
-                entry = plugin['urls'][pu['plat']]
-                entry['sha256'] = pu['new_sha256']
-                entry['hash_source'] = 'self'
+                entry = plugin["urls"][pu["plat"]]
+                entry["sha256"] = pu["new_sha256"]
+                entry["hash_source"] = "self"
             continue  # url/filename/version unchanged for stable-url
 
         # github/u-he path
-        for pu in upd['platforms']:
-            asset = pu['new_asset']
+        for pu in upd["platforms"]:
+            asset = pu["new_asset"]
             if asset is None:
                 continue
-            entry = plugin['urls'][pu['plat']]
-            entry['url'] = asset['url']
-            entry['filename'] = asset['name']
-            entry.pop('sha256', None)
-            entry.pop('hash_source', None)
+            entry = plugin["urls"][pu["plat"]]
+            entry["url"] = asset["url"]
+            entry["filename"] = asset["name"]
+            entry.pop("sha256", None)
+            entry.pop("hash_source", None)
         # Bump version unless the tag is rolling (same string before and after).
-        if upd['old_version'] != upd['new_version']:
-            plugin['version'] = upd['new_version']
+        if upd["old_version"] != upd["new_version"]:
+            plugin["version"] = upd["new_version"]
 
 
 def extract_archives(download_dir):
     """Extract zip files."""
     print_section("Extracting Archives")
 
-    for zip_path in download_dir.glob('*.zip'):
+    for zip_path in download_dir.glob("*.zip"):
         extract_dir = download_dir / zip_path.stem
 
         if extract_dir.exists():
@@ -693,11 +789,12 @@ def extract_archives(download_dir):
 
         print(f"  {C.CYAN}📦{C.NC}  Extracting {zip_path.name}...")
         try:
-            with zipfile.ZipFile(zip_path, 'r') as zf:
+            with zipfile.ZipFile(zip_path, "r") as zf:
                 zf.extractall(extract_dir)
             print(f"  {C.GREEN}✓{C.NC}  Extracted {zip_path.name}")
-        except Exception as e:
+        except (zipfile.BadZipFile, OSError) as e:
             print(f"  {C.RED}✗{C.NC}  Failed to extract {zip_path.name}: {e}")
+
 
 def get_plugin_url(plugin, plat):
     """Get the URL entry dict for the current platform.
@@ -705,38 +802,44 @@ def get_plugin_url(plugin, plat):
     Returns a dict with keys 'url', 'filename', 'sha256', 'hash_source'
     or None if the plugin is unavailable for this platform.
     """
-    urls = plugin.get('urls', {})
+    urls = plugin.get("urls", {})
     entry = urls.get(plat)
-    if isinstance(entry, dict) and entry.get('url'):
+    if isinstance(entry, dict) and entry.get("url"):
         return entry
     return None
 
+
 def download_category(plugins_data, category, download_dir, plat):
     """Download all plugins in a category."""
-    if category not in plugins_data.get('plugins', {}):
+    if category not in plugins_data.get("plugins", {}):
         return 0
 
-    plugins = plugins_data['plugins'][category]
+    plugins = plugins_data["plugins"][category]
     failed = 0
 
     print_section(category.title())
 
     for plugin in plugins:
-        name = plugin.get('name', 'Unknown')
+        name = plugin.get("name", "Unknown")
         entry = get_plugin_url(plugin, plat)
 
         if entry is None:
             print(f"  {C.YELLOW}⏭{C.NC}  {name} - not available for {plat}")
             continue
 
-        url = entry['url']
-        filename = entry.get('filename') or urllib.request.unquote(url.split('/')[-1].split('?')[0])
+        url = entry["url"]
+        filename = entry.get("filename") or urllib.request.unquote(
+            url.split("/")[-1].split("?")[0]
+        )
         filepath = download_dir / filename
 
-        if not download_file(url, filepath, name, entry['sha256'], entry['hash_source']):
+        if not download_file(
+            url, filepath, name, entry["sha256"], entry["hash_source"]
+        ):
             failed += 1
 
     return failed
+
 
 def print_summary(download_dir, plat):
     """Print download summary."""
@@ -748,7 +851,7 @@ def print_summary(download_dir, plat):
     # Calculate size
     total_size = sum(f.stat().st_size for f in files if f.is_file())
     size_mb = total_size / (1024 * 1024)
-    size_str = f"{size_mb:.1f} MB" if size_mb < 1024 else f"{size_mb/1024:.2f} GB"
+    size_str = f"{size_mb:.1f} MB" if size_mb < 1024 else f"{size_mb / 1024:.2f} GB"
 
     print()
     print(f"  {C.GREEN}Downloads complete!{C.NC}")
@@ -761,12 +864,12 @@ def print_summary(download_dir, plat):
     # Platform-specific installation instructions
     print(f"  {C.YELLOW}To install:{C.NC}")
 
-    if plat == 'macos':
+    if plat == "macos":
         print(f"     1. Open {C.CYAN}{download_dir}{C.NC}")
         print("     2. Double-click each .dmg or .pkg file")
         print("     3. Run the installer inside")
         print("     4. Rescan plugins in your DAW")
-    elif plat == 'windows':
+    elif plat == "windows":
         print(f"     1. Open {C.CYAN}{download_dir}{C.NC}")
         print("     2. Run each .exe or .msi installer as Administrator")
         print("     3. Follow installer prompts")
@@ -785,18 +888,19 @@ def print_summary(download_dir, plat):
     print(f"     • Analog Obsession → {C.CYAN}https://analogobsession.com{C.NC}")
     print()
 
+
 def list_plugins(plugins_data, plat):
     """List all available plugins."""
     print_header()
 
-    for category in ['synths', 'effects', 'instruments', 'bundles']:
-        if category not in plugins_data.get('plugins', {}):
+    for category in ["synths", "effects", "instruments", "bundles"]:
+        if category not in plugins_data.get("plugins", {}):
             continue
 
         print_section(category.title())
 
-        for plugin in plugins_data['plugins'][category]:
-            name = plugin.get('name', 'Unknown')
+        for plugin in plugins_data["plugins"][category]:
+            name = plugin.get("name", "Unknown")
             entry = get_plugin_url(plugin, plat)
 
             if entry is not None:
@@ -805,52 +909,83 @@ def list_plugins(plugins_data, plat):
                 print(f"  • {name} {C.YELLOW}(not available for {plat}){C.NC}")
 
     print_section("Manual Download Required")
-    for plugin in plugins_data.get('manual_download', []):
+    for plugin in plugins_data.get("manual_download", []):
         print(f"  • {plugin.get('name')} - {plugin.get('website')}")
 
     print()
 
+
 def main():
     parser = argparse.ArgumentParser(
-        description='Download free VST plugins for music production',
+        description="Download free VST plugins for music production",
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog='''
+        epilog="""
 Examples:
   %(prog)s                    # Download all plugins
   %(prog)s --synths           # Download synths only
   %(prog)s --dir ~/Music/VST  # Custom download location
   %(prog)s --list             # List available plugins
-'''
+""",
     )
 
-    parser.add_argument('-a', '--all', action='store_true', default=True,
-                        help='Download all plugins (default)')
-    parser.add_argument('-s', '--synths', action='store_true',
-                        help='Download synths only')
-    parser.add_argument('-e', '--effects', action='store_true',
-                        help='Download effects only')
-    parser.add_argument('-i', '--instruments', action='store_true',
-                        help='Download instruments only')
-    parser.add_argument('-b', '--bundles', action='store_true',
-                        help='Download bundles only')
-    parser.add_argument('-l', '--list', action='store_true',
-                        help='List available plugins')
-    parser.add_argument('-d', '--dir', type=str,
-                        help='Download directory')
-    parser.add_argument('--platform', choices=['macos', 'windows', 'linux'],
-                        help='Override detected platform')
-    parser.add_argument('--compute-hashes', action='store_true',
-                        help='Maintainer mode: compute SHA-256 for every URL and emit updated plugins.json')
-    parser.add_argument('--in-place', action='store_true',
-                        help='With --compute-hashes: rewrite plugins.json instead of stdout')
-    parser.add_argument('--force-recompute', action='store_true',
-                        help='With --compute-hashes: overwrite existing sha256 fields (otherwise preserved)')
-    parser.add_argument('--check-updates', action='store_true',
-                        help='Detect upstream version drift on entries with update_strategy set')
-    parser.add_argument('--apply', action='store_true',
-                        help='With --check-updates: write URL/filename/version/sha256 updates back to plugins.json')
-    parser.add_argument('--plugins-json', type=str,
-                        help='Path to plugins.json (defaults to ../plugins.json relative to script)')
+    parser.add_argument(
+        "-a",
+        "--all",
+        action="store_true",
+        default=True,
+        help="Download all plugins (default)",
+    )
+    parser.add_argument(
+        "-s", "--synths", action="store_true", help="Download synths only"
+    )
+    parser.add_argument(
+        "-e", "--effects", action="store_true", help="Download effects only"
+    )
+    parser.add_argument(
+        "-i", "--instruments", action="store_true", help="Download instruments only"
+    )
+    parser.add_argument(
+        "-b", "--bundles", action="store_true", help="Download bundles only"
+    )
+    parser.add_argument(
+        "-l", "--list", action="store_true", help="List available plugins"
+    )
+    parser.add_argument("-d", "--dir", type=str, help="Download directory")
+    parser.add_argument(
+        "--platform",
+        choices=["macos", "windows", "linux"],
+        help="Override detected platform",
+    )
+    parser.add_argument(
+        "--compute-hashes",
+        action="store_true",
+        help="Maintainer mode: compute SHA-256 for every URL and emit updated plugins.json",
+    )
+    parser.add_argument(
+        "--in-place",
+        action="store_true",
+        help="With --compute-hashes: rewrite plugins.json instead of stdout",
+    )
+    parser.add_argument(
+        "--force-recompute",
+        action="store_true",
+        help="With --compute-hashes: overwrite existing sha256 fields (otherwise preserved)",
+    )
+    parser.add_argument(
+        "--check-updates",
+        action="store_true",
+        help="Detect upstream version drift on entries with update_strategy set",
+    )
+    parser.add_argument(
+        "--apply",
+        action="store_true",
+        help="With --check-updates: write URL/filename/version/sha256 updates back to plugins.json",
+    )
+    parser.add_argument(
+        "--plugins-json",
+        type=str,
+        help="Path to plugins.json (defaults to ../plugins.json relative to script)",
+    )
 
     args = parser.parse_args()
 
@@ -862,7 +997,11 @@ Examples:
 
     # Load plugins data
     script_dir = Path(__file__).parent
-    plugins_json = Path(args.plugins_json) if args.plugins_json else script_dir.parent / 'plugins.json'
+    plugins_json = (
+        Path(args.plugins_json)
+        if args.plugins_json
+        else script_dir.parent / "plugins.json"
+    )
 
     if not plugins_json.exists():
         print(f"{C.RED}Error: plugins.json not found at {plugins_json}{C.NC}")
@@ -880,13 +1019,13 @@ Examples:
         updated = recompute_hashes(plugins_data, args.force_recompute)
         rendered = json.dumps(updated, indent=2, ensure_ascii=False) + "\n"
         if args.in_place:
-            plugins_json.write_text(rendered, encoding='utf-8')
+            plugins_json.write_text(rendered, encoding="utf-8")
         else:
             sys.stdout.write(rendered)
         return
 
     if args.check_updates:
-        api_base = os.environ.get('VST_DLP_GITHUB_API_BASE', 'https://api.github.com')
+        api_base = os.environ.get("VST_DLP_GITHUB_API_BASE", "https://api.github.com")
         report = check_updates(plugins_data, api_base=api_base)
         print_check_updates_report(report)
         if args.apply:
@@ -894,11 +1033,13 @@ Examples:
             # Recompute hashes for entries whose sha256 was cleared.
             recompute_hashes(plugins_data, force=False)
             rendered = json.dumps(plugins_data, indent=2, ensure_ascii=False) + "\n"
-            plugins_json.write_text(rendered, encoding='utf-8')
-            print(f"\n{C.GREEN}Applied{C.NC} {len(report['updates'])} update(s). plugins.json updated.")
+            plugins_json.write_text(rendered, encoding="utf-8")
+            print(
+                f"\n{C.GREEN}Applied{C.NC} {len(report['updates'])} update(s). plugins.json updated."
+            )
             sys.exit(0)
-        n_up = len(report['updates'])
-        n_fail = len(report['failures'])
+        n_up = len(report["updates"])
+        n_fail = len(report["failures"])
         sys.exit(1 if (n_up or n_fail) else 0)
 
     # Determine which categories to download
@@ -906,13 +1047,13 @@ Examples:
     categories = []
 
     if download_all or args.synths:
-        categories.append('synths')
+        categories.append("synths")
     if download_all or args.effects:
-        categories.append('effects')
+        categories.append("effects")
     if download_all or args.instruments:
-        categories.append('instruments')
+        categories.append("instruments")
     if download_all or args.bundles:
-        categories.append('bundles')
+        categories.append("bundles")
 
     print_header()
     print(f"  Platform: {C.CYAN}{plat}{C.NC}")
@@ -940,5 +1081,6 @@ Examples:
         print(f"{C.YELLOW}⚠ {failed} download(s) failed. Check the output above.{C.NC}")
         sys.exit(1)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

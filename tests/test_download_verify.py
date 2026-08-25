@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import importlib.util
-import json
 import sys
 from pathlib import Path
 
@@ -65,10 +64,14 @@ def test_download_file_reverifies_cached_file(mock_server, tmp_path) -> None:
     ok = dlp.download_file(url, out_path, "FakeSynth", expected, "self")
 
     assert ok is True
-    assert out_path.read_bytes() == body, "cached bad file should have been redownloaded"
+    assert out_path.read_bytes() == body, (
+        "cached bad file should have been redownloaded"
+    )
 
 
-def test_main_exits_nonzero_when_any_download_mismatches(mock_server, fixtures_dir, tmp_path, monkeypatch) -> None:
+def test_main_exits_nonzero_when_any_download_mismatches(
+    mock_server, fixtures_dir, tmp_path, monkeypatch
+) -> None:
     mock_server.add("/fakesynth-mac.dmg", b"actual")
     fake_plugins = tmp_path / "plugins.json"
     _write_fixture(
@@ -79,13 +82,20 @@ def test_main_exits_nonzero_when_any_download_mismatches(mock_server, fixtures_d
     )
 
     download_dir = tmp_path / "out"
-    monkeypatch.setattr(sys, "argv", [
-        "download-plugins.py",
-        "--platform", "macos",
-        "--dir", str(download_dir),
-        "--plugins-json", str(fake_plugins),
-        "--synths",
-    ])
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "download-plugins.py",
+            "--platform",
+            "macos",
+            "--dir",
+            str(download_dir),
+            "--plugins-json",
+            str(fake_plugins),
+            "--synths",
+        ],
+    )
 
     with pytest.raises(SystemExit) as exc:
         dlp.main()
