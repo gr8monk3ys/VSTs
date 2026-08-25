@@ -1,5 +1,9 @@
 # Free VST Plugins
 
+<p align="center">
+  <img src="docs/assets/hero.png" alt="free-vst-plugins preview" width="640">
+</p>
+
 [![CI](https://github.com/gr8monk3ys/free-vst-plugins/actions/workflows/ci.yml/badge.svg)](https://github.com/gr8monk3ys/free-vst-plugins/actions/workflows/ci.yml)
 [![Docker](https://github.com/gr8monk3ys/free-vst-plugins/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/gr8monk3ys/free-vst-plugins/pkgs/container/free-vst-plugins)
 
