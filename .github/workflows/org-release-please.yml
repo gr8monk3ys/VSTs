@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
       - name: Detect release strategy
         id: detect
@@ -48,7 +48,7 @@ jobs:
 
       - name: Run Release Please
         if: steps.detect.outputs.supported == 'true'
-        uses: googleapis/release-please-action@16a9c90856f42705d54a6fda1823352bdc62cf38
+        uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           release-type: ${{ steps.detect.outputs.release_type }}
