@@ -68,7 +68,7 @@ def load_plugins(json_path):
 
 
 DEFAULT_MANIFEST_URL = (
-    "https://raw.githubusercontent.com/gr8monk3ys/free-vst-plugins/main/plugins.json"
+    "https://raw.githubusercontent.com/gr8monk3ys/VSTs/main/plugins.json"
 )
 
 
