@@ -1,305 +1,85 @@
 # Free VST Plugins
 
-<p align="center">
-  <img src="docs/assets/hero.png" alt="free-vst-plugins preview" width="640">
-</p>
+A manifest of 17 free, legally redistributable VST plugins (7 synths, 8
+effects, a drum sampler, a 37-effect bundle), each pinned to a download URL
+and a SHA-256 hash, plus a downloader that refuses any file whose hash
+doesn't match.
 
-[![CI](https://github.com/gr8monk3ys/free-vst-plugins/actions/workflows/ci.yml/badge.svg)](https://github.com/gr8monk3ys/free-vst-plugins/actions/workflows/ci.yml)
-[![Docker](https://github.com/gr8monk3ys/free-vst-plugins/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/gr8monk3ys/free-vst-plugins/pkgs/container/free-vst-plugins)
+Browse the catalog: https://gr8monk3ys.github.io/free-vst-plugins/
 
-A curated collection of **high-quality, legally free** VST plugins for music production. Works on **macOS**, **Windows**, and **Linux**. Every download is pinned to a URL + SHA-256 hash in a version-controlled manifest.
+The point is the pin, not the list. Vendors move files, re-upload installers
+under the same URL, and occasionally get compromised; a plain link list can't
+tell you which of those happened. Every entry in `plugins.json` records where
+its hash came from (`hash_source: publisher` when the vendor publishes one,
+`self` when it was computed at pin time, trust-on-first-use), and the
+downloader re-hashes cached files too, so a file that changed on disk is
+deleted rather than installed. A weekly workflow checks upstream releases and
+opens a PR when a URL or hash drifts; that diff is the moment a new binary
+gets trusted. 9 more plugins that sit behind account walls are listed in the
+manifest under `manual_download` with no URL.
 
-**Browse the catalog:** https://gr8monk3ys.github.io/free-vst-plugins/
+Runs on macOS, Windows and Linux with Python 3.9+ and no dependencies.
 
-## Quick Start
-
-Requires Python 3.9+.
-
-### pipx (no clone needed)
+## Install and run
 
 ```bash
 pipx install git+https://github.com/gr8monk3ys/free-vst-plugins.git
-
-free-vst-plugins --list         # uses the latest manifest from this repo
-free-vst-plugins --synths
+free-vst-plugins --list          # fetches the latest manifest from this repo
+free-vst-plugins --synths        # downloads to ~/Downloads/VST-Plugins
 ```
 
-### From a checkout
+Or from a checkout, no install:
 
 ```bash
 git clone https://github.com/gr8monk3ys/free-vst-plugins.git
 cd free-vst-plugins
-
-# Download all plugins (~1.5GB)
-python3 scripts/download-plugins.py
-
-# Or download specific categories
-python3 scripts/download-plugins.py --synths
-python3 scripts/download-plugins.py --effects
-```
-
-### macOS (Bash)
-
-```bash
-./scripts/download-plugins.sh
-```
-
-### Windows (PowerShell)
-
-```powershell
-.\scripts\download-plugins.ps1
-```
-
-### Docker
-
-```bash
-# Download all plugins to current directory
-docker run -v $(pwd)/downloads:/downloads ghcr.io/gr8monk3ys/free-vst-plugins --all
-
-# Download synths only
-docker run -v $(pwd)/downloads:/downloads ghcr.io/gr8monk3ys/free-vst-plugins --synths
-
-# List available plugins
-docker run ghcr.io/gr8monk3ys/free-vst-plugins --list
-```
-
-Or with docker-compose:
-
-```bash
-# Download all plugins
-docker-compose run download-all
-
-# Download specific category
-docker-compose run download-synths
-docker-compose run download-effects
-```
-
-## What's Included
-
-### Synths (7 plugins)
-
-| Plugin | Description | macOS | Windows | Linux | Open Source |
-|--------|-------------|:-----:|:-------:|:-----:|:-----------:|
-| **[Surge XT](https://surge-synthesizer.github.io/)** | Hybrid synth - wavetable, FM, subtractive. 2800+ presets | ✅ | ✅ | ✅ | ✅ |
-| **[Dexed](https://asb2m10.github.io/dexed/)** | Yamaha DX7 FM synth clone | ✅ | ✅ | ✅ | ✅ |
-| **[OB-Xd](https://www.discodsp.com/obxd/)** | Oberheim OB-X emulation | ✅ | ✅ | ✅ | ✅ |
-| **[Helm](https://tytel.org/helm/)** | Polyphonic synth with deep modulation | ✅ | ✅ | ✅ | ✅ |
-| **[TAL-NoiseMaker](https://tal-software.com/products/tal-noisemaker)** | Classic VA synth, 256 presets | ✅ | ✅ | ✅ | |
-| **[Tyrell N6](https://u-he.com/products/tyrelln6/)** | u-he analog synth | ✅ | ✅ | ✅ | |
-| **[Zebralette](https://u-he.com/products/zebralette/)** | u-he wavetable oscillator | ✅ | ✅ | ✅ | |
-
-### Effects (10+ plugins)
-
-| Plugin | Type | macOS | Windows | Linux | Open Source |
-|--------|------|:-----:|:-------:|:-----:|:-----------:|
-| **[Valhalla Supermassive](https://valhalladsp.com/shop/reverb/valhalla-supermassive/)** | Reverb/Delay | ✅ | | | |
-| **[Valhalla FreqEcho](https://valhalladsp.com/shop/delay/valhalla-freq-echo/)** | Freq Shifter + Echo | ✅ | | | |
-| **[OTT](https://xferrecords.com/freeware)** | Multiband Compressor | ✅ | | | |
-| **[Dragonfly Reverb](https://michaelwillis.github.io/dragonfly-reverb/)** | 4 Reverbs | ✅ | ✅ | ✅ | ✅ |
-| **[BYOD](https://chowdsp.com/products.html)** | Modular Distortion | ✅ | ✅ | ✅ | ✅ |
-| **[TDR Nova](https://www.tokyodawn.net/tdr-nova/)** | Dynamic EQ | ✅ | ✅ | | |
-| **[Airwindows Consolidated](https://www.airwindows.com/consolidated/)** | **350+ effects** | ✅ | ✅ | ✅ | ✅ |
-| **[TAL-Vocoder](https://tal-software.com/products/tal-vocoder)** | Classic 80s Vocoder | ✅ | ✅ | ✅ | |
-
-### Instruments & Bundles
-
-| Plugin | Description | macOS | Windows | Linux |
-|--------|-------------|:-----:|:-------:|:-----:|
-| **[Sitala](https://decomposer.de/sitala/)** | Drum sampler - 16 pads | ✅ | ✅ | ✅ |
-| **[MeldaProduction MFreeFXBundle](https://www.meldaproduction.com/MFreeFXBundle)** | 37 free effects | ✅ | ✅ | |
-
-## Manual Download Required
-
-These require account registration but are worth it:
-
-| Plugin | Platforms | Why It's Great |
-|--------|-----------|----------------|
-| **[DC1A](https://klanghelm.com/contents/products/DC1A)** | macOS/Win | Character compressor — direct URL serves a download-gate page |
-| **[Vital](https://vital.audio)** | All | Best free wavetable synth (rivals $189 Serum) |
-| **[Spitfire LABS](https://labs.spitfireaudio.com)** | macOS/Win | Pro-quality sampled instruments |
-| **[Analog Obsession](https://analogobsession.com)** | macOS/Win | 50+ analog hardware emulations |
-| **[Kilohearts Essentials](https://kilohearts.com/products/kilohearts_essentials)** | macOS/Win | 30+ modular effects |
-| **[Komplete Start](https://www.native-instruments.com/en/products/komplete/bundles/komplete-start/)** | macOS/Win | NI's free starter bundle |
-| **[LSP Plugins](https://lsp-plug.in/)** | Linux/Win | 70+ professional Linux-native plugins |
-| **[Odin 2](https://thewavewarden.com/pages/odin-2)** | All | Open-source hybrid synth — analog/wavetable/FM/vector oscillators, no pinned release URL yet |
-
-## Usage
-
-```bash
-# Show help
-python3 scripts/download-plugins.py --help
-
-# List all available plugins
 python3 scripts/download-plugins.py --list
-
-# Download everything
-python3 scripts/download-plugins.py --all
-
-# Download specific categories
-python3 scripts/download-plugins.py --synths
-python3 scripts/download-plugins.py --effects
-python3 scripts/download-plugins.py --instruments
-python3 scripts/download-plugins.py --bundles
-
-# Custom download directory
-python3 scripts/download-plugins.py --dir ~/Music/Plugins
-
-# Only specific plugins (case-insensitive substring, repeatable)
+python3 scripts/download-plugins.py               # everything (~1.5 GB)
+python3 scripts/download-plugins.py --effects --dir ~/Music/Plugins
 python3 scripts/download-plugins.py --only surge --only dexed
-
-# Re-verify already-downloaded files against the manifest (no downloads)
-python3 scripts/download-plugins.py --verify
-
-# Force a specific platform (useful for testing)
+python3 scripts/download-plugins.py --verify      # re-hash what's on disk, no downloads
 python3 scripts/download-plugins.py --platform windows
 ```
 
-## How verification works
+`scripts/download-plugins.sh` and `scripts/download-plugins.ps1` wrap the same
+script for macOS and Windows shells.
 
-Each entry in `plugins.json` pins a download URL, filename, and SHA-256 hash.
-The downloader verifies every file against its pinned hash (including cached
-files) and deletes anything that doesn't match. `hash_source` records where a
-hash came from: `publisher` means the vendor published it; `self` means it was
-computed from the download at pin time (trust-on-first-use). A weekly workflow
-re-checks upstream releases and opens a PR when URLs or hashes drift — that PR
-diff is the moment a new upstream binary gets trusted, so it's worth a look
-before merging.
+Installers land in `~/Downloads/VST-Plugins/` (`%USERPROFILE%\Downloads\VST-Plugins\`
+on Windows). Run each `.dmg`/`.pkg`/`.exe`/`.msi`, or unpack archives into
+`~/.vst3/` on Linux, then rescan plugins in your DAW.
 
-## Installation
+## What's in the manifest
 
-### macOS
+| Category | Plugins |
+|---|---|
+| Synths | Surge XT, Dexed, OB-Xd, Helm, TAL-NoiseMaker, Tyrell N6, Zebralette |
+| Effects | Valhalla Supermassive, Valhalla FreqEcho, OTT, Dragonfly Reverb, BYOD, TDR Nova, Airwindows Consolidated, TAL-Vocoder |
+| Instruments | Sitala |
+| Bundles | MeldaProduction MFreeFXBundle |
 
-1. Open `~/Downloads/VST-Plugins/`
-2. Double-click each `.dmg` or `.pkg` file
-3. Run the installer
-4. Rescan plugins in your DAW:
-   - **FL Studio**: Options → Manage Plugins → Start Scan
-   - **Ableton**: Preferences → Plug-Ins → Rescan
-   - **Logic Pro**: Automatic on restart
+Not every plugin ships for every platform; `--list` shows what's available for
+yours. The catalog page has links and per-platform details.
 
-**Plugin Locations:**
-```
-/Library/Audio/Plug-Ins/VST3/         # System VST3
-/Library/Audio/Plug-Ins/Components/   # System AU
-~/Library/Audio/Plug-Ins/VST3/        # User VST3
-```
-
-### Windows
-
-1. Open `%USERPROFILE%\Downloads\VST-Plugins\`
-2. Run each `.exe` or `.msi` installer as Administrator
-3. Follow installer prompts
-4. Rescan plugins in your DAW
-
-**Plugin Locations:**
-```
-C:\Program Files\Common Files\VST3\           # System VST3
-C:\Program Files\VSTPlugins\                  # System VST
-%APPDATA%\VST3\                               # User VST3
-```
-
-### Linux
-
-1. Extract archives to plugin directories
-2. Rescan plugins in your DAW
-
-**Plugin Locations:**
-```
-~/.vst3/                  # User VST3
-~/.vst/                   # User VST
-~/.lv2/                   # User LV2
-/usr/lib/vst3/            # System VST3
-/usr/lib/lv2/             # System LV2
-```
-
-**Ubuntu/Debian package install:**
-```bash
-# For .deb packages
-sudo dpkg -i plugin-name.deb
-```
-
-## File Structure
-
-```
-free-vst-plugins/
-├── plugins.json              # The manifest: URLs + SHA-256 hashes for every plugin
-├── schemas/
-│   └── plugins.schema.json   # JSON Schema the manifest must satisfy
-├── src/free_vst_plugins/
-│   └── cli.py                # The downloader (single source of truth)
-├── scripts/
-│   ├── download-plugins.py   # Shim so checkout users don't need to install
-│   ├── download-plugins.sh   # Bash wrapper
-│   ├── download-plugins.ps1  # PowerShell wrapper
-│   ├── build_site.py         # Generates the catalog site from plugins.json
-│   ├── validate_manifest.py  # JSON + schema validation (used by CI)
-│   └── validate_urls.py      # URL reachability check (used by CI)
-├── tests/                    # pytest suite (mock HTTP server, no live network)
-├── Dockerfile
-└── docker-compose.yml
-```
-
-## CI/CD
-
-| Workflow | Description |
-|----------|-------------|
-| **CI** | Lint, schema validation, tests on 3 OSes, weekly URL check, Docker build |
-| **update-manifest** | Weekly upstream-drift check; opens a PR with refreshed URLs/hashes |
-| **pages** | Rebuilds the catalog site whenever plugins.json changes |
-| **CodeQL / gitleaks / OSV** | Security scanning |
-| **release-please** | Cuts releases from conventional commits |
-| **Docker Publish** | Pushes the image to GHCR on release |
-
-### Running Checks Locally
+## Maintaining the manifest
 
 ```bash
 pip install ruff pytest jsonschema
-
-python scripts/validate_manifest.py     # JSON + schema
-ruff check src/ scripts/ tests/         # lint
-ruff format --check src/ scripts/ tests/
-pytest tests/                           # full suite, no network needed
+python scripts/validate_manifest.py                    # JSON + schema
+ruff check src/ scripts/ tests/ && ruff format --check src/ scripts/ tests/
+pytest tests/                                          # 45 tests, local mock HTTP server, no network
 ```
 
-### Building Docker Locally
+Adding a plugin: add an entry to `plugins.json` with URLs for each platform it
+ships on, then `python3 scripts/download-plugins.py --compute-hashes --in-place`
+to pin the hashes, and run the checks above. `--check-updates` reports upstream
+drift for entries with an `update_strategy` (GitHub releases, u-he, or a stable
+URL whose content is re-hashed); `--apply` writes the new pins back.
 
-```bash
-# Build image
-docker build -t free-vst-plugins .
-
-# Run container
-docker run -v $(pwd)/downloads:/downloads free-vst-plugins --all
-```
-
-## Related Projects
-
-- **[OpenAudio](https://github.com/webprofusion/OpenAudio)** - Comprehensive list of open-source audio software
-- **[awesome-vst](https://github.com/dreikanter/awesome-vst)** - Curated VST plugins reference
-- **[FreeAudioPluginList](https://github.com/twinysam/FreeAudioPluginList)** - Ultimate list of free audio plugins
-- **[OwlPlug](https://github.com/DropSnorz/OwlPlug)** - Cross-platform plugin manager
-
-## Contributing
-
-Found a great free plugin? [Open a plugin suggestion](https://github.com/gr8monk3ys/free-vst-plugins/issues/new?template=plugin-suggestion.yml) or send a PR:
-
-1. Fork the repo
-2. Add the plugin to `plugins.json` with URLs for all available platforms
-   (compute hashes with `python3 scripts/download-plugins.py --compute-hashes --in-place`)
-3. Run `python scripts/validate_manifest.py` and `pytest tests/`
-4. Submit PR
-
-### Plugin Criteria
-
-- ✅ Legally free (not cracked/pirated)
-- ✅ 64-bit
-- ✅ VST3, AU, CLAP, or LV2 format
-- ✅ High quality / useful for production
-- ✅ Bonus: Available on multiple platforms
+Layout: `plugins.json` (the manifest), `schemas/plugins.schema.json`,
+`src/free_vst_plugins/cli.py` (the downloader), `scripts/build_site.py`
+(generates the catalog page), `scripts/validate_urls.py` (CI reachability check).
 
 ## License
 
-MIT License - Plugin downloads are subject to their respective licenses.
-
-## Disclaimer
-
-All plugins are downloaded from their official sources. This project does not host any plugin binaries. Always verify downloads and check plugin licenses before commercial use.
+MIT for this repo. Each plugin keeps its own license; nothing is hosted here,
+every download comes from the vendor.

@@ -29,3 +29,6 @@ build/
 dist/
 *.egg-info/
 .ruff_cache/
+
+# Claude Code local settings
+.claude/settings.local.json
