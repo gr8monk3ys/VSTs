@@ -109,27 +109,3 @@ jobs:
 
       - name: Check URLs are reachable
         run: python scripts/validate_urls.py
-
-  docker:
-    name: Build Docker Image
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@d7f5e7f509e45cec5c76c4d5afdd7de93d0b3df5
-
-      - name: Build Docker image
-        uses: docker/build-push-action@f9f3042f7e2789586610d6e8b85c8f03e5195baf
-        with:
-          context: .
-          push: false
-          load: true  # Load image into Docker daemon so 'docker run' can access it
-          tags: free-vst-plugins:test
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - name: Test Docker image
-        run: |
-          docker run --rm free-vst-plugins:test --list
-          docker run --rm free-vst-plugins:test --help

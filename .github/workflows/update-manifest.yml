@@ -1,8 +1,7 @@
 name: update-manifest
 
 # Self-updating manifest: detect upstream release/content drift and open a PR
-# with refreshed URLs, filenames, and hashes. Design:
-# docs/superpowers/specs/2026-05-09-self-updating-manifest-design.md
+# with refreshed URLs, filenames, and hashes.
 #
 # Requires "Allow GitHub Actions to create and approve pull requests" to be
 # enabled under Settings → Actions → General → Workflow permissions.

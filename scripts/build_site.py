@@ -236,8 +236,7 @@ def build_html(data: dict) -> str:
   </div>
   <a class="cta" href="{REPO_URL}">Get the downloader →</a>
   <p class="meta" style="margin-top:0.6rem">or
-    <code class="inline">pipx install free-vst-plugins</code> ·
-    <code class="inline">docker run ghcr.io/gr8monk3ys/free-vst-plugins --list</code>
+    <code class="inline">pipx install git+{REPO_URL}.git</code>
   </p>
 </header>
 <div class="controls"><input id="q" type="search" placeholder="Filter plugins…" aria-label="Filter plugins"></div>
