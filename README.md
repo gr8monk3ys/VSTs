@@ -5,7 +5,7 @@ effects, a drum sampler, a 37-effect bundle), each pinned to a download URL
 and a SHA-256 hash, plus a downloader that refuses any file whose hash
 doesn't match.
 
-Browse the catalog: https://gr8monk3ys.github.io/free-vst-plugins/
+Browse the catalog: https://gr8monk3ys.github.io/VSTs/
 
 The point is the pin, not the list. Vendors move files, re-upload installers
 under the same URL, and occasionally get compromised; a plain link list can't
@@ -23,7 +23,7 @@ Runs on macOS, Windows and Linux with Python 3.9+ and no dependencies.
 ## Install and run
 
 ```bash
-pipx install git+https://github.com/gr8monk3ys/free-vst-plugins.git
+pipx install git+https://github.com/gr8monk3ys/VSTs.git
 free-vst-plugins --list          # fetches the latest manifest from this repo
 free-vst-plugins --synths        # downloads to ~/Downloads/VST-Plugins
 ```
@@ -31,8 +31,8 @@ free-vst-plugins --synths        # downloads to ~/Downloads/VST-Plugins
 Or from a checkout, no install:
 
 ```bash
-git clone https://github.com/gr8monk3ys/free-vst-plugins.git
-cd free-vst-plugins
+git clone https://github.com/gr8monk3ys/VSTs.git
+cd VSTs
 python3 scripts/download-plugins.py --list
 python3 scripts/download-plugins.py               # everything (~1.5 GB)
 python3 scripts/download-plugins.py --effects --dir ~/Music/Plugins

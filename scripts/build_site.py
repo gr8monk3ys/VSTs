@@ -12,7 +12,7 @@ import html
 import json
 from pathlib import Path
 
-REPO_URL = "https://github.com/gr8monk3ys/free-vst-plugins"
+REPO_URL = "https://github.com/gr8monk3ys/VSTs"
 
 PLATFORM_LABELS = {"macos": "macOS", "windows": "Windows", "linux": "Linux"}
 
@@ -243,7 +243,7 @@ def build_html(data: dict) -> str:
 {"".join(sections)}
 <footer>
   Generated from <a href="{REPO_URL}/blob/main/plugins.json">plugins.json</a> ·
-  <a href="{REPO_URL}">gr8monk3ys/free-vst-plugins</a> · MIT licensed catalog;
+  <a href="{REPO_URL}">gr8monk3ys/VSTs</a> · MIT licensed catalog;
   each plugin keeps its own license.
 </footer>
 </main>
