@@ -4,11 +4,20 @@
 HEAD-requests each pinned URL. 403/405 responses count as reachable (some
 vendors reject HEAD but serve GET). Used by the scheduled CI job; run
 locally with:  python scripts/validate_urls.py
+
+Exit status is 1 when any URL is dead so a local run is loud. In CI the
+step is `continue-on-error` because this checks third-party uptime, not
+this repo's code: rolling upstream tags (e.g. baconpaul/airwin2rack
+`DAWPlugin`) replace their assets on every build, and a vendor outage
+should not block unrelated merges. Failures are surfaced as workflow
+annotations and in the job summary instead; `update-manifest.yml` is the
+job that actually re-pins drifted URLs.
 """
 
 from __future__ import annotations
 
 import json
+import os
 import sys
 import urllib.error
 import urllib.request
@@ -62,8 +71,27 @@ def main() -> int:
         print("\nFailed URLs:")
         for failure in failures:
             print(f"  - {failure}")
+        report_to_actions(checked, failures)
         return 1
     return 0
+
+
+def report_to_actions(checked: int, failures: list[str]) -> None:
+    """Surface failures in the GitHub Actions UI (no-op outside Actions)."""
+    if not os.environ.get("GITHUB_ACTIONS"):
+        return
+    for failure in failures:
+        print(f"::warning title=Dead plugin URL::{failure}")
+    summary = os.environ.get("GITHUB_STEP_SUMMARY")
+    if not summary:
+        return
+    with open(summary, "a", encoding="utf-8") as fh:
+        fh.write(f"## Plugin URL check: {len(failures)} of {checked} dead\n\n")
+        fh.writelines(f"- {failure}\n" for failure in failures)
+        fh.write(
+            "\nRe-pin via `python scripts/download-plugins.py --check-updates --apply`"
+            " (or wait for the Monday `update-manifest` PR).\n"
+        )
 
 
 if __name__ == "__main__":
