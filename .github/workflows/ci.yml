@@ -107,5 +107,9 @@ jobs:
         with:
           python-version: '3.11'
 
+      # Report-only: this gates on third-party uptime, not on this repo.
+      # Dead links are surfaced as annotations + job summary; update-manifest
+      # opens the PR that re-pins them.
       - name: Check URLs are reachable
         run: python scripts/validate_urls.py
+        continue-on-error: true
