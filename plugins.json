@@ -3,7 +3,7 @@
     "name": "Free VST Plugins",
     "version": "2.0.0",
     "description": "Curated collection of high-quality free VST plugins for macOS, Windows, and Linux",
-    "updated": "2026-01-19",
+    "updated": "2026-09-14",
     "author": "gr8monk3ys",
     "license": "MIT",
     "platforms": [
@@ -90,25 +90,25 @@
         "update_strategy": "github:reales/OB-Xd",
         "urls": {
           "macos": {
-            "url": "https://github.com/reales/OB-Xd/releases/download/v2.19/OB-Xd.2.19.pkg",
-            "filename": "OB-Xd.2.19.pkg",
-            "sha256": "954072c937e79be2d1adc42ebeca342c0d4cbf95a12442adb0d60a97c260f7f9",
+            "url": "https://github.com/reales/OB-Xd/releases/download/v2.20/OB-Xd.2.20.pkg",
+            "filename": "OB-Xd.2.20.pkg",
+            "sha256": "7927148d8fde91d035e9ca7ddb2702c0414fdb64177a857e483e3d060c488154",
             "hash_source": "self"
           },
           "windows": {
-            "url": "https://github.com/reales/OB-Xd/releases/download/v2.19/Obxd219.exe",
-            "filename": "Obxd219.exe",
-            "sha256": "98bef17f646cda2e2c425befd352d7dbec815c629b3450a0c06579c6f21086e4",
+            "url": "https://github.com/reales/OB-Xd/releases/download/v2.20/Obxd220.exe",
+            "filename": "Obxd220.exe",
+            "sha256": "ec90fb619d6a18682ad6c60ee0b409477061c61edb422afdde1aed517d1a9c20",
             "hash_source": "self"
           },
           "linux": {
-            "url": "https://github.com/reales/OB-Xd/releases/download/v2.19/Obxd219.deb",
-            "filename": "Obxd219.deb",
-            "sha256": "732dde1f9b701126afba985744e443bec1a87c5601e2a6a5093b9ba16464d618",
+            "url": "https://github.com/reales/OB-Xd/releases/download/v2.20/Obxd220.deb",
+            "filename": "Obxd220.deb",
+            "sha256": "1ab69776e91488c4faabc8adfed301e83fdf8de6e44e0f86c5ea6afbf8dd69ce",
             "hash_source": "self"
           }
         },
-        "version": "2.19",
+        "version": "v2.20",
         "formats": [
           "VST3",
           "AU",
@@ -434,21 +434,21 @@
         "update_strategy": "github:baconpaul/airwin2rack@DAWPlugin",
         "urls": {
           "macos": {
-            "url": "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/airwindows-consolidated-macOS-2026-09-05-2a6d1c0.dmg",
-            "filename": "airwindows-consolidated-macOS-2026-09-05-2a6d1c0.dmg",
-            "sha256": "24488b5ddbba25615af88745c9fde40b3ecc55169d570113e1b027d5a93ea7da",
+            "url": "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/airwindows-consolidated-macOS-2026-09-13-a3ccadd.dmg",
+            "filename": "airwindows-consolidated-macOS-2026-09-13-a3ccadd.dmg",
+            "sha256": "6373e37f6f47753f4d865dbf38d0f8d7dc00c6b543dd79fa98ea9c68d1157905",
             "hash_source": "self"
           },
           "windows": {
-            "url": "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/AirwindowsConsolidated-2026-09-05-2a6d1c0-Windows-64bit-setup.exe",
-            "filename": "AirwindowsConsolidated-2026-09-05-2a6d1c0-Windows-64bit-setup.exe",
-            "sha256": "92d95bd3e1f0011b5d0e95dc4a8d646362565fe112886efafd0aa537393c8cc8",
+            "url": "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/AirwindowsConsolidated-2026-09-13-a3ccadd-Windows-64bit-setup.exe",
+            "filename": "AirwindowsConsolidated-2026-09-13-a3ccadd-Windows-64bit-setup.exe",
+            "sha256": "dc439367149d14e2cf8572eb487b691a1949e4fb37fda5208e9b18b2b212bbd1",
             "hash_source": "self"
           },
           "linux": {
-            "url": "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/AirwindowsConsolidated-2026-09-05-2a6d1c0-Linux.zip",
-            "filename": "AirwindowsConsolidated-2026-09-05-2a6d1c0-Linux.zip",
-            "sha256": "8084eadef5416d6fc6e64657d5eed0acf69691cb585bbbbfac8e6bffaef879f4",
+            "url": "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/AirwindowsConsolidated-2026-09-13-a3ccadd-Linux.zip",
+            "filename": "AirwindowsConsolidated-2026-09-13-a3ccadd-Linux.zip",
+            "sha256": "c34a29c01542fe502424767c190caeba0d1705365b38bc1e2b810435f5bd8e6a",
             "hash_source": "self"
           }
         },
