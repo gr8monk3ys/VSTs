@@ -497,6 +497,50 @@
         ],
         "website": "https://tal-software.com/products/tal-vocoder",
         "open_source": false
+      },
+      {
+        "name": "StudioZIO Mastering Suite",
+        "description": "Nine-stage mastering chain - M/S, saturation, Pink Match, glue compression, EQ, clipper, true-peak limiter",
+        "urls": {
+          "macos": {
+            "url": "https://github.com/StudioZIO/StudioZIO-Releases/releases/download/mastering-suite-v2.1.1-install-fix-2026.09.11/StudioZIO-Mastering-Suite-2.1.1.pkg",
+            "filename": "StudioZIO-Mastering-Suite-2.1.1.pkg",
+            "sha256": "b054098c4f6565e5e469efd41554425d468830a001c9d4c531e72ab8c50f4cf1",
+            "hash_source": "publisher"
+          }
+        },
+        "version": "2.1.1",
+        "formats": [
+          "AU",
+          "VST3",
+          "AAX",
+          "Standalone"
+        ],
+        "website": "https://studioziomasteringsuite.vercel.app/",
+        "open_source": false,
+        "note": "macOS 11+, Universal (Apple Silicon and Intel). Signed and notarized .pkg. Freeware, closed source."
+      },
+      {
+        "name": "StudioZIO Tempo Delay",
+        "description": "Tempo-synced stereo delay - independent L/R timing, filtered and saturated feedback, ping-pong. Apple Silicon only",
+        "urls": {
+          "macos": {
+            "url": "https://github.com/StudioZIO/StudioZIO-Releases/releases/download/tempo-delay-v4.0.1-aax-2026.09.10/StudioZIOTempoDelay-v4.0.1-macOS-arm64-AAX.pkg",
+            "filename": "StudioZIOTempoDelay-v4.0.1-macOS-arm64-AAX.pkg",
+            "sha256": "4e919c509cca196e178a0a991d24c02eb7e1ba81c5890e0f4fce16aba94ec055",
+            "hash_source": "publisher"
+          }
+        },
+        "version": "4.0.1",
+        "formats": [
+          "AU",
+          "VST3",
+          "AAX",
+          "Standalone"
+        ],
+        "website": "https://www.tempodelay.tech/",
+        "open_source": false,
+        "note": "macOS 12+, Apple Silicon (arm64) only - the installer does not run on Intel Macs. Signed and notarized .pkg. Freeware, closed source."
       }
     ],
     "instruments": [
