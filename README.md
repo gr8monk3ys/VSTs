@@ -1,6 +1,6 @@
 # Free VST Plugins
 
-A manifest of 17 free, legally redistributable VST plugins (7 synths, 8
+A manifest of 18 free, legally redistributable VST plugins (8 synths, 8
 effects, a drum sampler, a 37-effect bundle), each pinned to a download URL
 and a SHA-256 hash, plus a downloader that refuses any file whose hash
 doesn't match.
@@ -52,7 +52,7 @@ on Windows). Run each `.dmg`/`.pkg`/`.exe`/`.msi`, or unpack archives into
 
 | Category | Plugins |
 |---|---|
-| Synths | Surge XT, Dexed, OB-Xd, Helm, TAL-NoiseMaker, Tyrell N6, Zebralette |
+| Synths | Surge XT, Dexed, OB-Xd, Helm, TAL-NoiseMaker, Tyrell N6, Zebralette, ChowKick |
 | Effects | Valhalla Supermassive, Valhalla FreqEcho, OTT, Dragonfly Reverb, BYOD, TDR Nova, Airwindows Consolidated, TAL-Vocoder |
 | Instruments | Sitala |
 | Bundles | MeldaProduction MFreeFXBundle |

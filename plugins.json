@@ -3,7 +3,7 @@
     "name": "Free VST Plugins",
     "version": "2.0.0",
     "description": "Curated collection of high-quality free VST plugins for macOS, Windows, and Linux",
-    "updated": "2026-09-14",
+    "updated": "2026-09-28",
     "author": "gr8monk3ys",
     "license": "MIT",
     "platforms": [
@@ -258,6 +258,42 @@
         ],
         "website": "https://u-he.com/products/zebralette/",
         "open_source": false
+      },
+      {
+        "name": "ChowKick",
+        "description": "Kick drum synth modelling vintage drum machine circuits - MIDI-triggered pulse through a tunable resonant filter",
+        "update_strategy": "github:Chowdhury-DSP/ChowKick",
+        "urls": {
+          "macos": {
+            "url": "https://github.com/Chowdhury-DSP/ChowKick/releases/download/v1.2.0/ChowKick-Mac-1.2.0.dmg",
+            "filename": "ChowKick-Mac-1.2.0.dmg",
+            "sha256": "de1833ac2bfd7f9d74ba61cb64f3fb7c600de348cba6b46d9c05c8df14d158f7",
+            "hash_source": "self"
+          },
+          "windows": {
+            "url": "https://github.com/Chowdhury-DSP/ChowKick/releases/download/v1.2.0/ChowKick-Win-64bit-1.2.0.exe",
+            "filename": "ChowKick-Win-64bit-1.2.0.exe",
+            "sha256": "d136b3938111a118d64e1dfc01f6b153a8c3ee5641001aed31b42cb033616c82",
+            "hash_source": "self"
+          },
+          "linux": {
+            "url": "https://github.com/Chowdhury-DSP/ChowKick/releases/download/v1.2.0/ChowKick-Linux-x64-1.2.0.deb",
+            "filename": "ChowKick-Linux-x64-1.2.0.deb",
+            "sha256": "2c1328c65bd4af1c188f96d088d71527eccbdc5c434cafe57c8352f53969bb2f",
+            "hash_source": "self"
+          }
+        },
+        "version": "1.2.0",
+        "formats": [
+          "VST3",
+          "AU",
+          "CLAP",
+          "LV2",
+          "Standalone"
+        ],
+        "website": "https://chowdsp.com/products.html#kick",
+        "open_source": true,
+        "github": "https://github.com/Chowdhury-DSP/ChowKick"
       }
     ],
     "effects": [
@@ -434,25 +470,25 @@
         "update_strategy": "github:baconpaul/airwin2rack@DAWPlugin",
         "urls": {
           "macos": {
-            "url": "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/airwindows-consolidated-macOS-2026-09-13-a3ccadd.dmg",
-            "filename": "airwindows-consolidated-macOS-2026-09-13-a3ccadd.dmg",
-            "sha256": "6373e37f6f47753f4d865dbf38d0f8d7dc00c6b543dd79fa98ea9c68d1157905",
+            "url": "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/airwindows-consolidated-macOS-2026-09-19-b6eef0a.dmg",
+            "filename": "airwindows-consolidated-macOS-2026-09-19-b6eef0a.dmg",
+            "sha256": "9d35db9409f98e2dc9b3b8159cf73737216b8d5a0ea1142b8bd87029e4c3c710",
             "hash_source": "self"
           },
           "windows": {
-            "url": "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/AirwindowsConsolidated-2026-09-13-a3ccadd-Windows-64bit-setup.exe",
-            "filename": "AirwindowsConsolidated-2026-09-13-a3ccadd-Windows-64bit-setup.exe",
-            "sha256": "dc439367149d14e2cf8572eb487b691a1949e4fb37fda5208e9b18b2b212bbd1",
+            "url": "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/AirwindowsConsolidated-2026-09-19-b6eef0a-Windows-64bit-setup.exe",
+            "filename": "AirwindowsConsolidated-2026-09-19-b6eef0a-Windows-64bit-setup.exe",
+            "sha256": "a2567102680fca9f67817dff8fdb12be2298b5c47335290f57c45fa07b9d015e",
             "hash_source": "self"
           },
           "linux": {
-            "url": "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/AirwindowsConsolidated-2026-09-13-a3ccadd-Linux.zip",
-            "filename": "AirwindowsConsolidated-2026-09-13-a3ccadd-Linux.zip",
-            "sha256": "c34a29c01542fe502424767c190caeba0d1705365b38bc1e2b810435f5bd8e6a",
+            "url": "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/AirwindowsConsolidated-2026-09-19-b6eef0a-Linux.zip",
+            "filename": "AirwindowsConsolidated-2026-09-19-b6eef0a-Linux.zip",
+            "sha256": "ca6ad0e4831c096668ca8f7883019769a33ec591e10bc913b8966b6b9a766353",
             "hash_source": "self"
           }
         },
-        "version": "2026-05-02-dc0ed69",
+        "version": "2026-09-19-b6eef0a",
         "formats": [
           "VST3",
           "AU",
