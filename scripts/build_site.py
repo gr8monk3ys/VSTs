@@ -21,7 +21,11 @@ CATEGORY_ICONS = {
     "effects": "◈",
     "instruments": "♪",
     "bundles": "▣",
+    "samples": "◎",
 }
+
+CATEGORY_ORDER = ("synths", "effects", "instruments", "bundles", "samples")
+CATEGORY_TITLES = {"samples": "Sample Libraries (SFZ)"}
 
 CSS = """
 :root {
@@ -163,7 +167,8 @@ def build_html(data: dict) -> str:
     plugins = data.get("plugins", {})
     manual = data.get("manual_download", [])
 
-    n_plugins = sum(len(v) for v in plugins.values())
+    n_samples = len(plugins.get("samples", []))
+    n_plugins = sum(len(v) for v in plugins.values()) - n_samples
     n_verified = sum(
         1
         for cat in plugins.values()
@@ -174,20 +179,19 @@ def build_html(data: dict) -> str:
     )
 
     sections = []
-    for category in ("synths", "effects", "instruments", "bundles"):
+    for category in CATEGORY_ORDER:
         items = plugins.get(category)
         if not items:
             continue
         icon = CATEGORY_ICONS.get(category, "•")
+        title = CATEGORY_TITLES.get(category, category.title())
         cards = "".join(render_plugin_card(p) for p in items)
         sections.append(
             f'<section data-cat="{esc(category)}">'
-            f'<h2 class="cat"><span class="icon">{icon}</span>{esc(category.title())}</h2>'
+            f'<h2 class="cat"><span class="icon">{icon}</span>{esc(title)}</h2>'
             f'<div class="grid">{cards}</div></section>'
         )
-    for category in sorted(
-        set(plugins) - {"synths", "effects", "instruments", "bundles"}
-    ):
+    for category in sorted(set(plugins) - set(CATEGORY_ORDER)):
         cards = "".join(render_plugin_card(p) for p in plugins[category])
         sections.append(
             f'<section data-cat="{esc(category)}">'
@@ -205,6 +209,11 @@ def build_html(data: dict) -> str:
             f'<div class="grid">{cards}</div></section>'
         )
 
+    sample_stat = (
+        f"<div><strong>{n_samples}</strong><span>sample libraries</span></div>"
+        if n_samples
+        else ""
+    )
     updated = esc(meta.get("updated", ""))
     description = esc(
         meta.get(
@@ -230,6 +239,7 @@ def build_html(data: dict) -> str:
   hash in a version-controlled manifest, and installs with one command.</p>
   <div class="stats">
     <div><strong>{n_plugins}</strong><span>plugins</span></div>
+    {sample_stat}
     <div><strong>{n_verified}</strong><span>hash-verified</span></div>
     <div><strong>3</strong><span>platforms</span></div>
     <div><strong>{updated}</strong><span>manifest updated</span></div>

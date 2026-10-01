@@ -84,6 +84,17 @@ DEFAULT_MANIFEST_URL = (
     "https://raw.githubusercontent.com/gr8monk3ys/VSTs/main/plugins.json"
 )
 
+# Categories a plain run downloads, in display order.
+DEFAULT_CATEGORIES = ["synths", "effects", "instruments", "bundles"]
+# Opt-in categories: SFZ sample libraries run to several GB, so a plain run
+# skips them and `--samples` asks for them explicitly.
+OPT_IN_CATEGORIES = ["samples"]
+CATEGORY_TITLES = {"samples": "Sample Libraries (SFZ)"}
+
+
+def category_title(category: str) -> str:
+    return CATEGORY_TITLES.get(category, category.title())
+
 
 def find_local_manifest() -> Path | None:
     """Find plugins.json in a repo checkout (walking up from this file), else CWD.
@@ -883,7 +894,7 @@ def download_category(plugins_data, category, download_dir, plat, only=None):
         return 0
     failed = 0
 
-    print_section(category.title())
+    print_section(category_title(category))
 
     for plugin in plugins:
         name = plugin.get("name", "Unknown")
@@ -951,7 +962,7 @@ def verify_downloads(plugins_data, download_dir, plat, only=None) -> int:
     return mismatched
 
 
-def print_summary(download_dir, plat):
+def print_summary(download_dir, plat, samples=False):
     """Print download summary."""
     print_section("Download Summary")
 
@@ -991,6 +1002,12 @@ def print_summary(download_dir, plat):
         print(f"        LV2:  {C.CYAN}~/.lv2{C.NC}")
         print("     2. Rescan plugins in your DAW")
 
+    if samples:
+        print()
+        print(f"  {C.YELLOW}Sample libraries:{C.NC}")
+        print("     Unpack each .zip/.7z into a folder of its own, then load")
+        print("     its .sfz files in an SFZ player such as sfizz (see Instruments).")
+
     print()
     print(f"  {C.YELLOW}Manual downloads needed:{C.NC}")
     print(f"     • Vital           → {C.CYAN}https://vital.audio{C.NC}")
@@ -1003,11 +1020,14 @@ def list_plugins(plugins_data, plat):
     """List all available plugins."""
     print_header()
 
-    for category in ["synths", "effects", "instruments", "bundles"]:
+    for category in DEFAULT_CATEGORIES + OPT_IN_CATEGORIES:
         if category not in plugins_data.get("plugins", {}):
             continue
 
-        print_section(category.title())
+        title = category_title(category)
+        if category in OPT_IN_CATEGORIES:
+            title += f" - only with --{category}"
+        print_section(title)
 
         for plugin in plugins_data["plugins"][category]:
             name = plugin.get("name", "Unknown")
@@ -1025,6 +1045,26 @@ def list_plugins(plugins_data, plat):
     print()
 
 
+def select_categories(args) -> list[str]:
+    """Categories to download for the parsed CLI flags.
+
+    No category flag means every default category. Opt-in categories (sample
+    libraries) are only included when asked for by flag, or when `--only`
+    names entries without any category flag, since naming a library is as
+    explicit as asking for its category.
+    """
+    flags = {
+        category: getattr(args, category, False) for category in DEFAULT_CATEGORIES
+    }
+    opt_in = {
+        category: getattr(args, category, False) for category in OPT_IN_CATEGORIES
+    }
+    if not any(flags.values()) and not any(opt_in.values()):
+        return DEFAULT_CATEGORIES + (OPT_IN_CATEGORIES if args.only else [])
+    chosen = [category for category in DEFAULT_CATEGORIES if flags[category]]
+    return chosen + [category for category in OPT_IN_CATEGORIES if opt_in[category]]
+
+
 def main():
     make_output_safe()
     parser = argparse.ArgumentParser(
@@ -1032,8 +1072,10 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  %(prog)s                    # Download all plugins
+  %(prog)s                    # Download all plugins (not sample libraries)
   %(prog)s --synths           # Download synths only
+  %(prog)s --samples          # Download SFZ sample libraries only (several GB)
+  %(prog)s --instruments --samples  # Instruments (incl. sfizz) plus libraries
   %(prog)s --dir ~/Music/VST  # Custom download location
   %(prog)s --list             # List available plugins
 """,
@@ -1057,6 +1099,11 @@ Examples:
     )
     parser.add_argument(
         "-b", "--bundles", action="store_true", help="Download bundles only"
+    )
+    parser.add_argument(
+        "--samples",
+        action="store_true",
+        help="Download SFZ sample libraries (opt-in: several GB, never part of the default run)",
     )
     parser.add_argument(
         "-l", "--list", action="store_true", help="List available plugins"
@@ -1183,17 +1230,7 @@ Examples:
         sys.exit(1 if mismatched else 0)
 
     # Determine which categories to download
-    download_all = not (args.synths or args.effects or args.instruments or args.bundles)
-    categories = []
-
-    if download_all or args.synths:
-        categories.append("synths")
-    if download_all or args.effects:
-        categories.append("effects")
-    if download_all or args.instruments:
-        categories.append("instruments")
-    if download_all or args.bundles:
-        categories.append("bundles")
+    categories = select_categories(args)
 
     print_header()
     print(f"  Platform: {C.CYAN}{plat}{C.NC}")
@@ -1217,7 +1254,7 @@ Examples:
     extract_archives(download_dir)
 
     # Print summary
-    print_summary(download_dir, plat)
+    print_summary(download_dir, plat, samples="samples" in categories)
 
     if failed > 0:
         print(f"{C.YELLOW}⚠ {failed} download(s) failed. Check the output above.{C.NC}")
