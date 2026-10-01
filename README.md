@@ -1,6 +1,6 @@
 # Free VST Plugins
 
-A manifest of 17 free, legally redistributable VST plugins (7 synths, 8
+A manifest of 26 free, legally redistributable VST plugins (7 synths, 17
 effects, a drum sampler, a 37-effect bundle), each pinned to a download URL
 and a SHA-256 hash, plus a downloader that refuses any file whose hash
 doesn't match.
@@ -15,7 +15,7 @@ its hash came from (`hash_source: publisher` when the vendor publishes one,
 downloader re-hashes cached files too, so a file that changed on disk is
 deleted rather than installed. A weekly workflow checks upstream releases and
 opens a PR when a URL or hash drifts; that diff is the moment a new binary
-gets trusted. 9 more plugins that sit behind account walls are listed in the
+gets trusted. 11 more plugins that sit behind account walls are listed in the
 manifest under `manual_download` with no URL.
 
 Runs on macOS, Windows and Linux with Python 3.9+ and no dependencies.
@@ -34,7 +34,7 @@ Or from a checkout, no install:
 git clone https://github.com/gr8monk3ys/VSTs.git
 cd VSTs
 python3 scripts/download-plugins.py --list
-python3 scripts/download-plugins.py               # everything (~1.5 GB)
+python3 scripts/download-plugins.py               # everything (~1.7 GB)
 python3 scripts/download-plugins.py --effects --dir ~/Music/Plugins
 python3 scripts/download-plugins.py --only surge --only dexed
 python3 scripts/download-plugins.py --verify      # re-hash what's on disk, no downloads
@@ -53,7 +53,7 @@ on Windows). Run each `.dmg`/`.pkg`/`.exe`/`.msi`, or unpack archives into
 | Category | Plugins |
 |---|---|
 | Synths | Surge XT, Dexed, OB-Xd, Helm, TAL-NoiseMaker, Tyrell N6, Zebralette |
-| Effects | Valhalla Supermassive, Valhalla FreqEcho, OTT, Dragonfly Reverb, BYOD, TDR Nova, Airwindows Consolidated, TAL-Vocoder |
+| Effects | Valhalla Supermassive, Valhalla FreqEcho, OTT, Dragonfly Reverb, BYOD, TDR Nova, Airwindows Consolidated, TAL-Vocoder, Neural Amp Modeler, Gateway (NAM), TONE3000, Youlean Loudness Meter 2, Voxengo SPAN, Graillon 3 Free, TDR Kotelnikov, TDR Molotok, TAL-Dub-X |
 | Instruments | Sitala |
 | Bundles | MeldaProduction MFreeFXBundle |
 
