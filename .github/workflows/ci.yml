@@ -63,8 +63,8 @@ jobs:
             python-version: '3.9'
           - os: windows-latest
             python-version: '3.12'
-    env:
-      PYTHONUTF8: '1'  # Ensure UTF-8 output on Windows (fixes UnicodeEncodeError for box-drawing chars)
+    # No PYTHONUTF8 here on purpose: Windows runs must see the same cp1252
+    # redirected stdout that users get, or an encoding crash passes CI.
 
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0

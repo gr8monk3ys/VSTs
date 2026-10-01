@@ -38,6 +38,19 @@ class Colors:
 C = Colors()
 
 
+def make_output_safe() -> None:
+    """Never crash on output the console can't encode.
+
+    Windows uses the ANSI code page (cp1252) for redirected or piped stdout, which
+    has no box-drawing or arrow characters, so a plain print() raised
+    UnicodeEncodeError. Unencodable characters are replaced with '?' instead.
+    """
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if reconfigure is not None:
+            reconfigure(errors="replace")
+
+
 class ChecksumMismatch(Exception):
     """Raised when a downloaded file's SHA-256 does not match plugins.json."""
 
@@ -878,6 +891,8 @@ def download_category(plugins_data, category, download_dir, plat, only=None):
 
         if entry is None:
             print(f"  {C.YELLOW}⏭{C.NC}  {name} - not available for {plat}")
+            if plugin.get("note"):
+                print(f"      {plugin['note']}")
             continue
 
         url = entry["url"]
@@ -1011,6 +1026,7 @@ def list_plugins(plugins_data, plat):
 
 
 def main():
+    make_output_safe()
     parser = argparse.ArgumentParser(
         description="Download free VST plugins for music production",
         formatter_class=argparse.RawDescriptionHelpFormatter,

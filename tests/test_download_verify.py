@@ -191,3 +191,41 @@ def test_verify_mode_reports_mismatch_without_downloading(
     with pytest.raises(SystemExit) as exc:
         dlp.main()
     assert exc.value.code == 0
+
+
+def test_main_survives_cp1252_stdout_and_prints_skip_note(
+    fixtures_dir, tmp_path, monkeypatch
+) -> None:
+    # Windows gives redirected/piped stdout the ANSI code page, which cannot
+    # encode the box-drawing and arrow characters main() prints.
+    import io
+    import json
+
+    manifest = json.loads(
+        (fixtures_dir / "plugins-with-hashes.json").read_text(encoding="utf-8")
+    )
+    manifest["plugins"]["synths"][0]["note"] = "Windows build is behind a form"
+    fake_plugins = tmp_path / "plugins.json"
+    fake_plugins.write_text(json.dumps(manifest), encoding="utf-8")
+
+    raw = io.BytesIO()
+    cp1252_stdout = io.TextIOWrapper(raw, encoding="cp1252", errors="strict")
+    monkeypatch.setattr(sys, "stdout", cp1252_stdout)
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "download-plugins.py",
+            "--platform",
+            "windows",
+            "--dir",
+            str(tmp_path / "out"),
+            "--plugins-json",
+            str(fake_plugins),
+        ],
+    )
+    dlp.main()
+    cp1252_stdout.flush()
+    out = raw.getvalue().decode("cp1252")
+    assert "FakeSynth - not available for windows" in out
+    assert "Windows build is behind a form" in out
