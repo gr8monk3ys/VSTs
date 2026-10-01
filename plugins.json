@@ -628,7 +628,7 @@
         "website": "https://virtualplaying.com/virtual-playing-orchestra/",
         "license": "Mixed: Sonatina (CC Sampling Plus 1.0), Mattias Westlund (CC BY-SA 3.0), No Budget Orchestra (CC BY-SA 4.0), VSCO 2 CE and stamperadam (CC0), University of Iowa (unrestricted). Music made with it needs no attribution; redistributing the samples needs credit.",
         "open_source": false,
-        "note": "Works with wave files 3.1 and 3.2. Extract into the same folder as the wave files."
+        "note": "Works with wave files 3.1 and 3.2. Extract into the same folder as the wave files. With sfizz 1.2.3, the scripts' delay_random lines can leave notes hanging; comment them out if you render or play through sfizz."
       },
       {
         "name": "Virtual Playing Orchestra 3 (performance scripts)",
@@ -660,7 +660,7 @@
         "website": "https://virtualplaying.com/virtual-playing-orchestra/",
         "license": "Mixed: Sonatina (CC Sampling Plus 1.0), Mattias Westlund (CC BY-SA 3.0), No Budget Orchestra (CC BY-SA 4.0), VSCO 2 CE and stamperadam (CC0), University of Iowa (unrestricted). Music made with it needs no attribution; redistributing the samples needs credit.",
         "open_source": false,
-        "note": "Works with wave files 3.1 and 3.2. Extract into the same folder as the wave files."
+        "note": "Works with wave files 3.1 and 3.2. Extract into the same folder as the wave files. With sfizz 1.2.3, the scripts' delay_random lines can leave notes hanging; comment them out if you render or play through sfizz."
       },
       {
         "name": "Sonatina Symphonic Orchestra",
