@@ -1,10 +1,10 @@
 # Free VST Plugins
 
-A manifest of 17 free, legally redistributable VST plugins (7 synths, 8
-effects, a drum sampler, a 37-effect bundle) and 13 free SFZ sample-library
-downloads (orchestra, solo strings and winds, saxes, accordion, piano,
-Mellotron), each pinned to a download URL and a SHA-256 hash, plus a
-downloader that refuses any file whose hash doesn't match.
+A manifest of 33 free, legally redistributable VST plugins (11 synths, 15
+effects, 5 instruments, 2 bundles) and 13 free SFZ sample-library downloads
+(orchestra, solo strings and winds, saxes, accordion, piano, Mellotron), each
+pinned to a download URL and a SHA-256 hash, plus a downloader that refuses any
+file whose hash doesn't match.
 
 Browse the catalog: https://gr8monk3ys.github.io/VSTs/
 
@@ -16,9 +16,9 @@ its hash came from (`hash_source: publisher` when the vendor publishes one,
 downloader re-hashes cached files too, so a file that changed on disk is
 deleted rather than installed. A weekly workflow checks upstream releases and
 opens a PR when a URL or hash drifts; that diff is the moment a new binary
-gets trusted. 13 more plugins and libraries that sit behind account walls
-(or, for VCSL, have no release archive) are listed in the manifest under
-`manual_download` with no URL.
+gets trusted. 16 more plugins and libraries that sit behind account walls or
+download gates (or, for VCSL, have no release archive) are listed in the
+manifest under `manual_download` with no URL.
 
 Runs on macOS, Windows and Linux with Python 3.9+ and no dependencies.
 
@@ -36,7 +36,7 @@ Or from a checkout, no install:
 git clone https://github.com/gr8monk3ys/VSTs.git
 cd VSTs
 python3 scripts/download-plugins.py --list
-python3 scripts/download-plugins.py               # every plugin (~1.5 GB), no sample libraries
+python3 scripts/download-plugins.py               # every plugin (~2.5 GB), no sample libraries
 python3 scripts/download-plugins.py --samples     # SFZ sample libraries only (~2.9 GB)
 python3 scripts/download-plugins.py --effects --dir ~/Music/Plugins
 python3 scripts/download-plugins.py --only surge --only dexed
@@ -62,10 +62,10 @@ Orchestra archives go into one folder (wave files plus either script set).
 
 | Category | Plugins |
 |---|---|
-| Synths | Surge XT, Dexed, OB-Xd, Helm, TAL-NoiseMaker, Tyrell N6, Zebralette |
-| Effects | Valhalla Supermassive, Valhalla FreqEcho, OTT, Dragonfly Reverb, BYOD, TDR Nova, Airwindows Consolidated, TAL-Vocoder |
-| Instruments | Sitala |
-| Bundles | MeldaProduction MFreeFXBundle |
+| Synths | Surge XT, Dexed, OB-Xd, OB-Xf, Helm, TAL-NoiseMaker, Tyrell N6, Zebralette, Vaporizer2, Podolski, Triple Cheese |
+| Effects | Valhalla Supermassive, Valhalla FreqEcho, OTT, Dragonfly Reverb, BYOD, TDR Nova, Airwindows Consolidated, TAL-Vocoder, CHOW Tape Model, ChowMatrix, ChowPhaser, TAL-Chorus-LX, TAL-Reverb-4, Protoverb, PaulXStretch |
+| Instruments | Sitala, sfizz, RipplerX, SocaLabs Organ, SocaLabs Piano |
+| Bundles | MeldaProduction MFreeFXBundle, Cardinal |
 | Sample libraries (`--samples`) | Virtual Playing Orchestra 3 (wave files, standard scripts, performance scripts), Sonatina Symphonic Orchestra 4.0, Karoryfer x bigcat Cello, Karoryfer Bear Sax, Karoryfer Weresax, Karoryfer War Tuba, MTG Solo Saxophones, Ixox Flute, FreePats Button Accordion HN, FreePats Upright Piano KW, Plogue sforzatron |
 
 Sample-library licences vary (CC0, CC-BY 4.0, CC Sampling Plus, a VPO mix of
