@@ -869,6 +869,285 @@
         "website": "https://sonosaurus.com/paulxstretch/",
         "open_source": true,
         "github": "https://github.com/essej/paulxstretch"
+      },
+      {
+        "name": "Neural Amp Modeler",
+        "description": "Neural amp/pedal capture player (.nam files) with built-in cab IR loader and noise gate",
+        "urls": {
+          "macos": {
+            "url": "https://github.com/sdatkinson/NeuralAmpModelerPlugin/releases/download/v0.7.13/NeuralAmpModeler-v0.7.13-mac.dmg",
+            "filename": "NeuralAmpModeler-v0.7.13-mac.dmg",
+            "sha256": "e9cea7a409fd167e05314d423a298ecb3b2c915eba2f8a514ee0c48a70f39173",
+            "hash_source": "self"
+          },
+          "windows": {
+            "url": "https://github.com/sdatkinson/NeuralAmpModelerPlugin/releases/download/v0.7.13/NeuralAmpModeler-v0.7.13-win.zip",
+            "filename": "NeuralAmpModeler-v0.7.13-win.zip",
+            "sha256": "8da37afde1f0797c773d6b8709da89bdda40c0e45f67cf3e4d87291e9b5e9da5",
+            "hash_source": "self"
+          }
+        },
+        "version": "0.7.13",
+        "formats": [
+          "VST3",
+          "AU"
+        ],
+        "website": "https://www.neuralampmodeler.com/users",
+        "open_source": true,
+        "github": "https://github.com/sdatkinson/NeuralAmpModelerPlugin",
+        "note": "Pinned to v0.7.13, the last GitHub release with binaries (v0.7.14/v0.7.15 have none, and the release also carries debug-symbol zips that confuse asset matching), so it has no update_strategy. Reads classic WaveNet/LSTM captures but not the newer A2 ones; use Gateway (NAM) for those."
+      },
+      {
+        "name": "Gateway (NAM)",
+        "description": "The renamed Neural Amp Modeler plugin (1.x) - plays classic and A2 .nam captures plus cab IRs",
+        "update_strategy": "stable-url",
+        "urls": {
+          "macos": {
+            "url": "https://drive.usercontent.google.com/download?export=download&confirm=t&id=1twtHzYU0SQGwUYVCjMHmpjUS_8AiQElt",
+            "filename": "Gateway-v1.0.1-mac.dmg",
+            "sha256": "94655edaf034fa33b62680e2a70c8ca8b9759270ca218a750d8d520368f3a7c4",
+            "hash_source": "self"
+          },
+          "windows": {
+            "url": "https://drive.usercontent.google.com/download?export=download&confirm=t&id=1MDZmrxIKPdkt7GJwW-IYlRK28Y4jjUVg",
+            "filename": "Gateway-v1.0.1-win.zip",
+            "sha256": "06571761c8429a3f2b6bd3a35ebd9729eb1e1fd5015fa0ce26fe8ed37d04f9b1",
+            "hash_source": "self"
+          }
+        },
+        "version": "1.0.1",
+        "formats": [
+          "VST3",
+          "AU"
+        ],
+        "website": "https://www.neuralampmodeler.com/users",
+        "open_source": true,
+        "github": "https://github.com/sdatkinson/NeuralAmpModelerPlugin",
+        "note": "Official binaries are hosted on Google Drive (linked from neuralampmodeler.com/users), not GitHub releases. Windows installer is Inno Setup 6.7."
+      },
+      {
+        "name": "TONE3000",
+        "description": "TONE3000's NAM/IR player with a multi-block rig; loads local .nam and IR files",
+        "update_strategy": "github:tone-3000/tone3000-plugin",
+        "urls": {
+          "macos": {
+            "url": "https://github.com/tone-3000/tone3000-plugin/releases/download/v0.0.9/TONE3000-v0.0.9-macos-universal.pkg",
+            "filename": "TONE3000-v0.0.9-macos-universal.pkg",
+            "sha256": "4df5611ae235511ef3863c4fbafd2ed06a127abecb92c64c8b47743fda3d735e",
+            "hash_source": "self"
+          },
+          "windows": {
+            "url": "https://github.com/tone-3000/tone3000-plugin/releases/download/v0.0.9/TONE3000-v0.0.9-windows-x64.exe",
+            "filename": "TONE3000-v0.0.9-windows-x64.exe",
+            "sha256": "2dd8d7db67288d0b91bcebbf1068e6051840bbd3337b726800ae8b3596873b11",
+            "hash_source": "self"
+          },
+          "linux": {
+            "url": "https://github.com/tone-3000/tone3000-plugin/releases/download/v0.0.9/TONE3000-v0.0.9-linux-x64.tar.gz",
+            "filename": "TONE3000-v0.0.9-linux-x64.tar.gz",
+            "sha256": "3e23fb63965f310834090c1cae0357ea0b279cfc14d6980e3beb0b7b5a54b546",
+            "hash_source": "self"
+          }
+        },
+        "version": "0.0.9",
+        "formats": [
+          "VST3",
+          "AU",
+          "AAX",
+          "CLAP",
+          "LV2"
+        ],
+        "website": "https://www.tone3000.com/plugin",
+        "open_source": true,
+        "github": "https://github.com/tone-3000/tone3000-plugin",
+        "note": "Plugin is free with no account; loading tones from the TONE3000 library needs a free account (local .nam/IR files work without one). Needs the WebView2 runtime on Windows."
+      },
+      {
+        "name": "Youlean Loudness Meter 2",
+        "description": "LUFS/true-peak loudness meter with history graph - free edition",
+        "update_strategy": "stable-url",
+        "urls": {
+          "macos": {
+            "url": "https://cdn.youlean.co/wp-content/uploads/2026/09/Youlean-Loudness-Meter-2-V2.5.15-macOS.dmg",
+            "filename": "Youlean-Loudness-Meter-2-V2.5.15-macOS.dmg",
+            "sha256": "0497a988c390e12ac4a7d71fe12aa11847af1787d972d40fc2ae03c25131eeab",
+            "hash_source": "self"
+          },
+          "windows": {
+            "url": "https://cdn.youlean.co/wp-content/uploads/2026/09/Youlean-Loudness-Meter-2-V2.5.15-Windows.zip",
+            "filename": "Youlean-Loudness-Meter-2-V2.5.15-Windows.zip",
+            "sha256": "ad8b4eb2b6a8397961f053011ad44b348255c40cec28df4af0afb0b6d474757b",
+            "hash_source": "self"
+          }
+        },
+        "version": "2.5.15",
+        "formats": [
+          "VST3",
+          "AU",
+          "VST",
+          "AAX"
+        ],
+        "website": "https://youlean.co/youlean-loudness-meter/",
+        "open_source": false,
+        "note": "Windows zip includes a manual-install folder with a single-file VST3."
+      },
+      {
+        "name": "Voxengo SPAN",
+        "description": "Real-time FFT spectrum analyzer with correlation and level meters",
+        "update_strategy": "stable-url",
+        "urls": {
+          "macos": {
+            "url": "https://www.voxengo.com/files/VoxengoSPAN_324_Mac_AU_AAX_VST_setup.dmg",
+            "filename": "VoxengoSPAN_324_Mac_AU_AAX_VST_setup.dmg",
+            "sha256": "82685deeac6060b72621516c7e524730345f06942ace2e32324cacd55f41c476",
+            "hash_source": "self"
+          },
+          "windows": {
+            "url": "https://www.voxengo.com/files/VoxengoSPAN_324_Win32_64_VST_VST3_AAX_setup.exe",
+            "filename": "VoxengoSPAN_324_Win32_64_VST_VST3_AAX_setup.exe",
+            "sha256": "dc62221a8f0784165ae0ff1482c6a96f9911b5dc9e6afeada67b3d46f4385ec2",
+            "hash_source": "self"
+          }
+        },
+        "version": "3.24",
+        "formats": [
+          "VST3",
+          "AU",
+          "VST",
+          "AAX"
+        ],
+        "website": "https://www.voxengo.com/product/span/",
+        "open_source": false
+      },
+      {
+        "name": "Graillon 3 Free",
+        "description": "Pitch correction, pitch and formant shifting - free edition of Auburn Sounds Graillon",
+        "update_strategy": "stable-url",
+        "urls": {
+          "macos": {
+            "url": "https://www.auburnsounds.com/downloads/Graillon-FREE-3.2.zip",
+            "filename": "Graillon-FREE-3.2.zip",
+            "sha256": "d9ed254bd6ac89d5c5e670383dec2cb1acf43a72c62ebf2e4401d039ff6bda18",
+            "hash_source": "self"
+          },
+          "windows": {
+            "url": "https://www.auburnsounds.com/downloads/Graillon-FREE-3.2.zip",
+            "filename": "Graillon-FREE-3.2.zip",
+            "sha256": "d9ed254bd6ac89d5c5e670383dec2cb1acf43a72c62ebf2e4401d039ff6bda18",
+            "hash_source": "self"
+          },
+          "linux": {
+            "url": "https://www.auburnsounds.com/downloads/Graillon-FREE-3.2.zip",
+            "filename": "Graillon-FREE-3.2.zip",
+            "sha256": "d9ed254bd6ac89d5c5e670383dec2cb1acf43a72c62ebf2e4401d039ff6bda18",
+            "hash_source": "self"
+          }
+        },
+        "version": "3.2",
+        "formats": [
+          "VST3",
+          "AU",
+          "VST",
+          "AAX",
+          "CLAP",
+          "LV2"
+        ],
+        "website": "https://www.auburnsounds.com/products/Graillon.html",
+        "open_source": false,
+        "note": "One zip for all platforms. The free edition lacks pitch-tracking modulation, keyboard tuning and the vocal doubler."
+      },
+      {
+        "name": "TDR Kotelnikov",
+        "description": "Transparent mastering/bus compressor with separate peak and RMS release",
+        "update_strategy": "stable-url",
+        "urls": {
+          "macos": {
+            "url": "https://www.tokyodawn.net/labs/Kotelnikov/1.6.7/TDR%20Kotelnikov.zip",
+            "filename": "TDR-Kotelnikov-macOS.zip",
+            "sha256": "59e580a260fb66db6f608b92434c9cf9e426eb83734995b5d4633930783389da",
+            "hash_source": "self"
+          },
+          "windows": {
+            "url": "https://www.tokyodawn.net/labs/Kotelnikov/1.6.7/TDR%20Kotelnikov%20(no%20installer).zip",
+            "filename": "TDR-Kotelnikov-Windows-no-installer.zip",
+            "sha256": "dfc2d3ad466352ab9efe63841f6051b33097e717ed822e3ff5e9321276bf18f4",
+            "hash_source": "self"
+          }
+        },
+        "version": "1.6.7",
+        "formats": [
+          "VST3",
+          "AU",
+          "VST",
+          "AAX"
+        ],
+        "website": "https://www.tokyodawn.net/tdr-kotelnikov/",
+        "open_source": false,
+        "note": "Windows build is the portable (no installer) zip; copy VST3/x64/TDR Kotelnikov.vst3 into your VST3 folder."
+      },
+      {
+        "name": "TDR Molotok",
+        "description": "Characterful vintage-style compressor (free sibling of TDR Molot GE)",
+        "update_strategy": "stable-url",
+        "urls": {
+          "macos": {
+            "url": "https://www.tokyodawn.net/labs/Molotok/1.0.7/TDR%20Molotok.zip",
+            "filename": "TDR-Molotok-macOS.zip",
+            "sha256": "29b65ea823f5b34f5d0e2d1e556b7f92a9889d07bf6fa20dbb40207ca50c288f",
+            "hash_source": "self"
+          },
+          "windows": {
+            "url": "https://www.tokyodawn.net/labs/Molotok/1.0.7/TDR%20Molotok%20(no%20installer).zip",
+            "filename": "TDR-Molotok-Windows-no-installer.zip",
+            "sha256": "438f2de9c91540fc033aed9a68968311c5a3fa67a948e6104f918cc094c7f0d0",
+            "hash_source": "self"
+          }
+        },
+        "version": "1.0.7",
+        "formats": [
+          "VST3",
+          "AU",
+          "VST",
+          "AAX"
+        ],
+        "website": "https://www.tokyodawn.net/tdr-molotok/",
+        "open_source": false,
+        "note": "Windows build is the portable (no installer) zip."
+      },
+      {
+        "name": "TAL-Dub-X",
+        "description": "Analog-modelled dub/tape-style delay with filter, saturation and modulation",
+        "update_strategy": "stable-url",
+        "urls": {
+          "macos": {
+            "url": "https://tal-software.com/downloads/plugins/TAL-Dub-X-installer_macos.zip",
+            "filename": "TAL-Dub-X-installer_macos.zip",
+            "sha256": "bc92759d1856722972ad15f6e7c393d28ad2857af3c8a0f64a23da4be6cdb59d",
+            "hash_source": "self"
+          },
+          "windows": {
+            "url": "https://tal-software.com/downloads/plugins/install_TAL-Dub-X.zip",
+            "filename": "install_TAL-Dub-X.zip",
+            "sha256": "9affe3694bc53044fce17a8477121cf6cab99df88a7edefda51c92403b2928d3",
+            "hash_source": "self"
+          },
+          "linux": {
+            "url": "https://tal-software.com/downloads/plugins/TAL-Dub-X_64_linux.zip",
+            "filename": "TAL-Dub-X_64_linux.zip",
+            "sha256": "789ce899b7df732407f3b5036f8fd85d820384ea44c805bacb2a4b68ace886f0",
+            "hash_source": "self"
+          }
+        },
+        "version": "1.x (2025-11-03 build)",
+        "formats": [
+          "VST3",
+          "AU",
+          "VST",
+          "AAX",
+          "CLAP"
+        ],
+        "website": "https://tal-software.com/products/tal-dub-x",
+        "open_source": false
       }
     ],
     "instruments": [
@@ -1700,6 +1979,26 @@
         "windows"
       ],
       "reason": "Delivered only through the Muse Hub app (account sign-in); the sounds play inside MuseScore Studio"
+    },
+    {
+      "name": "Tuna",
+      "description": "Aurora DSP's free resizable guitar/bass tuner (down to 40 Hz)",
+      "website": "https://auroradsp.com/tuna",
+      "platforms": [
+        "macos",
+        "windows"
+      ],
+      "reason": "Free licence must be claimed with an Aurora DSP account before the private download link appears"
+    },
+    {
+      "name": "T-De-Esser 2",
+      "description": "Techivation's free de-esser",
+      "website": "https://techivation.com/t-de-esser/",
+      "platforms": [
+        "macos",
+        "windows"
+      ],
+      "reason": "Download goes through Techivation's cart/account flow; no direct file URL"
     }
   ]
 }
