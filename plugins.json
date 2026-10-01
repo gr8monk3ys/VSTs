@@ -1107,6 +1107,433 @@
         "open_source": true,
         "github": "https://github.com/DISTRHO/Cardinal"
       }
+    ],
+    "samples": [
+      {
+        "name": "Virtual Playing Orchestra 3 (wave files)",
+        "description": "Full free orchestra in SFZ - string sections and solos, brass, woodwinds, choir, harp, celesta, mallets, timpani. The samples; pair with a VPO scripts package",
+        "urls": {
+          "macos": {
+            "url": "https://archive.org/download/virtual-playing-orchestra-3-2-wave-files/Virtual-Playing-Orchestra3-2-wave-files.zip",
+            "filename": "Virtual-Playing-Orchestra3-2-wave-files.zip",
+            "sha256": "ca8f1e0b56eede35314994646e5f1f307ec349616c967fbecf627c43aa646e90",
+            "hash_source": "self"
+          },
+          "windows": {
+            "url": "https://archive.org/download/virtual-playing-orchestra-3-2-wave-files/Virtual-Playing-Orchestra3-2-wave-files.zip",
+            "filename": "Virtual-Playing-Orchestra3-2-wave-files.zip",
+            "sha256": "ca8f1e0b56eede35314994646e5f1f307ec349616c967fbecf627c43aa646e90",
+            "hash_source": "self"
+          },
+          "linux": {
+            "url": "https://archive.org/download/virtual-playing-orchestra-3-2-wave-files/Virtual-Playing-Orchestra3-2-wave-files.zip",
+            "filename": "Virtual-Playing-Orchestra3-2-wave-files.zip",
+            "sha256": "ca8f1e0b56eede35314994646e5f1f307ec349616c967fbecf627c43aa646e90",
+            "hash_source": "self"
+          }
+        },
+        "version": "3.2",
+        "formats": [
+          "SFZ"
+        ],
+        "website": "https://virtualplaying.com/virtual-playing-orchestra/",
+        "license": "Mixed: Sonatina (CC Sampling Plus 1.0), Mattias Westlund (CC BY-SA 3.0), No Budget Orchestra (CC BY-SA 4.0), VSCO 2 CE and stamperadam (CC0), University of Iowa (unrestricted). Music made with it needs no attribution; redistributing the samples needs credit.",
+        "open_source": false,
+        "note": "616 MB. archive.org mirror linked from virtualplaying.com (its other two mirrors are OneDrive/Google Drive share pages). Unzip into the same folder as a scripts package."
+      },
+      {
+        "name": "Virtual Playing Orchestra 3 (standard scripts)",
+        "description": "The .sfz instrument files for VPO 3 - sustain, staccato, pizzicato, keyswitch and mod-wheel patches",
+        "urls": {
+          "macos": {
+            "url": "https://virtualplaying.com/vp-downloads/Virtual-Playing-Orchestra3-3-standard-scripts.zip",
+            "filename": "Virtual-Playing-Orchestra3-3-standard-scripts.zip",
+            "sha256": "f0f2bf0e42d2a39c5f49401addcffa840fd8f5525670f5945bf5093a5442bda5",
+            "hash_source": "self"
+          },
+          "windows": {
+            "url": "https://virtualplaying.com/vp-downloads/Virtual-Playing-Orchestra3-3-standard-scripts.zip",
+            "filename": "Virtual-Playing-Orchestra3-3-standard-scripts.zip",
+            "sha256": "f0f2bf0e42d2a39c5f49401addcffa840fd8f5525670f5945bf5093a5442bda5",
+            "hash_source": "self"
+          },
+          "linux": {
+            "url": "https://virtualplaying.com/vp-downloads/Virtual-Playing-Orchestra3-3-standard-scripts.zip",
+            "filename": "Virtual-Playing-Orchestra3-3-standard-scripts.zip",
+            "sha256": "f0f2bf0e42d2a39c5f49401addcffa840fd8f5525670f5945bf5093a5442bda5",
+            "hash_source": "self"
+          }
+        },
+        "version": "3.3",
+        "formats": [
+          "SFZ"
+        ],
+        "website": "https://virtualplaying.com/virtual-playing-orchestra/",
+        "license": "Mixed: Sonatina (CC Sampling Plus 1.0), Mattias Westlund (CC BY-SA 3.0), No Budget Orchestra (CC BY-SA 4.0), VSCO 2 CE and stamperadam (CC0), University of Iowa (unrestricted). Music made with it needs no attribution; redistributing the samples needs credit.",
+        "open_source": false,
+        "note": "Works with wave files 3.1 and 3.2. Extract into the same folder as the wave files. With sfizz 1.2.3, the scripts' delay_random lines can leave notes hanging; comment them out if you render or play through sfizz."
+      },
+      {
+        "name": "Virtual Playing Orchestra 3 (performance scripts)",
+        "description": "VPO 3 'PERF' patches - mod-wheel dynamics and legato-style transitions for more expressive lines",
+        "urls": {
+          "macos": {
+            "url": "https://virtualplaying.com/vp-downloads/Virtual-Playing-Orchestra3-3-performance-scripts.zip",
+            "filename": "Virtual-Playing-Orchestra3-3-performance-scripts.zip",
+            "sha256": "7543e64585ef28022bcf9759f127d12ee2d51a831f3bfba9fbb584a8bb993bfd",
+            "hash_source": "self"
+          },
+          "windows": {
+            "url": "https://virtualplaying.com/vp-downloads/Virtual-Playing-Orchestra3-3-performance-scripts.zip",
+            "filename": "Virtual-Playing-Orchestra3-3-performance-scripts.zip",
+            "sha256": "7543e64585ef28022bcf9759f127d12ee2d51a831f3bfba9fbb584a8bb993bfd",
+            "hash_source": "self"
+          },
+          "linux": {
+            "url": "https://virtualplaying.com/vp-downloads/Virtual-Playing-Orchestra3-3-performance-scripts.zip",
+            "filename": "Virtual-Playing-Orchestra3-3-performance-scripts.zip",
+            "sha256": "7543e64585ef28022bcf9759f127d12ee2d51a831f3bfba9fbb584a8bb993bfd",
+            "hash_source": "self"
+          }
+        },
+        "version": "3.3",
+        "formats": [
+          "SFZ"
+        ],
+        "website": "https://virtualplaying.com/virtual-playing-orchestra/",
+        "license": "Mixed: Sonatina (CC Sampling Plus 1.0), Mattias Westlund (CC BY-SA 3.0), No Budget Orchestra (CC BY-SA 4.0), VSCO 2 CE and stamperadam (CC0), University of Iowa (unrestricted). Music made with it needs no attribution; redistributing the samples needs credit.",
+        "open_source": false,
+        "note": "Works with wave files 3.1 and 3.2. Extract into the same folder as the wave files. With sfizz 1.2.3, the scripts' delay_random lines can leave notes hanging; comment them out if you render or play through sfizz."
+      },
+      {
+        "name": "Sonatina Symphonic Orchestra",
+        "description": "Peter Eastman's continued SSO - sections and solo strings, brass, woodwinds with legato, chorus, harpsichord, organ, celeste, harp, tuned percussion",
+        "urls": {
+          "macos": {
+            "url": "https://github.com/peastman/sso/archive/refs/tags/v4.0.zip",
+            "filename": "sso-4.0.zip",
+            "sha256": "5583e19482b0852ca735c6270a8a6106ad0eda29e9cff0292aec1355f8f69564",
+            "hash_source": "self"
+          },
+          "windows": {
+            "url": "https://github.com/peastman/sso/archive/refs/tags/v4.0.zip",
+            "filename": "sso-4.0.zip",
+            "sha256": "5583e19482b0852ca735c6270a8a6106ad0eda29e9cff0292aec1355f8f69564",
+            "hash_source": "self"
+          },
+          "linux": {
+            "url": "https://github.com/peastman/sso/archive/refs/tags/v4.0.zip",
+            "filename": "sso-4.0.zip",
+            "sha256": "5583e19482b0852ca735c6270a8a6106ad0eda29e9cff0292aec1355f8f69564",
+            "hash_source": "self"
+          }
+        },
+        "version": "4.0",
+        "formats": [
+          "SFZ"
+        ],
+        "website": "https://github.com/peastman/sso",
+        "github": "https://github.com/peastman/sso",
+        "license": "CC Sampling Plus 1.0",
+        "open_source": true,
+        "note": "1.4 GB GitHub tag archive (the release has no assets); its hash was identical across two downloads. Tested with sfizz."
+      },
+      {
+        "name": "Karoryfer x bigcat Cello",
+        "description": "Solo cello - bowed (velocity or mod-wheel dynamics, sustain/staccato/marcato) and plucked",
+        "update_strategy": "github:sfzinstruments/karoryfer-bigcat.cello",
+        "urls": {
+          "macos": {
+            "url": "https://github.com/sfzinstruments/karoryfer-bigcat.cello/releases/download/v1.001/Karoryfer_Bigcat_cello.v1.001.zip",
+            "filename": "Karoryfer_Bigcat_cello.v1.001.zip",
+            "sha256": "f340e2afc161de70b0484cda964f2e17e5b0c1e271fc18ade6a21bd0cc3c5e22",
+            "hash_source": "self"
+          },
+          "windows": {
+            "url": "https://github.com/sfzinstruments/karoryfer-bigcat.cello/releases/download/v1.001/Karoryfer_Bigcat_cello.v1.001.zip",
+            "filename": "Karoryfer_Bigcat_cello.v1.001.zip",
+            "sha256": "f340e2afc161de70b0484cda964f2e17e5b0c1e271fc18ade6a21bd0cc3c5e22",
+            "hash_source": "self"
+          },
+          "linux": {
+            "url": "https://github.com/sfzinstruments/karoryfer-bigcat.cello/releases/download/v1.001/Karoryfer_Bigcat_cello.v1.001.zip",
+            "filename": "Karoryfer_Bigcat_cello.v1.001.zip",
+            "sha256": "f340e2afc161de70b0484cda964f2e17e5b0c1e271fc18ade6a21bd0cc3c5e22",
+            "hash_source": "self"
+          }
+        },
+        "version": "1.001",
+        "formats": [
+          "SFZ"
+        ],
+        "website": "https://github.com/sfzinstruments/karoryfer-bigcat.cello",
+        "github": "https://github.com/sfzinstruments/karoryfer-bigcat.cello",
+        "license": "CC0-1.0",
+        "open_source": true
+      },
+      {
+        "name": "Karoryfer Bear Sax",
+        "description": "1926 Conn baritone saxophone - sustain, marcato, staccato, subtone, growl; solo and duo",
+        "update_strategy": "github:sfzinstruments/karoryfer.bear-sax",
+        "urls": {
+          "macos": {
+            "url": "https://github.com/sfzinstruments/karoryfer.bear-sax/releases/download/v1.004/Karoryfer.Bear_Sax.v1.004.zip",
+            "filename": "Karoryfer.Bear_Sax.v1.004.zip",
+            "sha256": "66c28ea361c86943b2e2bcda6ca48cf105fec4f60a8f40e7c6bbf584be45c654",
+            "hash_source": "self"
+          },
+          "windows": {
+            "url": "https://github.com/sfzinstruments/karoryfer.bear-sax/releases/download/v1.004/Karoryfer.Bear_Sax.v1.004.zip",
+            "filename": "Karoryfer.Bear_Sax.v1.004.zip",
+            "sha256": "66c28ea361c86943b2e2bcda6ca48cf105fec4f60a8f40e7c6bbf584be45c654",
+            "hash_source": "self"
+          },
+          "linux": {
+            "url": "https://github.com/sfzinstruments/karoryfer.bear-sax/releases/download/v1.004/Karoryfer.Bear_Sax.v1.004.zip",
+            "filename": "Karoryfer.Bear_Sax.v1.004.zip",
+            "sha256": "66c28ea361c86943b2e2bcda6ca48cf105fec4f60a8f40e7c6bbf584be45c654",
+            "hash_source": "self"
+          }
+        },
+        "version": "1.004",
+        "formats": [
+          "SFZ"
+        ],
+        "website": "https://github.com/sfzinstruments/karoryfer.bear-sax",
+        "github": "https://github.com/sfzinstruments/karoryfer.bear-sax",
+        "license": "CC0-1.0",
+        "open_source": true
+      },
+      {
+        "name": "Karoryfer Weresax",
+        "description": "Alto saxophone with deep vibrato controls, plus 'saxcordion' and a sax-based synth",
+        "update_strategy": "github:sfzinstruments/karoryfer.weresax",
+        "urls": {
+          "macos": {
+            "url": "https://github.com/sfzinstruments/karoryfer.weresax/releases/download/v1.003/Karoryfer.Weresax.v.1.003.zip",
+            "filename": "Karoryfer.Weresax.v.1.003.zip",
+            "sha256": "916dcb44b2ec8f03a3578c374dd1f1fdaa43e9e0264d921f65da2a339539d2ba",
+            "hash_source": "self"
+          },
+          "windows": {
+            "url": "https://github.com/sfzinstruments/karoryfer.weresax/releases/download/v1.003/Karoryfer.Weresax.v.1.003.zip",
+            "filename": "Karoryfer.Weresax.v.1.003.zip",
+            "sha256": "916dcb44b2ec8f03a3578c374dd1f1fdaa43e9e0264d921f65da2a339539d2ba",
+            "hash_source": "self"
+          },
+          "linux": {
+            "url": "https://github.com/sfzinstruments/karoryfer.weresax/releases/download/v1.003/Karoryfer.Weresax.v.1.003.zip",
+            "filename": "Karoryfer.Weresax.v.1.003.zip",
+            "sha256": "916dcb44b2ec8f03a3578c374dd1f1fdaa43e9e0264d921f65da2a339539d2ba",
+            "hash_source": "self"
+          }
+        },
+        "version": "1.003",
+        "formats": [
+          "SFZ"
+        ],
+        "website": "https://github.com/sfzinstruments/karoryfer.weresax",
+        "github": "https://github.com/sfzinstruments/karoryfer.weresax",
+        "license": "CC0-1.0",
+        "open_source": true
+      },
+      {
+        "name": "Karoryfer War Tuba",
+        "description": "Tuba - sustain, staccato, staccatissimo; solo, duo and trio, legato and poly",
+        "update_strategy": "github:sfzinstruments/karoryfer.war-tuba",
+        "urls": {
+          "macos": {
+            "url": "https://github.com/sfzinstruments/karoryfer.war-tuba/releases/download/v1.002/Karoryfer_War_Tuba_v1002.zip",
+            "filename": "Karoryfer_War_Tuba_v1002.zip",
+            "sha256": "4f0b065c18b89111df4281df34c5120cd2d5b9a0c6b316835ec08d7891fd88d9",
+            "hash_source": "self"
+          },
+          "windows": {
+            "url": "https://github.com/sfzinstruments/karoryfer.war-tuba/releases/download/v1.002/Karoryfer_War_Tuba_v1002.zip",
+            "filename": "Karoryfer_War_Tuba_v1002.zip",
+            "sha256": "4f0b065c18b89111df4281df34c5120cd2d5b9a0c6b316835ec08d7891fd88d9",
+            "hash_source": "self"
+          },
+          "linux": {
+            "url": "https://github.com/sfzinstruments/karoryfer.war-tuba/releases/download/v1.002/Karoryfer_War_Tuba_v1002.zip",
+            "filename": "Karoryfer_War_Tuba_v1002.zip",
+            "sha256": "4f0b065c18b89111df4281df34c5120cd2d5b9a0c6b316835ec08d7891fd88d9",
+            "hash_source": "self"
+          }
+        },
+        "version": "1.002",
+        "formats": [
+          "SFZ"
+        ],
+        "website": "https://github.com/sfzinstruments/karoryfer.war-tuba",
+        "github": "https://github.com/sfzinstruments/karoryfer.war-tuba",
+        "license": "CC0-1.0",
+        "open_source": true
+      },
+      {
+        "name": "MTG Solo Saxophones",
+        "description": "Soprano, alto, tenor and baritone sax built from the MTG freesound packs - looped, mod-wheel vibrato, legato mode",
+        "urls": {
+          "macos": {
+            "url": "https://github.com/sfzinstruments/MTG.SoloSax/archive/b494d256549b3d088fdec176ce82867f8a1f58b2.zip",
+            "filename": "MTG.SoloSax-b494d256549b3d088fdec176ce82867f8a1f58b2.zip",
+            "sha256": "ea91b5b7ac3199701155a49a22fc4f221bd7c74865ebdad5f12a917352b6d291",
+            "hash_source": "self"
+          },
+          "windows": {
+            "url": "https://github.com/sfzinstruments/MTG.SoloSax/archive/b494d256549b3d088fdec176ce82867f8a1f58b2.zip",
+            "filename": "MTG.SoloSax-b494d256549b3d088fdec176ce82867f8a1f58b2.zip",
+            "sha256": "ea91b5b7ac3199701155a49a22fc4f221bd7c74865ebdad5f12a917352b6d291",
+            "hash_source": "self"
+          },
+          "linux": {
+            "url": "https://github.com/sfzinstruments/MTG.SoloSax/archive/b494d256549b3d088fdec176ce82867f8a1f58b2.zip",
+            "filename": "MTG.SoloSax-b494d256549b3d088fdec176ce82867f8a1f58b2.zip",
+            "sha256": "ea91b5b7ac3199701155a49a22fc4f221bd7c74865ebdad5f12a917352b6d291",
+            "hash_source": "self"
+          }
+        },
+        "version": "2020-09-19 (b494d25)",
+        "formats": [
+          "SFZ"
+        ],
+        "website": "https://github.com/sfzinstruments/MTG.SoloSax",
+        "github": "https://github.com/sfzinstruments/MTG.SoloSax",
+        "license": "CC-BY-4.0 (credit MTG / kinwie)",
+        "open_source": true,
+        "note": "No releases; pinned to a commit archive. Bump the commit in the URL by hand."
+      },
+      {
+        "name": "Ixox Flute",
+        "description": "Two-flute patch from Xavier Hosxe's Ixox Flute VSTi - vibrato, legato, staccato",
+        "urls": {
+          "macos": {
+            "url": "https://github.com/sfzinstruments/Ixox.Flute/archive/0cc54468bb0d2d9b32921958585caad65ba8df21.zip",
+            "filename": "Ixox.Flute-0cc54468bb0d2d9b32921958585caad65ba8df21.zip",
+            "sha256": "60a0f8f0514ce0de920853433c05fcb3524bab435d5822c3c95caa0cf0d1da5a",
+            "hash_source": "self"
+          },
+          "windows": {
+            "url": "https://github.com/sfzinstruments/Ixox.Flute/archive/0cc54468bb0d2d9b32921958585caad65ba8df21.zip",
+            "filename": "Ixox.Flute-0cc54468bb0d2d9b32921958585caad65ba8df21.zip",
+            "sha256": "60a0f8f0514ce0de920853433c05fcb3524bab435d5822c3c95caa0cf0d1da5a",
+            "hash_source": "self"
+          },
+          "linux": {
+            "url": "https://github.com/sfzinstruments/Ixox.Flute/archive/0cc54468bb0d2d9b32921958585caad65ba8df21.zip",
+            "filename": "Ixox.Flute-0cc54468bb0d2d9b32921958585caad65ba8df21.zip",
+            "sha256": "60a0f8f0514ce0de920853433c05fcb3524bab435d5822c3c95caa0cf0d1da5a",
+            "hash_source": "self"
+          }
+        },
+        "version": "2020-12-13 (0cc5446)",
+        "formats": [
+          "SFZ"
+        ],
+        "website": "https://github.com/sfzinstruments/Ixox.Flute",
+        "github": "https://github.com/sfzinstruments/Ixox.Flute",
+        "license": "CC-BY-4.0 (credit Xavier Hosxe)",
+        "open_source": true,
+        "note": "No releases; pinned to a commit archive. Bump the commit in the URL by hand."
+      },
+      {
+        "name": "FreePats Button Accordion HN",
+        "description": "Diatonic button accordion, tuned - the only clean free SFZ accordion",
+        "update_strategy": "github:freepats/button-accordion-HN",
+        "urls": {
+          "macos": {
+            "url": "https://github.com/freepats/button-accordion-HN/releases/download/2024-03-29/ButtonAccordionHN-SFZ+FLAC-20240329.7z",
+            "filename": "ButtonAccordionHN-SFZ+FLAC-20240329.7z",
+            "sha256": "e5326a8830f0358faa195609fd21d0c1dbab899e39bd7f44b1590ebf2ce5035e",
+            "hash_source": "self"
+          },
+          "windows": {
+            "url": "https://github.com/freepats/button-accordion-HN/releases/download/2024-03-29/ButtonAccordionHN-SFZ+FLAC-20240329.7z",
+            "filename": "ButtonAccordionHN-SFZ+FLAC-20240329.7z",
+            "sha256": "e5326a8830f0358faa195609fd21d0c1dbab899e39bd7f44b1590ebf2ce5035e",
+            "hash_source": "self"
+          },
+          "linux": {
+            "url": "https://github.com/freepats/button-accordion-HN/releases/download/2024-03-29/ButtonAccordionHN-SFZ+FLAC-20240329.7z",
+            "filename": "ButtonAccordionHN-SFZ+FLAC-20240329.7z",
+            "sha256": "e5326a8830f0358faa195609fd21d0c1dbab899e39bd7f44b1590ebf2ce5035e",
+            "hash_source": "self"
+          }
+        },
+        "version": "2024-03-29",
+        "formats": [
+          "SFZ"
+        ],
+        "website": "https://freepats.zenvoid.org/Organ/accordion.html",
+        "github": "https://github.com/freepats/button-accordion-HN",
+        "license": "CC0-1.0",
+        "open_source": true,
+        "note": "7z archive (not auto-extracted)"
+      },
+      {
+        "name": "FreePats Upright Piano KW",
+        "description": "Upright piano with a warm, slightly worn tone - good for chamber pop",
+        "urls": {
+          "macos": {
+            "url": "https://freepats.zenvoid.org/Piano/UprightPianoKW/UprightPianoKW-SFZ+FLAC-20220221.7z",
+            "filename": "UprightPianoKW-SFZ+FLAC-20220221.7z",
+            "sha256": "3a66da3b25a2fd9499d90bcf09f1aee4431825796e249361b48af59b1201e703",
+            "hash_source": "self"
+          },
+          "windows": {
+            "url": "https://freepats.zenvoid.org/Piano/UprightPianoKW/UprightPianoKW-SFZ+FLAC-20220221.7z",
+            "filename": "UprightPianoKW-SFZ+FLAC-20220221.7z",
+            "sha256": "3a66da3b25a2fd9499d90bcf09f1aee4431825796e249361b48af59b1201e703",
+            "hash_source": "self"
+          },
+          "linux": {
+            "url": "https://freepats.zenvoid.org/Piano/UprightPianoKW/UprightPianoKW-SFZ+FLAC-20220221.7z",
+            "filename": "UprightPianoKW-SFZ+FLAC-20220221.7z",
+            "sha256": "3a66da3b25a2fd9499d90bcf09f1aee4431825796e249361b48af59b1201e703",
+            "hash_source": "self"
+          }
+        },
+        "version": "2022-02-21",
+        "formats": [
+          "SFZ"
+        ],
+        "website": "https://freepats.zenvoid.org/Piano/acoustic-grand-piano.html",
+        "license": "CC0-1.0",
+        "open_source": true,
+        "note": "7z archive (not auto-extracted)"
+      },
+      {
+        "name": "Plogue sforzatron",
+        "description": "Mellotron M400S tapes (Taijiguy samples) - strings, cello, flute, choir, brass, woodwinds",
+        "urls": {
+          "macos": {
+            "url": "https://s3.amazonaws.com/sforzando/FreeSounds/Plogue_sforzatron_v11.zip",
+            "filename": "Plogue_sforzatron_v11.zip",
+            "sha256": "17a200008cb1e3d1a83d5b45b477d685069d27ae9728e8b2e60d513f70e00443",
+            "hash_source": "self"
+          },
+          "windows": {
+            "url": "https://s3.amazonaws.com/sforzando/FreeSounds/Plogue_sforzatron_v11.zip",
+            "filename": "Plogue_sforzatron_v11.zip",
+            "sha256": "17a200008cb1e3d1a83d5b45b477d685069d27ae9728e8b2e60d513f70e00443",
+            "hash_source": "self"
+          },
+          "linux": {
+            "url": "https://s3.amazonaws.com/sforzando/FreeSounds/Plogue_sforzatron_v11.zip",
+            "filename": "Plogue_sforzatron_v11.zip",
+            "sha256": "17a200008cb1e3d1a83d5b45b477d685069d27ae9728e8b2e60d513f70e00443",
+            "hash_source": "self"
+          }
+        },
+        "version": "1.1",
+        "formats": [
+          "SFZ"
+        ],
+        "website": "https://www.plogue.com/products/sforzando-banks.html",
+        "license": "Freeware: Taijiguy's samples, used with permission; free for music, not for resale",
+        "open_source": false,
+        "note": "Built for Plogue sforzando, which defines $sample_dir. In sfizz, load a mapping through a wrapper that does '#define $sample_dir ../Samples' first."
+      }
     ]
   },
   "manual_download": [
@@ -1232,6 +1659,47 @@
         "windows"
       ],
       "reason": "Distributed through a Gumroad checkout (email required, $0 price)"
+    },
+    {
+      "name": "VCSL (Versilian Community Sample Library)",
+      "description": "CC0 harpsichords, recorders, harps, vibraphone, tubular bells, pipe organ, tenor sax and lots of percussion, with SFZ mappings",
+      "website": "https://github.com/sgossner/VCSL/tree/sfz",
+      "platforms": [
+        "macos",
+        "windows",
+        "linux"
+      ],
+      "reason": "No release archive: the SFZ files live on the repo's `sfz` branch (about 6 GB with samples). Clone it, ideally sparse: git clone --filter=blob:none --branch sfz https://github.com/sgossner/VCSL.git"
+    },
+    {
+      "name": "BBC Symphony Orchestra Discover",
+      "description": "Spitfire's free 33-instrument orchestra in its own player",
+      "website": "https://www.spitfireaudio.com/bbc-symphony-orchestra-discover",
+      "platforms": [
+        "macos",
+        "windows"
+      ],
+      "reason": "Requires a Spitfire Audio account and the Spitfire app"
+    },
+    {
+      "name": "Orchestral Tools SINEfactory",
+      "description": "Free SINE-player instruments - string ensembles, flutes, pianos, percussion",
+      "website": "https://www.orchestraltools.com/free-virtual-instruments",
+      "platforms": [
+        "macos",
+        "windows"
+      ],
+      "reason": "Requires an Orchestral Tools account and the SINE player"
+    },
+    {
+      "name": "Muse Sounds",
+      "description": "MuseScore's free orchestral libraries (Muse Strings, Brass, Woodwinds, Choir) via Muse Hub",
+      "website": "https://www.musehub.com/",
+      "platforms": [
+        "macos",
+        "windows"
+      ],
+      "reason": "Delivered only through the Muse Hub app (account sign-in); the sounds play inside MuseScore Studio"
     }
   ]
 }
