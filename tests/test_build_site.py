@@ -81,3 +81,6 @@ def test_build_site_renders_real_manifest(tmp_path) -> None:
     page = (out / "index.html").read_text(encoding="utf-8")
     for expected in ("Surge XT", "Valhalla Supermassive", "Airwindows Consolidated"):
         assert expected in page
+    assert "Sample Libraries (SFZ)" in page
+    assert "Sonatina Symphonic Orchestra" in page
+    assert "sample libraries</span>" in page
