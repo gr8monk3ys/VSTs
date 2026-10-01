@@ -3,7 +3,7 @@
     "name": "Free VST Plugins",
     "version": "2.0.0",
     "description": "Curated collection of high-quality free VST plugins for macOS, Windows, and Linux",
-    "updated": "2026-09-14",
+    "updated": "2026-10-01",
     "author": "gr8monk3ys",
     "license": "MIT",
     "platforms": [
@@ -258,6 +258,138 @@
         ],
         "website": "https://u-he.com/products/zebralette/",
         "open_source": false
+      },
+      {
+        "name": "OB-Xf",
+        "description": "Oberheim OB-X/OB-Xa emulation - successor to OB-Xd from the Surge Synth Team",
+        "update_strategy": "github:surge-synthesizer/OB-Xf",
+        "urls": {
+          "macos": {
+            "url": "https://github.com/surge-synthesizer/OB-Xf/releases/download/v1.0.3/ob-xf-macOS-v1.0.3.dmg",
+            "filename": "ob-xf-macOS-v1.0.3.dmg",
+            "sha256": "e6f52f453c476dfafbd3225b80c5c3ec341ec20be5748c6f70c01cef14e7e7a8",
+            "hash_source": "self"
+          },
+          "windows": {
+            "url": "https://github.com/surge-synthesizer/OB-Xf/releases/download/v1.0.3/ob-xf-Windows-v1.0.3.zip",
+            "filename": "ob-xf-Windows-v1.0.3.zip",
+            "sha256": "149fda0649daf8a3aa0851801f92515f0dbf6203acf33c0edc7d3c445e80b1e7",
+            "hash_source": "self"
+          },
+          "linux": {
+            "url": "https://github.com/surge-synthesizer/OB-Xf/releases/download/v1.0.3/ob-xf-Linux-v1.0.3.zip",
+            "filename": "ob-xf-Linux-v1.0.3.zip",
+            "sha256": "72b60c83cf6426337031df744c34a047104a9d95f1feaf6cd048ecfa39f74c96",
+            "hash_source": "self"
+          }
+        },
+        "version": "1.0.3",
+        "formats": [
+          "VST3",
+          "AU",
+          "CLAP"
+        ],
+        "website": "https://surge-synth-team.org/ob-xf/",
+        "open_source": true,
+        "github": "https://github.com/surge-synthesizer/OB-Xf",
+        "note": "Windows download is a portable zip (VST3 + CLAP bundles, no installer)"
+      },
+      {
+        "name": "Vaporizer2",
+        "description": "Hybrid wavetable/additive synth - 4 oscillators, sampler, analog-style filters, 1,000+ presets",
+        "update_strategy": "github:VASTDynamics/Vaporizer2",
+        "urls": {
+          "macos": {
+            "url": "https://github.com/VASTDynamics/Vaporizer2/releases/download/v3.5.0/Vaporizer2_installer_OSX64_3.5.0.zip",
+            "filename": "Vaporizer2_installer_OSX64_3.5.0.zip",
+            "sha256": "26817c1ad039b5a30d6259094f130831c4dee62ffc7c886ae1fc45441b625aa7",
+            "hash_source": "self"
+          },
+          "windows": {
+            "url": "https://github.com/VASTDynamics/Vaporizer2/releases/download/v3.5.0/Vaporizer2_installer_win_3.5.0.zip",
+            "filename": "Vaporizer2_installer_win_3.5.0.zip",
+            "sha256": "75891d485ffa1f98b6a975e7dc0def3ca45f1cb70437a2370ac778b736cdd11e",
+            "hash_source": "self"
+          }
+        },
+        "version": "3.5.0",
+        "formats": [
+          "VST3",
+          "AU",
+          "VST",
+          "AAX",
+          "CLAP",
+          "LV2"
+        ],
+        "website": "https://www.vast-dynamics.com/?q=products",
+        "open_source": true,
+        "github": "https://github.com/VASTDynamics/Vaporizer2"
+      },
+      {
+        "name": "Podolski",
+        "description": "u-he's free one-oscillator VA synth - arpeggiator/sequencer, chorus and delay",
+        "urls": {
+          "macos": {
+            "url": "https://dl.u-he.com/releases/Podolski_123_12092_Mac.zip",
+            "filename": "Podolski_123_12092_Mac.zip",
+            "sha256": "b3477dbd7306d733303bb3656798e8dbff2876cebc5057dd25bf05ae7162baa4",
+            "hash_source": "self"
+          },
+          "windows": {
+            "url": "https://dl.u-he.com/releases/Podolski_123_12092_Win.zip",
+            "filename": "Podolski_123_12092_Win.zip",
+            "sha256": "d0ef1c3ee15a4377c4664114af08bd4cf1a7d2b7cbe504c8d5f4ff1df784c83a",
+            "hash_source": "self"
+          },
+          "linux": {
+            "url": "https://dl.u-he.com/releases/Podolski_123_12092_Linux.tar.xz",
+            "filename": "Podolski_123_12092_Linux.tar.xz",
+            "sha256": "7dde7e9b77980b2785d0f317e5150d90f3e7947441955b751a7f8d027a33f126",
+            "hash_source": "self"
+          }
+        },
+        "version": "1.2.3",
+        "formats": [
+          "VST3",
+          "AU",
+          "VST",
+          "AAX"
+        ],
+        "website": "https://u-he.com/products/podolski/",
+        "open_source": false
+      },
+      {
+        "name": "Triple Cheese",
+        "description": "u-he's free comb-filter synth - plucks, bells and lo-fi textures from three resonators",
+        "urls": {
+          "macos": {
+            "url": "https://dl.u-he.com/releases/TripleCheese_13_12092_Mac.zip",
+            "filename": "TripleCheese_13_12092_Mac.zip",
+            "sha256": "9542262570317927d9914aa45086ae37eae3c4b96f2f00cfd67cef9513d7b353",
+            "hash_source": "self"
+          },
+          "windows": {
+            "url": "https://dl.u-he.com/releases/TripleCheese_13_12092_Win.zip",
+            "filename": "TripleCheese_13_12092_Win.zip",
+            "sha256": "49247fe63f35b4a046590f84b4d9021d794a32f3293932c1e62675fa0a291a02",
+            "hash_source": "self"
+          },
+          "linux": {
+            "url": "https://dl.u-he.com/releases/TripleCheese_13_12092_Linux.tar.xz",
+            "filename": "TripleCheese_13_12092_Linux.tar.xz",
+            "sha256": "04ea1233fd64173746480c85e662f3e81d3e48c1149ca419f89a216e850fb3c4",
+            "hash_source": "self"
+          }
+        },
+        "version": "1.3",
+        "formats": [
+          "VST3",
+          "AU",
+          "VST",
+          "AAX"
+        ],
+        "website": "https://u-he.com/products/triplecheese/",
+        "open_source": false
       }
     ],
     "effects": [
@@ -497,6 +629,246 @@
         ],
         "website": "https://tal-software.com/products/tal-vocoder",
         "open_source": false
+      },
+      {
+        "name": "CHOW Tape Model",
+        "description": "Physical model of a reel-to-reel tape machine - saturation, hysteresis, wow & flutter, loss",
+        "update_strategy": "github:jatinchowdhury18/AnalogTapeModel",
+        "urls": {
+          "macos": {
+            "url": "https://github.com/jatinchowdhury18/AnalogTapeModel/releases/download/v2.11.4/ChowTapeModel-Mac-2.11.4.dmg",
+            "filename": "ChowTapeModel-Mac-2.11.4.dmg",
+            "sha256": "9b37e2b6cb6c0a839ee9c65e1a958834ca647b3edfc4bd144115c483b4d64f82",
+            "hash_source": "self"
+          },
+          "windows": {
+            "url": "https://github.com/jatinchowdhury18/AnalogTapeModel/releases/download/v2.11.4/ChowTapeModel-Win-64bit-2.11.4.exe",
+            "filename": "ChowTapeModel-Win-64bit-2.11.4.exe",
+            "sha256": "8ba6e91196067244837877d9ca4a8e4a1f5bfad60cf33fa699c8a5b41f1211bf",
+            "hash_source": "self"
+          },
+          "linux": {
+            "url": "https://github.com/jatinchowdhury18/AnalogTapeModel/releases/download/v2.11.4/ChowTapeModel-Linux-x64-2.11.4.deb",
+            "filename": "ChowTapeModel-Linux-x64-2.11.4.deb",
+            "sha256": "71aaae1c454ac83ac16b248d4cc99c12bf6d11452a87376fcb6b1e79060e3a5c",
+            "hash_source": "self"
+          }
+        },
+        "version": "2.11.4",
+        "formats": [
+          "VST3",
+          "AU",
+          "VST",
+          "AAX",
+          "CLAP",
+          "LV2"
+        ],
+        "website": "https://chowdsp.com/products.html",
+        "open_source": true,
+        "github": "https://github.com/jatinchowdhury18/AnalogTapeModel"
+      },
+      {
+        "name": "ChowMatrix",
+        "description": "Delay-tree effect - branching, modulated analog-style delay lines",
+        "update_strategy": "github:Chowdhury-DSP/ChowMatrix",
+        "urls": {
+          "macos": {
+            "url": "https://github.com/Chowdhury-DSP/ChowMatrix/releases/download/v1.3.0/ChowMatrix-Mac-1.3.0.dmg",
+            "filename": "ChowMatrix-Mac-1.3.0.dmg",
+            "sha256": "11705e4cfb023525e8b6830fb29feb046eac05688428a12a8fdad48dc9a9fdcf",
+            "hash_source": "self"
+          },
+          "windows": {
+            "url": "https://github.com/Chowdhury-DSP/ChowMatrix/releases/download/v1.3.0/ChowMatrix-Win-1.3.0.exe",
+            "filename": "ChowMatrix-Win-1.3.0.exe",
+            "sha256": "b1e2451ae66362bf82112e77fccc48a1233780b6cbfb58fe1a588b17a77456c5",
+            "hash_source": "self"
+          },
+          "linux": {
+            "url": "https://github.com/Chowdhury-DSP/ChowMatrix/releases/download/v1.3.0/ChowMatrix-Linux-x64-1.3.0.deb",
+            "filename": "ChowMatrix-Linux-x64-1.3.0.deb",
+            "sha256": "332749bba2fcfefeb68c105b9f55fd71aa7a8bfb524f592cbb68cc6c0581a767",
+            "hash_source": "self"
+          }
+        },
+        "version": "1.3.0",
+        "formats": [
+          "VST3",
+          "AU",
+          "VST",
+          "AAX",
+          "LV2"
+        ],
+        "website": "https://chowdsp.com/products.html",
+        "open_source": true,
+        "github": "https://github.com/Chowdhury-DSP/ChowMatrix"
+      },
+      {
+        "name": "ChowPhaser",
+        "description": "Phaser modelled on the Schulte Compact Phasing 'A' - light-dependent-resistor LFO",
+        "update_strategy": "github:jatinchowdhury18/ChowPhaser",
+        "urls": {
+          "macos": {
+            "url": "https://github.com/jatinchowdhury18/ChowPhaser/releases/download/v1.1.1/ChowPhaser-Mac-1.1.1.dmg",
+            "filename": "ChowPhaser-Mac-1.1.1.dmg",
+            "sha256": "ca3ffcacd9265da601e9005df83c3e70ba7bcfae2a94a2e78d68afbb3f728126",
+            "hash_source": "self"
+          },
+          "windows": {
+            "url": "https://github.com/jatinchowdhury18/ChowPhaser/releases/download/v1.1.1/ChowPhaser-Win-1.1.1.exe",
+            "filename": "ChowPhaser-Win-1.1.1.exe",
+            "sha256": "490f1d970b097ada8d5f14eca95124e10b9d75e1ddf73a4f0b473f9d31f02a01",
+            "hash_source": "self"
+          },
+          "linux": {
+            "url": "https://github.com/jatinchowdhury18/ChowPhaser/releases/download/v1.1.1/ChowPhaser-Linux-x64-1.1.1.deb",
+            "filename": "ChowPhaser-Linux-x64-1.1.1.deb",
+            "sha256": "554ef220e96ea2c355e8ed8aa0c94c8bbcc281b5ce8069a12865a75ef6737889",
+            "hash_source": "self"
+          }
+        },
+        "version": "1.1.1",
+        "formats": [
+          "VST3",
+          "AU",
+          "VST",
+          "LV2"
+        ],
+        "website": "https://chowdsp.com/products.html",
+        "open_source": true,
+        "github": "https://github.com/jatinchowdhury18/ChowPhaser"
+      },
+      {
+        "name": "TAL-Chorus-LX",
+        "description": "Juno-60 chorus emulation - modes I, II and I+II",
+        "update_strategy": "stable-url",
+        "urls": {
+          "macos": {
+            "url": "https://tal-software.com/downloads/plugins/TAL-Chorus-LX-installer_macos.zip",
+            "filename": "TAL-Chorus-LX-installer_macos.zip",
+            "sha256": "36c0a0ef3fdaa35c86b48c1adab0d1a66032080d73f7276b9c69a5faa99ef3ca",
+            "hash_source": "self"
+          },
+          "windows": {
+            "url": "https://tal-software.com/downloads/plugins/install_TAL-Chorus-LX.zip",
+            "filename": "install_TAL-Chorus-LX.zip",
+            "sha256": "5ab8f7f1c7a61e312a778b0478f0ab0dcede1ebd49aa67bde184307ae7afdbaa",
+            "hash_source": "self"
+          },
+          "linux": {
+            "url": "https://tal-software.com/downloads/plugins/TAL-Chorus-LX_64_linux.zip",
+            "filename": "TAL-Chorus-LX_64_linux.zip",
+            "sha256": "176396c83a3f43d3ec0ae0b1483c2ef7b9480952699cc999f393993fba786a0e",
+            "hash_source": "self"
+          }
+        },
+        "version": "1.6.3",
+        "formats": [
+          "VST3",
+          "AU",
+          "VST",
+          "AAX",
+          "CLAP"
+        ],
+        "website": "https://tal-software.com/products/tal-chorus-lx",
+        "open_source": false
+      },
+      {
+        "name": "TAL-Reverb-4",
+        "description": "Plate reverb with a vintage 80s character - modulation, pre-delay, stereo width",
+        "update_strategy": "stable-url",
+        "urls": {
+          "macos": {
+            "url": "https://tal-software.com/downloads/plugins/TAL-Reverb-4-installer_macos.zip",
+            "filename": "TAL-Reverb-4-installer_macos.zip",
+            "sha256": "4dfad31d763004955c03184c801771fd38e7ef9408232ac12cdfb137b3df9448",
+            "hash_source": "self"
+          },
+          "windows": {
+            "url": "https://tal-software.com/downloads/plugins/install_TAL-Reverb-4.zip",
+            "filename": "install_TAL-Reverb-4.zip",
+            "sha256": "cb01267ebd22fd6484e3d914070809eae1bf59a91c95c9491a9f1f8453c3209f",
+            "hash_source": "self"
+          },
+          "linux": {
+            "url": "https://tal-software.com/downloads/plugins/TAL-Reverb-4_64_linux.zip",
+            "filename": "TAL-Reverb-4_64_linux.zip",
+            "sha256": "b08dabd091d75335011c9a8e0c836e77b3af8fc0b8884d4bcd1626fcb5155bba",
+            "hash_source": "self"
+          }
+        },
+        "version": "4.0.4",
+        "formats": [
+          "VST3",
+          "AU",
+          "VST",
+          "AAX",
+          "CLAP"
+        ],
+        "website": "https://tal-software.com/products/tal-reverb-4",
+        "open_source": false
+      },
+      {
+        "name": "Protoverb",
+        "description": "u-he's free experimental reverb - a modelled corridor, from small rooms to noisy lo-fi spaces",
+        "urls": {
+          "macos": {
+            "url": "https://dl.u-he.com/releases/Protoverb_101_12092_Mac.zip",
+            "filename": "Protoverb_101_12092_Mac.zip",
+            "sha256": "18d15e06620c14c41923bc59c0c61d7f4614afdd6174c399f5835c766c527eaf",
+            "hash_source": "self"
+          },
+          "windows": {
+            "url": "https://dl.u-he.com/releases/Protoverb_101_12092_Win.zip",
+            "filename": "Protoverb_101_12092_Win.zip",
+            "sha256": "74068b721e993251c040820fa3eaf4cdb567e882f996a461253f902924a94794",
+            "hash_source": "self"
+          },
+          "linux": {
+            "url": "https://dl.u-he.com/releases/Protoverb_101_12092_Linux.tar.xz",
+            "filename": "Protoverb_101_12092_Linux.tar.xz",
+            "sha256": "7b2c626b749a2a27f0aaeefe5e7fac43565e1df2e5a94f2b47a02c629a0a26d0",
+            "hash_source": "self"
+          }
+        },
+        "version": "1.0.1",
+        "formats": [
+          "VST3",
+          "AU",
+          "VST",
+          "AAX"
+        ],
+        "website": "https://u-he.com/products/protoverb/",
+        "open_source": false
+      },
+      {
+        "name": "PaulXStretch",
+        "description": "Extreme time-stretching (Paulstretch) for drones, pads and ambient washes",
+        "update_strategy": "github:essej/paulxstretch",
+        "urls": {
+          "macos": {
+            "url": "https://github.com/essej/paulxstretch/releases/download/v1.6.0/paulxstretch-1.6.0-mac.dmg",
+            "filename": "paulxstretch-1.6.0-mac.dmg",
+            "sha256": "c5bcba5215076f629c3442902eaba4825a7f71ac33fc2d793c7cb729bdeb17ad",
+            "hash_source": "self"
+          },
+          "windows": {
+            "url": "https://github.com/essej/paulxstretch/releases/download/v1.6.0/paulxstretch-1.6.0-win.exe",
+            "filename": "paulxstretch-1.6.0-win.exe",
+            "sha256": "98017a1cd98219bdb4e7b3029d520928e602592921455f2e726a92ead488b226",
+            "hash_source": "self"
+          }
+        },
+        "version": "1.6.0",
+        "formats": [
+          "VST3",
+          "AU",
+          "AAX",
+          "CLAP"
+        ],
+        "website": "https://sonosaurus.com/paulxstretch/",
+        "open_source": true,
+        "github": "https://github.com/essej/paulxstretch"
       }
     ],
     "instruments": [
@@ -533,6 +905,141 @@
         "website": "https://decomposer.de/sitala/",
         "open_source": false,
         "note": "Free version - paid v2.0 available"
+      },
+      {
+        "name": "sfizz",
+        "description": "SFZ sample player - loads free SFZ libraries (Salamander piano, VSCO 2 orchestra, ...)",
+        "update_strategy": "github:sfztools/sfizz-ui",
+        "urls": {
+          "macos": {
+            "url": "https://github.com/sfztools/sfizz-ui/releases/download/1.2.3/sfizz-1.2.3-macos.pkg",
+            "filename": "sfizz-1.2.3-macos.pkg",
+            "sha256": "62c76af58bfec05ca6ef199befca7c2508e15a5e63bca076198d94f085c14da7",
+            "hash_source": "self"
+          },
+          "windows": {
+            "url": "https://github.com/sfztools/sfizz-ui/releases/download/1.2.3/sfizz-1.2.3-win64.exe",
+            "filename": "sfizz-1.2.3-win64.exe",
+            "sha256": "56f57dfe443018e947b82b8e2bf4c9d824a9c961ff2b8eb6c5e929030b71b937",
+            "hash_source": "self"
+          }
+        },
+        "version": "1.2.3",
+        "formats": [
+          "VST3",
+          "AU",
+          "LV2"
+        ],
+        "website": "https://sfz.tools/sfizz/",
+        "open_source": true,
+        "github": "https://github.com/sfztools/sfizz-ui"
+      },
+      {
+        "name": "RipplerX",
+        "description": "Physically modelled percussion - mallets, marimba, bells, membranes and plucked strings",
+        "update_strategy": "github:tiagolr/ripplerx",
+        "urls": {
+          "macos": {
+            "url": "https://github.com/tiagolr/ripplerx/releases/download/v1.5.19/ripplerx-macos-v1.5.19.zip",
+            "filename": "ripplerx-macos-v1.5.19.zip",
+            "sha256": "24189919de96d6e5a4b80343ab4b664dc7ad5f7f049a06336da34559e4ddddbe",
+            "hash_source": "self"
+          },
+          "windows": {
+            "url": "https://github.com/tiagolr/ripplerx/releases/download/v1.5.19/ripplerx-win-v1.5.19.zip",
+            "filename": "ripplerx-win-v1.5.19.zip",
+            "sha256": "517c0e99f3ff37cf7b3941ed9afbece1423a0da69d70a9dd8076a473d630a50d",
+            "hash_source": "self"
+          },
+          "linux": {
+            "url": "https://github.com/tiagolr/ripplerx/releases/download/v1.5.19/ripplerx-linux-v1.5.19.zip",
+            "filename": "ripplerx-linux-v1.5.19.zip",
+            "sha256": "3b8ab9add298d2c77a1f81b6b63e4a668a79bf7f1b67edb063165010c9bec166",
+            "hash_source": "self"
+          }
+        },
+        "version": "1.5.19",
+        "formats": [
+          "VST3",
+          "AU",
+          "LV2"
+        ],
+        "website": "https://github.com/tiagolr/ripplerx",
+        "open_source": true,
+        "github": "https://github.com/tiagolr/ripplerx",
+        "note": "Portable zips (no installer)"
+      },
+      {
+        "name": "SocaLabs Organ",
+        "description": "Tonewheel organ based on setBfree - drawbars, percussion, vibrato/chorus, rotary speaker",
+        "urls": {
+          "macos": {
+            "url": "https://github.com/FigBug/Organ/releases/download/v1.0.14/Organ.pkg",
+            "filename": "Organ.pkg",
+            "sha256": "35cb0fa7f00874d252d35252daad5762cc18a58b91f9ff23f9fa421127a7291b",
+            "hash_source": "self"
+          },
+          "windows": {
+            "url": "https://github.com/FigBug/Organ/releases/download/v1.0.14/Organ.exe",
+            "filename": "Organ.exe",
+            "sha256": "423b50d3173b14ae6775202297e67c062d8d27ebdfdfffaf28dca0cbc0856697",
+            "hash_source": "self"
+          },
+          "linux": {
+            "url": "https://github.com/FigBug/Organ/releases/download/v1.0.14/Organ.deb",
+            "filename": "Organ.deb",
+            "sha256": "90ca7327e3d2e1857ac55691471af5a51bebd4255e8a9b041bb90322ecd5d42e",
+            "hash_source": "self"
+          }
+        },
+        "version": "1.0.14",
+        "formats": [
+          "VST3",
+          "AU",
+          "VST",
+          "CLAP",
+          "LV2"
+        ],
+        "website": "https://socalabs.com/synths/organ/",
+        "open_source": true,
+        "github": "https://github.com/FigBug/Organ",
+        "note": "Release asset names carry no version, so there is no update_strategy; bump the tag in the URLs by hand"
+      },
+      {
+        "name": "SocaLabs Piano",
+        "description": "Physically modelled piano - no samples, tiny download",
+        "urls": {
+          "macos": {
+            "url": "https://github.com/FigBug/Piano/releases/download/v1.0.14/Piano.pkg",
+            "filename": "Piano.pkg",
+            "sha256": "b3d7a42149298173ac7a957d55159197d4b783f8e2cccac6014b2605f0e12a8f",
+            "hash_source": "self"
+          },
+          "windows": {
+            "url": "https://github.com/FigBug/Piano/releases/download/v1.0.14/Piano.exe",
+            "filename": "Piano.exe",
+            "sha256": "9e4b80c1081dabe12341e11f1de027f66fcec1140f6240510edc015cafb913a8",
+            "hash_source": "self"
+          },
+          "linux": {
+            "url": "https://github.com/FigBug/Piano/releases/download/v1.0.14/Piano.deb",
+            "filename": "Piano.deb",
+            "sha256": "f42a19c333113822e1e313e037717542b006f742e30e2794610ceccc5ed31370",
+            "hash_source": "self"
+          }
+        },
+        "version": "1.0.14",
+        "formats": [
+          "VST3",
+          "AU",
+          "VST",
+          "CLAP",
+          "LV2"
+        ],
+        "website": "https://socalabs.com/synths/piano/",
+        "open_source": true,
+        "github": "https://github.com/FigBug/Piano",
+        "note": "Release asset names carry no version, so there is no update_strategy; bump the tag in the URLs by hand"
       }
     ],
     "bundles": [
@@ -563,6 +1070,42 @@
         "website": "https://www.meldaproduction.com/MFreeFXBundle",
         "open_source": false,
         "note": "Requires MPluginManager to install individual plugins"
+      },
+      {
+        "name": "Cardinal",
+        "description": "VCV Rack-based modular synth as a plugin - 1,000+ built-in modules, synth/FX/main variants",
+        "update_strategy": "github:DISTRHO/Cardinal",
+        "urls": {
+          "macos": {
+            "url": "https://github.com/DISTRHO/Cardinal/releases/download/26.02/Cardinal-macOS-universal-26.02.pkg",
+            "filename": "Cardinal-macOS-universal-26.02.pkg",
+            "sha256": "5f62f020aab3987aea4bf7bfde4caf09b4c41ab555f485c0e7ebf46944bdb415",
+            "hash_source": "self"
+          },
+          "windows": {
+            "url": "https://github.com/DISTRHO/Cardinal/releases/download/26.02/Cardinal-win64-26.02-installer.exe",
+            "filename": "Cardinal-win64-26.02-installer.exe",
+            "sha256": "16f21250fe656fc766f6c1df79c45244bbdf55ffa90ff0c3c3ace9af70cf3e24",
+            "hash_source": "self"
+          },
+          "linux": {
+            "url": "https://github.com/DISTRHO/Cardinal/releases/download/26.02/Cardinal-linux-x86_64-26.02.tar.gz",
+            "filename": "Cardinal-linux-x86_64-26.02.tar.gz",
+            "sha256": "657df0beeec04184de7359cbd3e173a36eeab78077e1e26da81405632f98ec25",
+            "hash_source": "self"
+          }
+        },
+        "version": "26.02",
+        "formats": [
+          "VST3",
+          "AU",
+          "VST",
+          "CLAP",
+          "LV2"
+        ],
+        "website": "https://cardinal.kx.studio/",
+        "open_source": true,
+        "github": "https://github.com/DISTRHO/Cardinal"
       }
     ]
   },
@@ -657,7 +1200,38 @@
         "windows",
         "linux"
       ],
-      "reason": "Open source (GitHub: TheWaveWarden/odin2) but the stable installer ships from the vendor's own site, not a versioned GitHub release, so there's no pinnable per-platform URL+sha256 yet"
+      "reason": "Stable 2.4.0 installers are Dropbox share links on the vendor page; GitHub only carries the NightlyDevel builds, which upstream says not to use"
+    },
+    {
+      "name": "Decent Sampler",
+      "description": "Free sample player for the large Decent Sampler / Pianobook instrument ecosystem",
+      "website": "https://www.decentsamples.com/product/decent-sampler-plugin/",
+      "platforms": [
+        "macos",
+        "windows",
+        "linux"
+      ],
+      "reason": "Download links are sent after an email sign-up form"
+    },
+    {
+      "name": "MT Power Drum Kit 2",
+      "description": "Acoustic rock/pop drum kit with a built-in groove library",
+      "website": "https://www.powerdrumkit.com/download76187.php",
+      "platforms": [
+        "macos",
+        "windows"
+      ],
+      "reason": "JavaScript-only download page that requires accepting a EULA; no static file URL"
+    },
+    {
+      "name": "Mel-Lofi",
+      "description": "Mellotron emulation built on Taijiguy's samples - strings, flutes, choirs",
+      "website": "https://audiolatry.com/free-mel-lofi-plugin/",
+      "platforms": [
+        "macos",
+        "windows"
+      ],
+      "reason": "Distributed through a Gumroad checkout (email required, $0 price)"
     }
   ]
 }
