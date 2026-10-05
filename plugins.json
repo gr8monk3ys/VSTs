@@ -3,7 +3,7 @@
     "name": "Free VST Plugins",
     "version": "2.0.0",
     "description": "Curated collection of high-quality free VST plugins for macOS, Windows, and Linux",
-    "updated": "2026-10-01",
+    "updated": "2026-10-05",
     "author": "gr8monk3ys",
     "license": "MIT",
     "platforms": [
@@ -271,9 +271,9 @@
             "hash_source": "self"
           },
           "windows": {
-            "url": "https://github.com/surge-synthesizer/OB-Xf/releases/download/v1.0.3/ob-xf-Windows-v1.0.3.zip",
-            "filename": "ob-xf-Windows-v1.0.3.zip",
-            "sha256": "149fda0649daf8a3aa0851801f92515f0dbf6203acf33c0edc7d3c445e80b1e7",
+            "url": "https://github.com/surge-synthesizer/OB-Xf/releases/download/v1.0.3/ob-xf-Windows-arm64-v1.0.3.zip",
+            "filename": "ob-xf-Windows-arm64-v1.0.3.zip",
+            "sha256": "9f107371cfa87d9fabc5c27a9665d01abdd89ab693a94d718264a23b915a3f57",
             "hash_source": "self"
           },
           "linux": {
@@ -283,7 +283,7 @@
             "hash_source": "self"
           }
         },
-        "version": "1.0.3",
+        "version": "v1.0.3",
         "formats": [
           "VST3",
           "AU",
@@ -566,21 +566,21 @@
         "update_strategy": "github:baconpaul/airwin2rack@DAWPlugin",
         "urls": {
           "macos": {
-            "url": "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/airwindows-consolidated-macOS-2026-09-13-a3ccadd.dmg",
-            "filename": "airwindows-consolidated-macOS-2026-09-13-a3ccadd.dmg",
-            "sha256": "6373e37f6f47753f4d865dbf38d0f8d7dc00c6b543dd79fa98ea9c68d1157905",
+            "url": "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/airwindows-consolidated-macOS-2026-10-04-9b87116.dmg",
+            "filename": "airwindows-consolidated-macOS-2026-10-04-9b87116.dmg",
+            "sha256": "0d69597294cf76e67d6bbda920be3d9a2169052f7033624c4ffeb1d050ee61d5",
             "hash_source": "self"
           },
           "windows": {
-            "url": "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/AirwindowsConsolidated-2026-09-13-a3ccadd-Windows-64bit-setup.exe",
-            "filename": "AirwindowsConsolidated-2026-09-13-a3ccadd-Windows-64bit-setup.exe",
-            "sha256": "dc439367149d14e2cf8572eb487b691a1949e4fb37fda5208e9b18b2b212bbd1",
+            "url": "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/AirwindowsConsolidated-2026-10-04-9b87116-Windows-64bit-setup.exe",
+            "filename": "AirwindowsConsolidated-2026-10-04-9b87116-Windows-64bit-setup.exe",
+            "sha256": "66f7a01d06446552960b40315c1305de5ec0852e866f780b9422b1a4aebe2b03",
             "hash_source": "self"
           },
           "linux": {
-            "url": "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/AirwindowsConsolidated-2026-09-13-a3ccadd-Linux.zip",
-            "filename": "AirwindowsConsolidated-2026-09-13-a3ccadd-Linux.zip",
-            "sha256": "c34a29c01542fe502424767c190caeba0d1705365b38bc1e2b810435f5bd8e6a",
+            "url": "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/AirwindowsConsolidated-2026-10-04-9b87116-Linux.zip",
+            "filename": "AirwindowsConsolidated-2026-10-04-9b87116-Linux.zip",
+            "sha256": "1b0ecf04c418087f84849d85e5c67e8703642d99a423429fce5a11b929f66780",
             "hash_source": "self"
           }
         },
@@ -931,25 +931,25 @@
         "update_strategy": "github:tone-3000/tone3000-plugin",
         "urls": {
           "macos": {
-            "url": "https://github.com/tone-3000/tone3000-plugin/releases/download/v0.0.9/TONE3000-v0.0.9-macos-universal.pkg",
-            "filename": "TONE3000-v0.0.9-macos-universal.pkg",
-            "sha256": "4df5611ae235511ef3863c4fbafd2ed06a127abecb92c64c8b47743fda3d735e",
+            "url": "https://github.com/tone-3000/tone3000-plugin/releases/download/v0.0.11/TONE3000-v0.0.11-macos-universal.pkg",
+            "filename": "TONE3000-v0.0.11-macos-universal.pkg",
+            "sha256": "49c819c07c84d1f8f256763a2f070c70020cc5ccfefbfb85047257d27934d6a0",
             "hash_source": "self"
           },
           "windows": {
-            "url": "https://github.com/tone-3000/tone3000-plugin/releases/download/v0.0.9/TONE3000-v0.0.9-windows-x64.exe",
-            "filename": "TONE3000-v0.0.9-windows-x64.exe",
-            "sha256": "2dd8d7db67288d0b91bcebbf1068e6051840bbd3337b726800ae8b3596873b11",
+            "url": "https://github.com/tone-3000/tone3000-plugin/releases/download/v0.0.11/TONE3000-v0.0.11-windows-x64.exe",
+            "filename": "TONE3000-v0.0.11-windows-x64.exe",
+            "sha256": "1d9a20ae3478794a3b62ea86c98970690d7d5682ac39d0c5aecee9c7bed01f51",
             "hash_source": "self"
           },
           "linux": {
-            "url": "https://github.com/tone-3000/tone3000-plugin/releases/download/v0.0.9/TONE3000-v0.0.9-linux-x64.tar.gz",
-            "filename": "TONE3000-v0.0.9-linux-x64.tar.gz",
-            "sha256": "3e23fb63965f310834090c1cae0357ea0b279cfc14d6980e3beb0b7b5a54b546",
+            "url": "https://github.com/tone-3000/tone3000-plugin/releases/download/v0.0.11/TONE3000-v0.0.11-linux-x64.tar.gz",
+            "filename": "TONE3000-v0.0.11-linux-x64.tar.gz",
+            "sha256": "d16dfcf8a007749f6722d82a9cdd8535e1134902eae773f92c339c813efd9185",
             "hash_source": "self"
           }
         },
-        "version": "0.0.9",
+        "version": "v0.0.11",
         "formats": [
           "VST3",
           "AU",
