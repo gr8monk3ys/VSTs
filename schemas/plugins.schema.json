@@ -17,15 +17,22 @@
       }
     },
     "manual_download": {
-      "type": "array"
+      "type": "array",
+      "items": { "$ref": "#/$defs/manualEntry" }
     }
   },
   "$defs": {
+    "httpsUrl": {
+      "type": "string",
+      "pattern": "^https://[^\\s]+$"
+    },
     "plugin": {
       "type": "object",
       "required": ["name", "urls"],
       "properties": {
-        "name": { "type": "string" },
+        "name": { "type": "string", "minLength": 1 },
+        "website": { "$ref": "#/$defs/httpsUrl" },
+        "github": { "$ref": "#/$defs/httpsUrl" },
         "update_strategy": {
           "type": "string",
           "pattern": "^(github:[\\w.-]+/[\\w.-]+(@[\\w.-]+)?|u-he:[\\w.-]+|stable-url)$"
@@ -47,12 +54,26 @@
       "type": "object",
       "required": ["url", "filename", "sha256", "hash_source"],
       "properties": {
-        "url":      { "type": "string", "format": "uri" },
-        "filename": { "type": "string", "minLength": 1 },
+        "url": { "$ref": "#/$defs/httpsUrl" },
+        "filename": {
+          "description": "A plain file name inside the download folder: no path separators, drive or stream colon, Windows-reserved or control characters, and not . or ..",
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^(?!\\.\\.?$)[^/\\\\:*?\"<>|\\x00-\\x1f]+$"
+        },
         "sha256":   { "type": "string", "pattern": "^[a-f0-9]{64}$" },
         "hash_source": { "enum": ["publisher", "self"] }
       },
       "additionalProperties": false
+    },
+    "manualEntry": {
+      "type": "object",
+      "required": ["name", "website"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "website": { "$ref": "#/$defs/httpsUrl" }
+      },
+      "additionalProperties": true
     }
   }
 }

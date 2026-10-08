@@ -30,3 +30,8 @@ free-vst-plugins = "free_vst_plugins.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[dependency-groups]
+# Maintainer tools: `uv run pytest`, `uv run ruff check`. The downloader itself
+# stays stdlib-only.
+dev = ["pytest>=8", "jsonschema>=4", "ruff>=0.6"]

@@ -8,16 +8,20 @@ All plugins are legally free from their official sources.
 from __future__ import annotations
 
 import argparse
+import copy
 import datetime
 import hashlib
+import http.client
 import json
 import os
 import platform
 import re
 import sys
 import urllib.error
+import urllib.parse
 import urllib.request
 import zipfile
+from dataclasses import dataclass
 from pathlib import Path
 
 
@@ -59,6 +63,67 @@ class ChecksumMismatch(Exception):
         self.name = name
         self.expected = expected
         self.actual = actual
+
+
+USER_AGENT = "Mozilla/5.0 (compatible; VST-Downloader/1.0)"
+
+# Plain HTTP is only allowed to the local machine (the test suite's mock
+# server); everything that crosses the network must be HTTPS.
+LOOPBACK_HOSTS = frozenset({"127.0.0.1", "localhost", "::1"})
+
+
+class InsecureURLError(urllib.error.URLError):
+    """Raised for a URL or redirect target that is not HTTPS."""
+
+
+def check_url_allowed(url: str) -> None:
+    """Raise InsecureURLError unless `url` is HTTPS (or HTTP to loopback)."""
+    parts = urllib.parse.urlsplit(url)
+    if parts.scheme == "https":
+        return
+    if parts.scheme == "http" and parts.hostname in LOOPBACK_HOSTS:
+        return
+    raise InsecureURLError(f"refusing non-HTTPS URL {url!r}")
+
+
+class _SafeRedirectHandler(urllib.request.HTTPRedirectHandler):
+    """Follow redirects only to allowed URLs, and never carry credentials to
+    another host (urllib copies every header, Authorization included)."""
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        check_url_allowed(newurl)
+        new = super().redirect_request(req, fp, code, msg, headers, newurl)
+        if new is not None:
+            old_host = urllib.parse.urlsplit(req.full_url).hostname
+            if urllib.parse.urlsplit(newurl).hostname != old_host:
+                new.remove_header("Authorization")
+        return new
+
+
+_OPENER = urllib.request.build_opener(_SafeRedirectHandler)
+
+
+def open_url(url: str, *, timeout: float, headers: dict | None = None):
+    """Open `url` for reading: the one way this module talks to the network.
+
+    Sends the downloader's User-Agent, refuses non-HTTPS URLs and redirects
+    (InsecureURLError, a URLError), and drops Authorization on a cross-host
+    redirect. Returns the response, usable as a context manager.
+    """
+    check_url_allowed(url)
+    req = urllib.request.Request(
+        url, headers={"User-Agent": USER_AGENT, **(headers or {})}
+    )
+    return _OPENER.open(req, timeout=timeout)
+
+
+def sha256_file(path: Path) -> str:
+    """Lowercase hex SHA-256 of a file on disk."""
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(65536), b""):
+            h.update(chunk)
+    return h.hexdigest()
 
 
 def get_platform():
@@ -115,10 +180,7 @@ def find_local_manifest() -> Path | None:
 
 def fetch_remote_manifest(url: str = DEFAULT_MANIFEST_URL) -> dict:
     """Fetch the canonical plugins.json for installed (no-checkout) runs."""
-    req = urllib.request.Request(
-        url, headers={"User-Agent": "Mozilla/5.0 (compatible; VST-Downloader/1.0)"}
-    )
-    with urllib.request.urlopen(req, timeout=30) as response:
+    with open_url(url, timeout=30) as response:
         return json.loads(response.read().decode("utf-8"))
 
 
@@ -140,20 +202,25 @@ def print_section(title):
     print(f"{C.BLUE}{'─' * 64}{C.NC}")
 
 
+def _discard(path: Path) -> None:
+    if path.exists():
+        path.unlink()
+
+
 def download_file(url, filepath, name, expected_sha256, hash_source):
     """Download `url` to `filepath`, verifying SHA-256 in a single I/O pass.
 
-    On hash mismatch, removes the partial/cached file and raises
-    ChecksumMismatch. On a cached-file hit (filepath already exists), the
-    file is re-hashed before being trusted; if it doesn't match, the cached
-    file is deleted and the download proceeds normally.
+    The body streams to `<filepath>.part`, which is renamed to `filepath` only
+    once its hash matches, so an unverified or truncated file never sits under
+    the installer's real name. On hash mismatch the partial file is removed
+    and ChecksumMismatch is raised. A network failure (HTTP error, refused
+    redirect, timeout or reset mid-body) removes the partial file and returns
+    False. On a cached-file hit (filepath already exists), the file is
+    re-hashed before being trusted; if it doesn't match, the cached file is
+    deleted and the download proceeds normally.
     """
-    if filepath.exists():
-        h_existing = hashlib.sha256()
-        with open(filepath, "rb") as f:
-            for chunk in iter(lambda: f.read(65536), b""):
-                h_existing.update(chunk)
-        if h_existing.hexdigest() == expected_sha256:
+    if filepath.is_file():
+        if sha256_file(filepath) == expected_sha256:
             print(f"  {C.YELLOW}⏭{C.NC}  {name} - already verified ({hash_source})")
             return True
         # Cached file is bad — delete and fall through to re-download.
@@ -164,16 +231,10 @@ def download_file(url, filepath, name, expected_sha256, hash_source):
 
     print(f"  {C.CYAN}⬇{C.NC}  Downloading {name}...")
 
-    req = urllib.request.Request(
-        url, headers={"User-Agent": "Mozilla/5.0 (compatible; VST-Downloader/1.0)"}
-    )
-
+    part = filepath.with_name(filepath.name + ".part")
     h = hashlib.sha256()
     try:
-        with (
-            urllib.request.urlopen(req, timeout=60) as response,
-            open(filepath, "wb") as f,
-        ):
+        with open_url(url, timeout=60) as response, open(part, "wb") as f:
             while True:
                 chunk = response.read(65536)
                 if not chunk:
@@ -181,24 +242,25 @@ def download_file(url, filepath, name, expected_sha256, hash_source):
                 f.write(chunk)
                 h.update(chunk)
     except urllib.error.HTTPError as e:
-        if filepath.exists():
-            filepath.unlink()
+        _discard(part)
         print(f"  {C.RED}✗{C.NC}  {name} - HTTP error {e.code}")
         return False
-    except urllib.error.URLError as e:
-        if filepath.exists():
-            filepath.unlink()
-        print(f"  {C.RED}✗{C.NC}  {name} - connection error: {e.reason}")
+    except (OSError, http.client.HTTPException) as e:
+        # URLError is an OSError, and so are timeouts and resets mid-body.
+        _discard(part)
+        reason = getattr(e, "reason", None) or e
+        print(f"  {C.RED}✗{C.NC}  {name} - connection error: {reason}")
         return False
 
     actual = h.hexdigest()
     if actual != expected_sha256:
-        filepath.unlink()
+        part.unlink()
         print(f"  {C.RED}✗{C.NC}  {name} - HASH MISMATCH")
         print(f"      expected: {expected_sha256}")
         print(f"      actual:   {actual}")
         raise ChecksumMismatch(name, expected_sha256, actual)
 
+    os.replace(part, filepath)
     print(f"  {C.GREEN}✓{C.NC}  {name} - verified ({hash_source})")
     return True
 
@@ -213,11 +275,8 @@ def compute_hash_for_url(url: str, chunk_size: int = 65536) -> str:
     typically indicate a download-gate page or API error rather than a
     real installer (the hash would be valid but verify the wrong content).
     """
-    req = urllib.request.Request(
-        url, headers={"User-Agent": "Mozilla/5.0 (compatible; VST-Downloader/1.0)"}
-    )
     h = hashlib.sha256()
-    with urllib.request.urlopen(req, timeout=60) as response:
+    with open_url(url, timeout=60) as response:
         ct = (response.getheader("Content-Type") or "").lower()
         if ct.startswith(("text/html", "application/json")):
             raise ValueError(
@@ -267,24 +326,21 @@ def detect_latest_for_github(
     Returns {'tag': str, 'assets': [{'name': str, 'url': str, 'size': int}, ...]}.
 
     Reads GITHUB_TOKEN from the environment when set and adds it as a Bearer
-    Authorization header (raises the rate limit from 60/hr to 5000/hr).
-    HTTP errors propagate to the caller.
+    Authorization header (raises the rate limit from 60/hr to 5000/hr), but
+    only when api_base is api.github.com, so the token never goes to an
+    overridden or mock host. HTTP errors propagate to the caller.
     """
     if tag:
         path = f"/repos/{repo}/releases/tags/{tag}"
     else:
         path = f"/repos/{repo}/releases/latest"
 
-    headers = {
-        "User-Agent": "Mozilla/5.0 (compatible; VST-Downloader/1.0)",
-        "Accept": "application/vnd.github+json",
-    }
+    headers = {"Accept": "application/vnd.github+json"}
     token = os.environ.get("GITHUB_TOKEN")
-    if token:
+    if token and urllib.parse.urlsplit(api_base).hostname == "api.github.com":
         headers["Authorization"] = f"Bearer {token}"
 
-    req = urllib.request.Request(api_base + path, headers=headers)
-    with urllib.request.urlopen(req, timeout=30) as response:
+    with open_url(api_base + path, timeout=30, headers=headers) as response:
         data = json.loads(response.read().decode("utf-8"))
 
     return {
@@ -351,13 +407,7 @@ def detect_latest_for_uhe(
     url = page_url or cfg["page_url"]
     base = dl_base or "https://dl.u-he.com"
 
-    req = urllib.request.Request(
-        url,
-        headers={
-            "User-Agent": "Mozilla/5.0 (compatible; VST-Downloader/1.0)",
-        },
-    )
-    with urllib.request.urlopen(req, timeout=30) as response:
+    with open_url(url, timeout=30) as response:
         body = response.read().decode("utf-8", errors="replace")
 
     m = cfg["version_re"].search(body)
@@ -466,9 +516,16 @@ def find_matching_asset(
     useful when the maintainer's filename field is a shortened form of the upstream
     asset name (e.g., `-macos.dmg` vs `-macos-universal.dmg`).
 
+    Only candidates with the same final extension as current_filename are
+    considered, so a sibling `.sha256`/`.sig`/`.txt` asset that shares every
+    token can never be pinned in place of the installer.
+
     Returns the matched candidate dict or None if no candidate scores at least 2
     shared tokens (prevents matching purely on file extension).
     """
+    ext = Path(current_filename).suffix.lower()
+    candidates = [c for c in candidates if Path(c["name"]).suffix.lower() == ext]
+
     if old_tag and new_tag and old_tag != new_tag and old_tag in current_filename:
         expected = current_filename.replace(old_tag, new_tag)
         for cand in candidates:
@@ -836,12 +893,68 @@ def apply_updates(plugins_data: dict, report: dict) -> None:
         plugins_data["meta"]["updated"] = datetime.date.today().isoformat()
 
 
-def extract_archives(download_dir):
-    """Extract zip files."""
+def unsafe_zip_members(zf: zipfile.ZipFile, extract_dir: Path) -> list[str]:
+    """Names of members that would land outside extract_dir (zip-slip).
+
+    zipfile.extractall already strips `..` and drive/absolute prefixes, but
+    it does so silently; an archive that tries it is refused outright.
+    """
+    root = extract_dir.resolve()
+
+    def escapes(name: str) -> bool:
+        if name.startswith(("/", "\\")) or re.match(r"^[A-Za-z]:", name):
+            return True
+        target = (root / name).resolve()
+        return target != root and root not in target.parents
+
+    return [name for name in zf.namelist() if escapes(name)]
+
+
+def pin_applied_updates(plugins_data: dict, original: dict) -> list[dict]:
+    """Hash every URL entry apply_updates left without a sha256.
+
+    A plugin whose new download can't be hashed (HTTP error, timeout, an HTML
+    gate page) is restored from `original` instead of aborting the whole run,
+    so one bad upstream doesn't block every other update. Returns
+    [{'name', 'category', 'reason'}] for each plugin restored.
+    """
+    reverted = []
+    for category, plugins in plugins_data.get("plugins", {}).items():
+        for i, plugin in enumerate(plugins):
+            pending = [
+                entry
+                for entry in plugin.get("urls", {}).values()
+                if isinstance(entry, dict)
+                and "url" in entry
+                and not entry.get("sha256")
+            ]
+            try:
+                for entry in pending:
+                    entry["sha256"] = compute_hash_for_url(entry["url"])
+                    entry["hash_source"] = "self"
+            except (OSError, http.client.HTTPException, ValueError) as e:
+                plugins[i] = copy.deepcopy(original["plugins"][category][i])
+                reverted.append(
+                    {
+                        "name": plugin.get("name", "Unknown"),
+                        "category": category,
+                        "reason": str(e),
+                    }
+                )
+    return reverted
+
+
+def extract_archives(archives: list[Path]) -> None:
+    """Extract the given .zip files, each into a sibling folder of its stem.
+
+    Callers pass only archives whose hash was verified this run, never a glob
+    of the download folder, which may hold unrelated or unverified zips.
+    """
+    zips = [a for a in archives if a.suffix.lower() == ".zip"]
     print_section("Extracting Archives")
 
-    for zip_path in download_dir.glob("*.zip"):
-        extract_dir = download_dir / zip_path.stem
+    for zip_path in zips:
+        extract_dir = zip_path.parent / zip_path.stem
 
         if extract_dir.exists():
             print(f"  {C.YELLOW}⏭{C.NC}  {zip_path.name} - already extracted")
@@ -850,10 +963,80 @@ def extract_archives(download_dir):
         print(f"  {C.CYAN}📦{C.NC}  Extracting {zip_path.name}...")
         try:
             with zipfile.ZipFile(zip_path, "r") as zf:
+                bad = unsafe_zip_members(zf, extract_dir)
+                if bad:
+                    print(
+                        f"  {C.RED}✗{C.NC}  Refusing {zip_path.name}: "
+                        f"{len(bad)} member(s) escape the folder, e.g. {bad[0]!r}"
+                    )
+                    continue
                 zf.extractall(extract_dir)
             print(f"  {C.GREEN}✓{C.NC}  Extracted {zip_path.name}")
         except (zipfile.BadZipFile, OSError) as e:
             print(f"  {C.RED}✗{C.NC}  Failed to extract {zip_path.name}: {e}")
+
+
+SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
+# Characters that make a filename anything other than a plain name inside the
+# download folder: path separators, a drive or NTFS stream colon, the rest of
+# Windows' reserved set, and control characters.
+UNSAFE_FILENAME_RE = re.compile(r'[/\\:*?"<>|\x00-\x1f]')
+
+
+@dataclass(frozen=True)
+class DownloadTarget:
+    """A manifest URL entry checked and resolved to a path in download_dir.
+
+    Constructed only by resolve_target, so holding one means: the URL is
+    allowed (HTTPS), the file lands directly inside download_dir, and there
+    is a well-formed SHA-256 to verify against.
+    """
+
+    url: str
+    path: Path
+    sha256: str
+    hash_source: str
+
+
+class UnsafeEntry(ValueError):
+    """A manifest URL entry that must not be downloaded or written."""
+
+
+def check_filename(filename: str) -> None:
+    """Raise UnsafeEntry unless `filename` is a plain name with no path parts."""
+    if not filename or filename in (".", "..") or UNSAFE_FILENAME_RE.search(filename):
+        raise UnsafeEntry(f"unsafe filename {filename!r}")
+
+
+def resolve_target(plugin: dict, plat: str, download_dir: Path):
+    """The plugin's DownloadTarget for `plat`, or None if it has no URL there.
+
+    Raises UnsafeEntry for an entry that is present but unsafe to act on:
+    a non-HTTPS URL, a filename (or URL-derived name) that would escape
+    download_dir, or a missing/malformed sha256. The remote manifest is never
+    schema-validated at run time, so this is where its entries are checked.
+    """
+    entry = get_plugin_url(plugin, plat)
+    if entry is None:
+        return None
+    url = entry["url"]
+    try:
+        check_url_allowed(url)
+    except InsecureURLError as e:
+        raise UnsafeEntry(str(e.reason)) from None
+    filename = entry.get("filename") or urllib.parse.unquote(
+        url.split("/")[-1].split("?")[0]
+    )
+    check_filename(filename)
+    sha256 = entry.get("sha256")
+    if not isinstance(sha256, str) or not SHA256_RE.match(sha256):
+        raise UnsafeEntry(f"missing or malformed sha256 {sha256!r}")
+    return DownloadTarget(
+        url=url,
+        path=download_dir / filename,
+        sha256=sha256,
+        hash_source=entry.get("hash_source", "?"),
+    )
 
 
 def get_plugin_url(plugin, plat):
@@ -880,10 +1063,15 @@ def matches_only(name: str, only: list[str] | None) -> bool:
     return any(needle.lower() in lowered for needle in only)
 
 
-def download_category(plugins_data, category, download_dir, plat, only=None):
-    """Download all plugins in a category (optionally filtered by --only)."""
+def download_category(
+    plugins_data, category, download_dir, plat, only=None
+) -> tuple[int, list[Path]]:
+    """Download all plugins in a category (optionally filtered by --only).
+
+    Returns (number of failed entries, paths of files verified this run).
+    """
     if category not in plugins_data.get("plugins", {}):
-        return 0
+        return 0, []
 
     plugins = [
         p
@@ -891,40 +1079,43 @@ def download_category(plugins_data, category, download_dir, plat, only=None):
         if matches_only(p.get("name", "Unknown"), only)
     ]
     if not plugins:
-        return 0
+        return 0, []
     failed = 0
+    verified: list[Path] = []
 
     print_section(category_title(category))
 
     for plugin in plugins:
         name = plugin.get("name", "Unknown")
-        entry = get_plugin_url(plugin, plat)
+        try:
+            target = resolve_target(plugin, plat, download_dir)
+        except UnsafeEntry as e:
+            print(f"  {C.RED}✗{C.NC}  {name} - refused: {e}")
+            failed += 1
+            continue
 
-        if entry is None:
+        if target is None:
             print(f"  {C.YELLOW}⏭{C.NC}  {name} - not available for {plat}")
             if plugin.get("note"):
                 print(f"      {plugin['note']}")
             continue
 
-        url = entry["url"]
-        filename = entry.get("filename") or urllib.request.unquote(
-            url.split("/")[-1].split("?")[0]
-        )
-        filepath = download_dir / filename
-
-        if not download_file(
-            url, filepath, name, entry["sha256"], entry["hash_source"]
+        if download_file(
+            target.url, target.path, name, target.sha256, target.hash_source
         ):
+            verified.append(target.path)
+        else:
             failed += 1
 
-    return failed
+    return failed, verified
 
 
 def verify_downloads(plugins_data, download_dir, plat, only=None) -> int:
     """Re-hash already-downloaded files against the manifest. No downloads.
 
-    Prints one line per plugin (verified / MISMATCH / not downloaded) and
-    returns the number of hash mismatches found.
+    Prints one line per plugin (verified / MISMATCH / refused / not
+    downloaded) and returns the number of hash mismatches plus refused
+    (unsafe) entries.
     """
     print_section("Verifying Downloads")
     mismatched = 0
@@ -935,27 +1126,24 @@ def verify_downloads(plugins_data, download_dir, plat, only=None) -> int:
             name = plugin.get("name", "Unknown")
             if not matches_only(name, only):
                 continue
-            entry = get_plugin_url(plugin, plat)
-            if entry is None:
+            try:
+                target = resolve_target(plugin, plat, download_dir)
+            except UnsafeEntry as e:
+                mismatched += 1
+                print(f"  {C.RED}✗{C.NC}  {name} - refused: {e}")
                 continue
-            filename = entry.get("filename") or urllib.request.unquote(
-                entry["url"].split("/")[-1].split("?")[0]
-            )
-            filepath = download_dir / filename
-            if not filepath.exists():
+            if target is None:
+                continue
+            if not target.path.is_file():
                 print(f"  {C.YELLOW}⏭{C.NC}  {name} - not downloaded")
                 continue
 
             checked += 1
-            h = hashlib.sha256()
-            with open(filepath, "rb") as f:
-                for chunk in iter(lambda: f.read(65536), b""):
-                    h.update(chunk)
-            if h.hexdigest() == entry["sha256"]:
-                print(f"  {C.GREEN}✓{C.NC}  {name} - verified ({entry['hash_source']})")
+            if sha256_file(target.path) == target.sha256:
+                print(f"  {C.GREEN}✓{C.NC}  {name} - verified ({target.hash_source})")
             else:
                 mismatched += 1
-                print(f"  {C.RED}✗{C.NC}  {name} - HASH MISMATCH ({filepath.name})")
+                print(f"  {C.RED}✗{C.NC}  {name} - HASH MISMATCH ({target.path.name})")
 
     print()
     print(f"  {checked} file(s) checked, {mismatched} mismatch(es)")
@@ -1186,6 +1374,10 @@ Examples:
         print(f"{C.RED}Error: plugins.json not found at {plugins_json}{C.NC}")
         sys.exit(1)
     else:
+        # The manifest decides what gets downloaded and which hashes count as
+        # good, so always say which one is in use (stderr keeps stdout clean
+        # for --compute-hashes).
+        print(f"  Using manifest: {plugins_json.resolve()}", file=sys.stderr)
         plugins_data = load_plugins(plugins_json)
 
     # List mode
@@ -1208,13 +1400,22 @@ Examples:
         report = check_updates(plugins_data, api_base=api_base)
         print_check_updates_report(report)
         if args.apply:
+            original = copy.deepcopy(plugins_data)
             apply_updates(plugins_data, report)
-            # Recompute hashes for entries whose sha256 was cleared.
-            recompute_hashes(plugins_data, force=False)
+            reverted = pin_applied_updates(plugins_data, original)
+            for item in reverted:
+                print(
+                    f"{C.YELLOW}Reverted{C.NC} {item['name']}: "
+                    f"could not hash the new download ({item['reason']})"
+                )
+            applied = len(report["updates"]) - len(reverted)
+            if plugins_data["plugins"] == original["plugins"]:
+                print(f"\nNo updates applied. {plugins_json.name} left unchanged.")
+                sys.exit(0)
             rendered = json.dumps(plugins_data, indent=2, ensure_ascii=False) + "\n"
             plugins_json.write_text(rendered, encoding="utf-8")
             print(
-                f"\n{C.GREEN}Applied{C.NC} {len(report['updates'])} update(s). plugins.json updated."
+                f"\n{C.GREEN}Applied{C.NC} {applied} update(s). plugins.json updated."
             )
             sys.exit(0)
         n_up = len(report["updates"])
@@ -1240,18 +1441,21 @@ Examples:
     download_dir.mkdir(parents=True, exist_ok=True)
 
     failed = 0
+    verified: list[Path] = []
     try:
         for category in categories:
-            failed += download_category(
+            category_failed, category_verified = download_category(
                 plugins_data, category, download_dir, plat, only=args.only
             )
+            failed += category_failed
+            verified += category_verified
     except ChecksumMismatch as e:
         print(f"\n{C.RED}HASH MISMATCH detected for {e.name}.{C.NC}")
         print(f"{C.RED}Aborting. The bad file has been deleted.{C.NC}")
         sys.exit(1)
 
-    # Extract archives
-    extract_archives(download_dir)
+    # Extract only the archives verified in this run.
+    extract_archives(verified)
 
     # Print summary
     print_summary(download_dir, plat, samples="samples" in categories)
