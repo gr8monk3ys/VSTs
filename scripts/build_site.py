@@ -108,10 +108,21 @@ def esc(value: object) -> str:
     return html.escape(str(value), quote=True)
 
 
+def safe_href(url: object) -> str:
+    """Escaped `url` for an href, or the repo URL unless it is http(s).
+
+    Escaping alone would let a manifest `javascript:` URL run on click.
+    """
+    text = str(url or "")
+    if not text.lower().startswith(("https://", "http://")):
+        text = REPO_URL
+    return esc(text)
+
+
 def render_plugin_card(plugin: dict) -> str:
     name = esc(plugin.get("name", "Unknown"))
     desc = esc(plugin.get("description", ""))
-    website = esc(plugin.get("website") or plugin.get("github") or REPO_URL)
+    website = safe_href(plugin.get("website") or plugin.get("github"))
     version = plugin.get("version")
 
     badges = []
@@ -147,7 +158,7 @@ def render_plugin_card(plugin: dict) -> str:
 def render_manual_card(item: dict) -> str:
     name = esc(item.get("name", "Unknown"))
     desc = esc(item.get("description", ""))
-    website = esc(item.get("website", REPO_URL))
+    website = safe_href(item.get("website"))
     badges = "".join(
         f'<span class="badge">{PLATFORM_LABELS.get(p, esc(p))}</span>'
         for p in item.get("platforms", [])

@@ -78,11 +78,20 @@ yours. The catalog page has links and per-platform details.
 ## Maintaining the manifest
 
 ```bash
-pip install ruff pytest jsonschema
-python scripts/validate_manifest.py                    # JSON + schema
-ruff check src/ scripts/ tests/ && ruff format --check src/ scripts/ tests/
-pytest tests/                                          # 52 tests, local mock HTTP server, no network
+uv run python scripts/validate_manifest.py             # JSON + schema
+uv run ruff check && uv run ruff format --check src/ scripts/ tests/
+uv run pytest                                          # 92 tests, local mock HTTP server, no network
 ```
+
+`uv run` installs the `dev` dependency group (pytest, jsonschema, ruff); with
+plain pip, `pip install ruff pytest jsonschema` and drop the `uv run` prefix.
+
+The schema enforces what the downloader also checks at run time: every
+download URL (and `website`/`github` link) is `https://`, every `filename` is a
+plain name that cannot leave the download folder, and every entry carries a
+`sha256`. The downloader refuses redirects off HTTPS, writes each download to
+a `.part` file that is renamed only after its hash matches, and extracts only
+the zips it verified in that run.
 
 Adding a plugin: add an entry to `plugins.json` with URLs for each platform it
 ships on, then `python3 scripts/download-plugins.py --compute-hashes --in-place`
