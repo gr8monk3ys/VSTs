@@ -526,6 +526,11 @@ def find_matching_asset(
     ext = Path(current_filename).suffix.lower()
     candidates = [c for c in candidates if Path(c["name"]).suffix.lower() == ext]
 
+    # The pinned asset still exists upstream under the same name: keep it.
+    for cand in candidates:
+        if cand["name"] == current_filename:
+            return cand
+
     if old_tag and new_tag and old_tag != new_tag and old_tag in current_filename:
         expected = current_filename.replace(old_tag, new_tag)
         for cand in candidates:
@@ -541,18 +546,37 @@ def find_matching_asset(
     url_toks = tokens(current_url) if current_url else set()
 
     best = None
-    # Two-tier score: (filename-overlap, url-overlap). Prefers candidates that
-    # match the current filename's tokens (which carry platform/extension info)
-    # over candidates that only match URL path components.
-    best_score = (1, 0)  # filename-overlap floor of 2 (must beat 1)
+    # Three-tier score: (filename-overlap, url-overlap, -extra-tokens). Prefers
+    # candidates that match the current filename's tokens (which carry
+    # platform/extension info) over candidates that only match URL path
+    # components. On a tie, the candidate with the fewest tokens the current
+    # name lacks wins, so `foo-Windows.zip` is not swapped for a sibling
+    # `foo-Windows-arm64.zip` that happens to be listed first.
+    best_score = None
     for cand in candidates:
         cand_toks = tokens(cand["name"])
-        score = (len(filename_toks & cand_toks), len(url_toks & cand_toks))
-        if score > best_score:
+        overlap = len(filename_toks & cand_toks)
+        if overlap < 2:  # floor: never match on the file extension alone
+            continue
+        extra = len(cand_toks - filename_toks - url_toks)
+        score = (overlap, len(url_toks & cand_toks), -extra)
+        if best_score is None or score > best_score:
             best = cand
             best_score = score
 
     return best
+
+
+def _match_version_style(new: str, old: str | None) -> str:
+    """Write `new` the way `old` is written: drop a leading "v" the manifest lacks.
+
+    GitHub tags are often "v1.0.3" while the manifest stores "1.0.3"; without
+    this, an unchanged release reads as a version bump and the manifest's
+    format drifts one plugin at a time.
+    """
+    if old and new and new[0] in "vV" and new[1:2].isdigit() and old[0].isdigit():
+        return new[1:]
+    return new
 
 
 def _parse_update_strategy(strategy: str):
@@ -710,7 +734,7 @@ def check_updates(plugins_data: dict, api_base: str = "https://api.github.com") 
                 )
                 continue
 
-            new_tag = release["tag"]
+            new_tag = _match_version_style(release["tag"], old_tag)
 
             platform_updates = []
             any_drift = False

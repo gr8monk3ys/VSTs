@@ -785,3 +785,49 @@ def test_apply_for_stable_url_skips_unchanged_platforms(mock_server):
     # Unchanged platform: sha256 untouched, hash_source untouched.
     assert macos["sha256"] == mac_stored
     assert macos["hash_source"] == "publisher"
+
+
+def test_find_matching_asset_keeps_pinned_name_over_arch_sibling() -> None:
+    # Upstream lists the arm64 zip before the x64 one and both share every token
+    # of the pinned name; the pinned x64 asset must stay pinned.
+    current = "ob-xf-Windows-v1.0.3.zip"
+    cands = _candidates(
+        "ob-xf-Windows-arm64-v1.0.3.zip",
+        "ob-xf-Windows-arm64ec-v1.0.3.zip",
+        "ob-xf-Windows-v1.0.3.zip",
+    )
+
+    result = dlp.find_matching_asset(current, cands, old_tag="1.0.3", new_tag="1.0.3")
+
+    assert result is not None
+    assert result["name"] == "ob-xf-Windows-v1.0.3.zip"
+
+
+def test_find_matching_asset_tie_prefers_fewest_extra_tokens() -> None:
+    # New release: no exact name, both variants tie on overlap; the one without
+    # an architecture token the current name lacks wins.
+    current = "ob-xf-Windows-v1.0.3.zip"
+    cands = _candidates(
+        "ob-xf-Windows-arm64-v1.0.4.zip",
+        "ob-xf-Windows-v1.0.4.zip",
+    )
+
+    result = dlp.find_matching_asset(current, cands)
+
+    assert result is not None
+    assert result["name"] == "ob-xf-Windows-v1.0.4.zip"
+
+
+@pytest.mark.parametrize(
+    ("new", "old", "expected"),
+    [
+        ("v1.0.3", "1.0.3", "1.0.3"),
+        ("v0.0.12", "0.0.9", "0.0.12"),
+        ("v2.21", "v2.20", "v2.21"),
+        ("DAWPlugin", "DAWPlugin", "DAWPlugin"),
+        ("1.2.0", "1.1.0", "1.2.0"),
+        ("v1.0", None, "v1.0"),
+    ],
+)
+def test_match_version_style(new: str, old: str | None, expected: str) -> None:
+    assert dlp._match_version_style(new, old) == expected

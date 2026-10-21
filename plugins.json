@@ -271,9 +271,9 @@
             "hash_source": "self"
           },
           "windows": {
-            "url": "https://github.com/surge-synthesizer/OB-Xf/releases/download/v1.0.3/ob-xf-Windows-arm64-v1.0.3.zip",
-            "filename": "ob-xf-Windows-arm64-v1.0.3.zip",
-            "sha256": "9f107371cfa87d9fabc5c27a9665d01abdd89ab693a94d718264a23b915a3f57",
+            "url": "https://github.com/surge-synthesizer/OB-Xf/releases/download/v1.0.3/ob-xf-Windows-v1.0.3.zip",
+            "filename": "ob-xf-Windows-v1.0.3.zip",
+            "sha256": "149fda0649daf8a3aa0851801f92515f0dbf6203acf33c0edc7d3c445e80b1e7",
             "hash_source": "self"
           },
           "linux": {
@@ -283,7 +283,7 @@
             "hash_source": "self"
           }
         },
-        "version": "v1.0.3",
+        "version": "1.0.3",
         "formats": [
           "VST3",
           "AU",
@@ -949,7 +949,7 @@
             "hash_source": "self"
           }
         },
-        "version": "v0.0.12",
+        "version": "0.0.12",
         "formats": [
           "VST3",
           "AU",
