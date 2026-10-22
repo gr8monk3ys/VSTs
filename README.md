@@ -1,6 +1,6 @@
 # Free VST Plugins
 
-A manifest of 42 free, legally redistributable VST plugins (11 synths, 24
+A manifest of 43 free, legally redistributable VST plugins (11 synths, 25
 effects, 5 instruments, 2 bundles) and 13 free SFZ sample-library downloads
 (orchestra, solo strings and winds, saxes, accordion, piano, Mellotron), each
 pinned to a download URL and a SHA-256 hash, plus a downloader that refuses any
@@ -63,7 +63,7 @@ Orchestra archives go into one folder (wave files plus either script set).
 | Category | Plugins |
 |---|---|
 | Synths | Surge XT, Dexed, OB-Xd, OB-Xf, Helm, TAL-NoiseMaker, Tyrell N6, Zebralette, Vaporizer2, Podolski, Triple Cheese |
-| Effects | Valhalla Supermassive, Valhalla FreqEcho, OTT, Dragonfly Reverb, BYOD, TDR Nova, Airwindows Consolidated, TAL-Vocoder, CHOW Tape Model, ChowMatrix, ChowPhaser, TAL-Chorus-LX, TAL-Reverb-4, Protoverb, PaulXStretch, Neural Amp Modeler, Gateway (NAM), TONE3000, Youlean Loudness Meter 2, Voxengo SPAN, Graillon 3 Free, TDR Kotelnikov, TDR Molotok, TAL-Dub-X |
+| Effects | Valhalla Supermassive, Valhalla FreqEcho, OTT, Dragonfly Reverb, BYOD, TDR Nova, Airwindows Consolidated, TAL-Vocoder, CHOW Tape Model, ChowMatrix, ChowPhaser, TAL-Chorus-LX, TAL-Reverb-4, Protoverb, PaulXStretch, Neural Amp Modeler, Gateway (NAM), TONE3000, Youlean Loudness Meter 2, Voxengo SPAN, Graillon 3 Free, TDR Kotelnikov, TDR Molotok, TAL-Dub-X, Valentine |
 | Instruments | Sitala, sfizz, RipplerX, SocaLabs Organ, SocaLabs Piano |
 | Bundles | MeldaProduction MFreeFXBundle, Cardinal |
 | Sample libraries (`--samples`) | Virtual Playing Orchestra 3 (wave files, standard scripts, performance scripts), Sonatina Symphonic Orchestra 4.0, Karoryfer x bigcat Cello, Karoryfer Bear Sax, Karoryfer Weresax, Karoryfer War Tuba, MTG Solo Saxophones, Ixox Flute, FreePats Button Accordion HN, FreePats Upright Piano KW, Plogue sforzatron |
