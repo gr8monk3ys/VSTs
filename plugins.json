@@ -3,7 +3,7 @@
     "name": "Free VST Plugins",
     "version": "2.0.0",
     "description": "Curated collection of high-quality free VST plugins for macOS, Windows, and Linux",
-    "updated": "2026-10-19",
+    "updated": "2026-10-26",
     "author": "gr8monk3ys",
     "license": "MIT",
     "platforms": [
@@ -566,21 +566,21 @@
         "update_strategy": "github:baconpaul/airwin2rack@DAWPlugin",
         "urls": {
           "macos": {
-            "url": "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/airwindows-consolidated-macOS-2026-10-17-d8fe301.dmg",
-            "filename": "airwindows-consolidated-macOS-2026-10-17-d8fe301.dmg",
-            "sha256": "cf381e395f87409e19315ebae1bce341222a18c6d33b2281725395ac5f6a60e3",
+            "url": "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/airwindows-consolidated-macOS-2026-10-24-dcf98a3.dmg",
+            "filename": "airwindows-consolidated-macOS-2026-10-24-dcf98a3.dmg",
+            "sha256": "92538298316b0ea97a98729e12f96b26b027e60ebe65a39e6126440380f8b782",
             "hash_source": "self"
           },
           "windows": {
-            "url": "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/AirwindowsConsolidated-2026-10-17-d8fe301-Windows-64bit-setup.exe",
-            "filename": "AirwindowsConsolidated-2026-10-17-d8fe301-Windows-64bit-setup.exe",
-            "sha256": "24a16e45891e5868baaac8336c99b53f6f06afb43c1b7f34b8e187d2d1c18bf5",
+            "url": "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/AirwindowsConsolidated-2026-10-24-dcf98a3-Windows-64bit-setup.exe",
+            "filename": "AirwindowsConsolidated-2026-10-24-dcf98a3-Windows-64bit-setup.exe",
+            "sha256": "ec5fb0cdf30a328e41b96e85a6dd6ffb1ef53798f54e7efd50b0ac75f64304da",
             "hash_source": "self"
           },
           "linux": {
-            "url": "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/AirwindowsConsolidated-2026-10-17-d8fe301-Linux.zip",
-            "filename": "AirwindowsConsolidated-2026-10-17-d8fe301-Linux.zip",
-            "sha256": "6effa67d2142cebe454fb1f2ee9888cc5f6f5f940450c8ce922174cd983775c8",
+            "url": "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/AirwindowsConsolidated-2026-10-24-dcf98a3-Linux.zip",
+            "filename": "AirwindowsConsolidated-2026-10-24-dcf98a3-Linux.zip",
+            "sha256": "740297c0d34dc255d8780ad62509d054f3ff0480aac43f90071465fd23c53be4",
             "hash_source": "self"
           }
         },
