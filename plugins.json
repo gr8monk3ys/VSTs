@@ -3,7 +3,7 @@
     "name": "Free VST Plugins",
     "version": "2.0.0",
     "description": "Curated collection of high-quality free VST plugins for macOS, Windows, and Linux",
-    "updated": "2026-10-19",
+    "updated": "2026-10-29",
     "author": "gr8monk3ys",
     "license": "MIT",
     "platforms": [
@@ -1148,6 +1148,41 @@
         ],
         "website": "https://tal-software.com/products/tal-dub-x",
         "open_source": false
+      },
+      {
+        "name": "TIME-12",
+        "description": "Tilr's drawable delay-time modulator (GrossBeat/ShaperBox-style) for stutter, tape stop, scratch, reverse and pitch effects, with 12 MIDI-triggered patterns",
+        "update_strategy": "github:tiagolr/time12",
+        "urls": {
+          "macos": {
+            "url": "https://github.com/tiagolr/time12/releases/download/v1.2.3/time12-macos-v1.2.3.zip",
+            "filename": "time12-macos-v1.2.3.zip",
+            "sha256": "9066d0f46fe0cbce102296180d157a176708654b9d6488f6d616e9e3d5cf45e4",
+            "hash_source": "self"
+          },
+          "windows": {
+            "url": "https://github.com/tiagolr/time12/releases/download/v1.2.3/time12-win-v1.2.3.zip",
+            "filename": "time12-win-v1.2.3.zip",
+            "sha256": "b5699e49850826a8279e315d51cc8cf92636fc98d5d649bcfadd7ae026982989",
+            "hash_source": "self"
+          },
+          "linux": {
+            "url": "https://github.com/tiagolr/time12/releases/download/v1.2.3/time12-linux-v1.2.3.zip",
+            "filename": "time12-linux-v1.2.3.zip",
+            "sha256": "d1e19e0c2e5332626af3077d4dd98dcaeb4b4c2b33ee74c267a732c29df10613",
+            "hash_source": "self"
+          }
+        },
+        "version": "1.2.3",
+        "formats": [
+          "VST3",
+          "AU",
+          "LV2"
+        ],
+        "website": "https://github.com/tiagolr/time12",
+        "open_source": true,
+        "github": "https://github.com/tiagolr/time12",
+        "note": "Portable zips (no installer). macOS builds are unsigned: the bundled readme.txt gives the xattr command to clear quarantine."
       }
     ],
     "instruments": [
