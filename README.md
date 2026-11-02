@@ -1,6 +1,6 @@
 # Free VST Plugins
 
-A manifest of 44 free, legally redistributable VST plugins (11 synths, 25
+A manifest of 44 free, legally redistributable VST plugins (11 synths, 26
 effects, 5 instruments, 2 bundles) and 13 free SFZ sample-library downloads
 (orchestra, solo strings and winds, saxes, accordion, piano, Mellotron), each
 pinned to a download URL and a SHA-256 hash, plus a downloader that refuses any
