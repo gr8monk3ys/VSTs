@@ -3,7 +3,7 @@
     "name": "Free VST Plugins",
     "version": "2.0.0",
     "description": "Curated collection of high-quality free VST plugins for macOS, Windows, and Linux",
-    "updated": "2026-10-19",
+    "updated": "2026-10-26",
     "author": "gr8monk3ys",
     "license": "MIT",
     "platforms": [
@@ -1148,6 +1148,41 @@
         ],
         "website": "https://tal-software.com/products/tal-dub-x",
         "open_source": false
+      },
+      {
+        "name": "GATE-12",
+        "description": "Tilr's drawable envelope generator for gate/volume shaping (GrossBeat/ShaperBox-style), with 12 MIDI-triggered patterns",
+        "update_strategy": "github:tiagolr/gate12",
+        "urls": {
+          "macos": {
+            "url": "https://github.com/tiagolr/gate12/releases/download/v1.3.3/gate12-macos-v1.3.3.zip",
+            "filename": "gate12-macos-v1.3.3.zip",
+            "sha256": "2c11517bd9b59a83fa813fe9f933c4233deff5c7571b4e299c8b6fd91b2e7189",
+            "hash_source": "self"
+          },
+          "windows": {
+            "url": "https://github.com/tiagolr/gate12/releases/download/v1.3.3/gate12-win-v1.3.3.zip",
+            "filename": "gate12-win-v1.3.3.zip",
+            "sha256": "93b1056a40a341452804260a165ce9ce0feaad65eedbcf192319910671f54cf5",
+            "hash_source": "self"
+          },
+          "linux": {
+            "url": "https://github.com/tiagolr/gate12/releases/download/v1.3.3/gate12-linux-v1.3.3.zip",
+            "filename": "gate12-linux-v1.3.3.zip",
+            "sha256": "fa19ebf1cacd064c5c2fc687894ffc7400a92e9887f6db3cc3f2f59042d07cad",
+            "hash_source": "self"
+          }
+        },
+        "version": "1.3.3",
+        "formats": [
+          "VST3",
+          "AU",
+          "LV2"
+        ],
+        "website": "https://github.com/tiagolr/gate12",
+        "open_source": true,
+        "github": "https://github.com/tiagolr/gate12",
+        "note": "Portable zips (no installer). macOS builds are unsigned: the bundled readme.txt gives the xattr command to clear quarantine."
       }
     ],
     "instruments": [
