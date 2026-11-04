@@ -3,7 +3,7 @@
     "name": "Free VST Plugins",
     "version": "2.0.0",
     "description": "Curated collection of high-quality free VST plugins for macOS, Windows, and Linux",
-    "updated": "2026-10-22",
+    "updated": "2026-11-02",
     "author": "gr8monk3ys",
     "license": "MIT",
     "platforms": [
@@ -55,25 +55,25 @@
         "update_strategy": "github:asb2m10/dexed",
         "urls": {
           "macos": {
-            "url": "https://github.com/asb2m10/dexed/releases/download/v1.0.1/Dexed-1.0.1-macOS.dmg",
-            "filename": "Dexed-1.0.1-macOS.dmg",
-            "sha256": "a6505103869d15400e7bed1d988d9dd155d6d8204a3d532f5301966ae7507ad8",
+            "url": "https://github.com/asb2m10/dexed/releases/download/v1.1.0/Dexed-1.1.0-macOS.dmg",
+            "filename": "Dexed-1.1.0-macOS.dmg",
+            "sha256": "f95b5d4a8985af444094fd3d76c5f4c86795f56169b9b9a1f4d620bb54c300ce",
             "hash_source": "self"
           },
           "windows": {
-            "url": "https://github.com/asb2m10/dexed/releases/download/v1.0.1/Dexed-1.0.1-win.exe",
-            "filename": "Dexed-1.0.1-win.exe",
-            "sha256": "5dc4e072af90ec54aa0197790b40856e7db1659ff924ed107c7536b442d3584b",
+            "url": "https://github.com/asb2m10/dexed/releases/download/v1.1.0/Dexed-1.1.0-win.exe",
+            "filename": "Dexed-1.1.0-win.exe",
+            "sha256": "a5ebac7578f45ccf691cd5887b0af0c7206bdc763e85d479795c2c1866f54d5f",
             "hash_source": "self"
           },
           "linux": {
-            "url": "https://github.com/asb2m10/dexed/releases/download/v1.0.1/Dexed-1.0.1-lnx.zip",
-            "filename": "Dexed-1.0.1-lnx.zip",
-            "sha256": "2bac3d0c4237e8c22c4274b6d5b59fe6329fcae72864f81b5830393eff354fc1",
+            "url": "https://github.com/asb2m10/dexed/releases/download/v1.1.0/Dexed-1.1.0-lnx.zip",
+            "filename": "Dexed-1.1.0-lnx.zip",
+            "sha256": "3a1a01511e3428f432cc91c7bf5267d72bfcb68aded4f084d4f9d002dcc42da6",
             "hash_source": "self"
           }
         },
-        "version": "1.0.1",
+        "version": "1.1.0",
         "formats": [
           "VST3",
           "AU",
@@ -566,21 +566,21 @@
         "update_strategy": "github:baconpaul/airwin2rack@DAWPlugin",
         "urls": {
           "macos": {
-            "url": "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/airwindows-consolidated-macOS-2026-10-17-d8fe301.dmg",
-            "filename": "airwindows-consolidated-macOS-2026-10-17-d8fe301.dmg",
-            "sha256": "cf381e395f87409e19315ebae1bce341222a18c6d33b2281725395ac5f6a60e3",
+            "url": "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/airwindows-consolidated-macOS-2026-10-31-d013e10.dmg",
+            "filename": "airwindows-consolidated-macOS-2026-10-31-d013e10.dmg",
+            "sha256": "067106f1311f60ab6dc20d8cc92bbf9919de0136f299cccf0e53924223ec23eb",
             "hash_source": "self"
           },
           "windows": {
-            "url": "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/AirwindowsConsolidated-2026-10-17-d8fe301-Windows-64bit-setup.exe",
-            "filename": "AirwindowsConsolidated-2026-10-17-d8fe301-Windows-64bit-setup.exe",
-            "sha256": "24a16e45891e5868baaac8336c99b53f6f06afb43c1b7f34b8e187d2d1c18bf5",
+            "url": "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/AirwindowsConsolidated-2026-10-31-d013e10-Windows-64bit-setup.exe",
+            "filename": "AirwindowsConsolidated-2026-10-31-d013e10-Windows-64bit-setup.exe",
+            "sha256": "a3ddb348b6ad9c9e1ec69c4f43ddaaab72a856e3aa068f1eb8bea2e639bc2aa5",
             "hash_source": "self"
           },
           "linux": {
-            "url": "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/AirwindowsConsolidated-2026-10-17-d8fe301-Linux.zip",
-            "filename": "AirwindowsConsolidated-2026-10-17-d8fe301-Linux.zip",
-            "sha256": "6effa67d2142cebe454fb1f2ee9888cc5f6f5f940450c8ce922174cd983775c8",
+            "url": "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/AirwindowsConsolidated-2026-10-31-d013e10-Linux.zip",
+            "filename": "AirwindowsConsolidated-2026-10-31-d013e10-Linux.zip",
+            "sha256": "98f9f37788a14cfff97dad73332e7f7621e29bd2685b4ef5f0671273a1253ef4",
             "hash_source": "self"
           }
         },
@@ -1148,6 +1148,76 @@
         ],
         "website": "https://tal-software.com/products/tal-dub-x",
         "open_source": false
+      },
+      {
+        "name": "GATE-12",
+        "description": "Tilr's drawable envelope generator for gate/volume shaping (GrossBeat/ShaperBox-style), with 12 MIDI-triggered patterns",
+        "update_strategy": "github:tiagolr/gate12",
+        "urls": {
+          "macos": {
+            "url": "https://github.com/tiagolr/gate12/releases/download/v1.3.3/gate12-macos-v1.3.3.zip",
+            "filename": "gate12-macos-v1.3.3.zip",
+            "sha256": "2c11517bd9b59a83fa813fe9f933c4233deff5c7571b4e299c8b6fd91b2e7189",
+            "hash_source": "self"
+          },
+          "windows": {
+            "url": "https://github.com/tiagolr/gate12/releases/download/v1.3.3/gate12-win-v1.3.3.zip",
+            "filename": "gate12-win-v1.3.3.zip",
+            "sha256": "93b1056a40a341452804260a165ce9ce0feaad65eedbcf192319910671f54cf5",
+            "hash_source": "self"
+          },
+          "linux": {
+            "url": "https://github.com/tiagolr/gate12/releases/download/v1.3.3/gate12-linux-v1.3.3.zip",
+            "filename": "gate12-linux-v1.3.3.zip",
+            "sha256": "fa19ebf1cacd064c5c2fc687894ffc7400a92e9887f6db3cc3f2f59042d07cad",
+            "hash_source": "self"
+          }
+        },
+        "version": "1.3.3",
+        "formats": [
+          "VST3",
+          "AU",
+          "LV2"
+        ],
+        "website": "https://github.com/tiagolr/gate12",
+        "open_source": true,
+        "github": "https://github.com/tiagolr/gate12",
+        "note": "Portable zips (no installer). macOS builds are unsigned: the bundled readme.txt gives the xattr command to clear quarantine."
+      },
+      {
+        "name": "TIME-12",
+        "description": "Tilr's drawable delay-time modulator (GrossBeat/ShaperBox-style) for stutter, tape stop, scratch, reverse and pitch effects, with 12 MIDI-triggered patterns",
+        "update_strategy": "github:tiagolr/time12",
+        "urls": {
+          "macos": {
+            "url": "https://github.com/tiagolr/time12/releases/download/v1.2.3/time12-macos-v1.2.3.zip",
+            "filename": "time12-macos-v1.2.3.zip",
+            "sha256": "9066d0f46fe0cbce102296180d157a176708654b9d6488f6d616e9e3d5cf45e4",
+            "hash_source": "self"
+          },
+          "windows": {
+            "url": "https://github.com/tiagolr/time12/releases/download/v1.2.3/time12-win-v1.2.3.zip",
+            "filename": "time12-win-v1.2.3.zip",
+            "sha256": "b5699e49850826a8279e315d51cc8cf92636fc98d5d649bcfadd7ae026982989",
+            "hash_source": "self"
+          },
+          "linux": {
+            "url": "https://github.com/tiagolr/time12/releases/download/v1.2.3/time12-linux-v1.2.3.zip",
+            "filename": "time12-linux-v1.2.3.zip",
+            "sha256": "d1e19e0c2e5332626af3077d4dd98dcaeb4b4c2b33ee74c267a732c29df10613",
+            "hash_source": "self"
+          }
+        },
+        "version": "1.2.3",
+        "formats": [
+          "VST3",
+          "AU",
+          "LV2"
+        ],
+        "website": "https://github.com/tiagolr/time12",
+        "open_source": true,
+        "github": "https://github.com/tiagolr/time12",
+        "note": "Portable zips (no installer). macOS builds are unsigned: the bundled readme.txt gives the xattr command to clear quarantine."
       },
       {
         "name": "Valentine",
