@@ -63,7 +63,7 @@ Orchestra archives go into one folder (wave files plus either script set).
 | Category | Plugins |
 |---|---|
 | Synths | Surge XT, Dexed, OB-Xd, OB-Xf, Helm, TAL-NoiseMaker, Tyrell N6, Zebralette, Vaporizer2, Podolski, Triple Cheese |
-| Effects | Valhalla Supermassive, Valhalla FreqEcho, OTT, Dragonfly Reverb, BYOD, TDR Nova, Airwindows Consolidated, TAL-Vocoder, CHOW Tape Model, ChowMatrix, ChowPhaser, TAL-Chorus-LX, TAL-Reverb-4, Protoverb, PaulXStretch, Neural Amp Modeler, Gateway (NAM), TONE3000, Youlean Loudness Meter 2, Voxengo SPAN, Graillon 3 Free, TDR Kotelnikov, TDR Molotok, TAL-Dub-X, GATE-12, TIME-12 |
+| Effects | Valhalla Supermassive, Valhalla FreqEcho, OTT, Dragonfly Reverb, BYOD, TDR Nova, Airwindows Consolidated, TAL-Vocoder, CHOW Tape Model, ChowMatrix, ChowPhaser, TAL-Chorus-LX, TAL-Reverb-4, Protoverb, PaulXStretch, Neural Amp Modeler, Gateway (NAM), TONE3000, Youlean Loudness Meter 2, Voxengo SPAN, Graillon 3 Free, TDR Kotelnikov, TDR Molotok, TAL-Dub-X, GATE-12, TIME-12, REEV-R |
 | Instruments | Sitala, sfizz, RipplerX, SocaLabs Organ, SocaLabs Piano |
 | Bundles | MeldaProduction MFreeFXBundle, Cardinal |
 | Sample libraries (`--samples`) | Virtual Playing Orchestra 3 (wave files, standard scripts, performance scripts), Sonatina Symphonic Orchestra 4.0, Karoryfer x bigcat Cello, Karoryfer Bear Sax, Karoryfer Weresax, Karoryfer War Tuba, MTG Solo Saxophones, Ixox Flute, FreePats Button Accordion HN, FreePats Upright Piano KW, Plogue sforzatron |

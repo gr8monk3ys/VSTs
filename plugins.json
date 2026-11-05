@@ -3,7 +3,7 @@
     "name": "Free VST Plugins",
     "version": "2.0.0",
     "description": "Curated collection of high-quality free VST plugins for macOS, Windows, and Linux",
-    "updated": "2026-11-02",
+    "updated": "2026-11-05",
     "author": "gr8monk3ys",
     "license": "MIT",
     "platforms": [
@@ -1217,6 +1217,41 @@
         "website": "https://github.com/tiagolr/time12",
         "open_source": true,
         "github": "https://github.com/tiagolr/time12",
+        "note": "Portable zips (no installer). macOS builds are unsigned: the bundled readme.txt gives the xattr command to clear quarantine."
+      },
+      {
+        "name": "REEV-R",
+        "description": "Tilr's convolution reverb with IR stretch/trim/reverse, IR EQs, and drawable pre/send and post/reverb modulation with 12 MIDI-triggered patterns",
+        "update_strategy": "github:tiagolr/reevr",
+        "urls": {
+          "macos": {
+            "url": "https://github.com/tiagolr/reevr/releases/download/v1.4.0/reevr-macos-v1.4.0.zip",
+            "filename": "reevr-macos-v1.4.0.zip",
+            "sha256": "92e069e942ac0f286169b32d0fd175483a10e07da6470a3582c93cc8a741c9e3",
+            "hash_source": "self"
+          },
+          "windows": {
+            "url": "https://github.com/tiagolr/reevr/releases/download/v1.4.0/reevr-win-v1.4.0.zip",
+            "filename": "reevr-win-v1.4.0.zip",
+            "sha256": "d22f2c2421f4d3b52040bad8878ec37c96f1c69413f231f689769833dfffb864",
+            "hash_source": "self"
+          },
+          "linux": {
+            "url": "https://github.com/tiagolr/reevr/releases/download/v1.4.0/reevr-linux-v1.4.0.zip",
+            "filename": "reevr-linux-v1.4.0.zip",
+            "sha256": "243da8bd8b90e60372f75ddea9a6ae54c5a1dd7f2071b0050e47ed613c511f8f",
+            "hash_source": "self"
+          }
+        },
+        "version": "1.4.0",
+        "formats": [
+          "VST3",
+          "AU",
+          "LV2"
+        ],
+        "website": "https://github.com/tiagolr/reevr",
+        "open_source": true,
+        "github": "https://github.com/tiagolr/reevr",
         "note": "Portable zips (no installer). macOS builds are unsigned: the bundled readme.txt gives the xattr command to clear quarantine."
       }
     ],
