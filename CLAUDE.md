@@ -5,7 +5,10 @@ Python downloader (`src/free_vst_plugins/cli.py`, stdlib only) for the catalog i
 
 ## Checks
 
-`uv run pytest` and `uv run ruff check` (plus `uv run ruff format --check src/ scripts/ tests/`).
+`uv run python scripts/verify.py` runs exactly what CI gates on (`lint`: manifest schema,
+ruff check, ruff format --check, py_compile; `test`: CLI `--help`/`--list`, platform
+detection, pytest); CI calls the same script per job. Individual tools: `uv run pytest`,
+`uv run ruff check`, `uv run ruff format --check src/ scripts/ tests/`.
 Tests use a local mock HTTP server; never download real plugins or run installers to test.
 
 ## Security invariants
