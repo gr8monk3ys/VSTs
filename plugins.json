@@ -1257,6 +1257,7 @@
       {
         "name": "Valentine",
         "description": "Tote Bag Labs compressor/saturator with a bit-crush stage - drive it hard for pumping, crushed textures",
+        "update_strategy": "github:tote-bag-labs/valentine",
         "urls": {
           "macos": {
             "url": "https://github.com/tote-bag-labs/valentine/releases/download/v1.0.1/valentine-1.0.1-macOS.dmg",
@@ -1285,7 +1286,7 @@
         "website": "https://github.com/tote-bag-labs/valentine",
         "open_source": true,
         "github": "https://github.com/tote-bag-labs/valentine",
-        "note": "No update_strategy: upstream's release workflow publishes every tag as a GitHub prerelease, which /releases/latest skips. The Linux zip is an unadvertised CI build (upstream lists macOS AU/VST3 and Windows VST3); it holds VST3/Valentine.vst3 and a standalone binary, plus a build-time libValentine_SharedCode.a you can delete."
+        "note": "The Linux zip is an unadvertised CI build (upstream lists macOS AU/VST3 and Windows VST3); it holds VST3/Valentine.vst3 and a standalone binary, plus a build-time libValentine_SharedCode.a you can delete."
       }
     ],
     "instruments": [
