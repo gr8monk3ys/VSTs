@@ -7,7 +7,7 @@ name = "free-vst-plugins"
 version = "2.0.0"
 description = "Cross-platform downloader for curated, hash-verified free VST plugins"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 license = { text = "MIT" }
 authors = [{ name = "gr8monk3ys" }]
 keywords = ["vst", "vst3", "audio", "plugins", "music-production", "downloader"]

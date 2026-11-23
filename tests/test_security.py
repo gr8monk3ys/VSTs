@@ -261,7 +261,9 @@ def test_pin_applied_updates_reverts_only_the_plugin_that_fails(
     }
     data = copy.deepcopy(original)
     for plugin, url in zip(
-        data["plugins"]["synths"], (good_url, mock_server.url_for("/gone.exe"))
+        data["plugins"]["synths"],
+        (good_url, mock_server.url_for("/gone.exe")),
+        strict=True,
     ):
         entry = plugin["urls"]["windows"]
         entry["url"] = url
