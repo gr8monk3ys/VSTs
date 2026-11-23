@@ -20,7 +20,7 @@ gets trusted. 18 more plugins and libraries that sit behind account walls or
 download gates (or, for VCSL, have no release archive) are listed in the
 manifest under `manual_download` with no URL.
 
-Runs on macOS, Windows and Linux with Python 3.9+ and no dependencies.
+Runs on macOS, Windows and Linux with Python 3.10+ and no dependencies.
 
 ## Install and run
 
