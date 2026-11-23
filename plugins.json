@@ -3,7 +3,7 @@
     "name": "Free VST Plugins",
     "version": "2.0.0",
     "description": "Curated collection of high-quality free VST plugins for macOS, Windows, and Linux",
-    "updated": "2026-11-16",
+    "updated": "2026-11-23",
     "author": "gr8monk3ys",
     "license": "MIT",
     "platforms": [
@@ -390,6 +390,42 @@
         ],
         "website": "https://u-he.com/products/triplecheese/",
         "open_source": false
+      },
+      {
+        "name": "JC-303",
+        "description": "TB-303 bass line clone built on Robin Schmidt's Open303, with a 16-step acid sequencer, eight filter models, a mod matrix and a GuitarML-based neural overdrive",
+        "update_strategy": "github:midilab/jc303",
+        "urls": {
+          "macos": {
+            "url": "https://github.com/midilab/jc303/releases/download/v0.14.0/jc303-0.14.0-macos_universal-plugins.zip",
+            "filename": "jc303-0.14.0-macos_universal-plugins.zip",
+            "sha256": "dfdc9b7deb674d472dc8663ec03a8ea177bf5d752beac4058cd0ea309bd48107",
+            "hash_source": "self"
+          },
+          "windows": {
+            "url": "https://github.com/midilab/jc303/releases/download/v0.14.0/jc303-0.14.0-windows_x64-plugins.zip",
+            "filename": "jc303-0.14.0-windows_x64-plugins.zip",
+            "sha256": "499c1bec494d9116999a52c13ae59ff503bdff32438e8ef4af5fce6408e08057",
+            "hash_source": "self"
+          },
+          "linux": {
+            "url": "https://github.com/midilab/jc303/releases/download/v0.14.0/jc303-0.14.0-linux_x64-plugins.zip",
+            "filename": "jc303-0.14.0-linux_x64-plugins.zip",
+            "sha256": "378200f8ddda266873c9795feb6ee857fbae000a3b3537a7b42933dd277b370c",
+            "hash_source": "self"
+          }
+        },
+        "version": "0.14.0",
+        "formats": [
+          "VST3",
+          "AU",
+          "CLAP",
+          "LV2"
+        ],
+        "website": "https://github.com/midilab/jc303",
+        "open_source": true,
+        "github": "https://github.com/midilab/jc303",
+        "note": "Portable zips (no installer) with one folder per format plus a standalone app; AU is macOS-only. macOS builds need the quarantine flag cleared (the upstream README gives the xattr command)."
       }
     ],
     "effects": [
