@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Fast gate that Claude Code runs before a session can finish: `make check`,
+# i.e. scripts/verify.py, the same script CI calls per job (manifest schema,
+# ruff lint + format, syntax, CLI smoke, pytest). No real downloads.
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+uv run --frozen python scripts/verify.py
