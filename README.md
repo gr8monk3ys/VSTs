@@ -1,6 +1,6 @@
 # Free VST Plugins
 
-A manifest of 46 free, legally redistributable VST plugins (11 synths, 28
+A manifest of 47 free, legally redistributable VST plugins (12 synths, 28
 effects, 5 instruments, 2 bundles) and 13 free SFZ sample-library downloads
 (orchestra, solo strings and winds, saxes, accordion, piano, Mellotron), each
 pinned to a download URL and a SHA-256 hash, plus a downloader that refuses any
@@ -62,7 +62,7 @@ Orchestra archives go into one folder (wave files plus either script set).
 
 | Category | Plugins |
 |---|---|
-| Synths | Surge XT, Dexed, OB-Xd, OB-Xf, Helm, TAL-NoiseMaker, Tyrell N6, Zebralette, Vaporizer2, Podolski, Triple Cheese |
+| Synths | Surge XT, Dexed, OB-Xd, OB-Xf, Helm, TAL-NoiseMaker, Tyrell N6, Zebralette, Vaporizer2, Podolski, Triple Cheese, JC-303 |
 | Effects | Valhalla Supermassive, Valhalla FreqEcho, OTT, Dragonfly Reverb, BYOD, TDR Nova, Airwindows Consolidated, TAL-Vocoder, CHOW Tape Model, ChowMatrix, ChowPhaser, TAL-Chorus-LX, TAL-Reverb-4, Protoverb, PaulXStretch, Neural Amp Modeler, Gateway (NAM), TONE3000, Youlean Loudness Meter 2, Voxengo SPAN, Graillon 3 Free, TDR Kotelnikov, TDR Molotok, TAL-Dub-X, GATE-12, TIME-12, REEV-R, Valentine |
 | Instruments | Sitala, sfizz, RipplerX, SocaLabs Organ, SocaLabs Piano |
 | Bundles | MeldaProduction MFreeFXBundle, Cardinal |
